@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthCare AI Assistant</title>
+
+<link rel="stylesheet" href="CSS/style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🩺 HealthAI</h2>
+
+        <button class="nav-btn active">💬 Chat</button>
+        <button class="nav-btn">📊 Health Stats</button>
+        <button class="nav-btn">💊 Reminder</button>
+        <button class="nav-btn">⚙ Settings</button>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="main">
+
+        <div class="header">
+            <h3>Healthcare Assistant</h3>
+            <span class="status">🟢 Online</span>
+        </div>
+
+        <div class="chat-area" id="chatBox">
+
+            <div class="bot-msg">
+                👋 Hello! I am your healthcare assistant.  
+                How can I help you today?
+            </div>
+
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Describe your symptoms...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="JS/script.js"></script>
+
+</body>
+</html>
