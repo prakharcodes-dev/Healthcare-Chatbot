@@ -78,8 +78,8 @@ Detailed symptom list (10-15 symptoms each)
 Severity rating (mild/moderate/high)
 
 📡 API Endpoints
-Endpoint	Method	Description
-/	GET	Serves frontend interface
-/chat	POST	Main chat endpoint
-/diseases	GET	List all diseases
-/health	GET	System health check
+Endpoint	  Method    	Description
+/	           GET       	Serves frontend interface
+/chat   	  POST	     Main chat endpoint
+/diseases    GET	     List all diseases
+/health 	   GET       	System health check
