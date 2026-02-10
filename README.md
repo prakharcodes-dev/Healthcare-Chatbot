@@ -1,44 +1,85 @@
 🏥 Healthcare Chatbot
+A medical assistant chatbot that analyzes symptoms and suggests possible medical conditions from a database of 150+ diseases. Built with Python Flask and a comprehensive medical knowledge base.
 
-The Healthcare Chatbot is a simple web-based application built using Python Flask that provides basic healthcare guidance based on symptoms entered by users. The project focuses on implementing chatbot logic, handling user interaction, and building a structured backend system.
+🚀 Features
+Symptom Analysis: Detects symptoms from user input
 
-This chatbot is designed as a learning project to understand how conversational systems work in healthcare assistance scenarios.
+Disease Matching: Compares against 150+ medical conditions
 
-🔧 Technologies Used
+Intelligent Ranking: Shows top 5 matches with percentage scores
 
-Python
+Category Filtering: Diseases organized by medical specialty
 
-Flask
+Emergency Detection: Alerts for critical symptoms
 
-HTML
+Web Interface: Clean chat UI with real-time responses
 
-CSS
+🏗️ Project Structure
+Minimal File Structure:
 
-✨ Features
+healthcare-chatbot/
+├── app.py              # Main Flask backend (single file)
+├── index.html          # Frontend interface (single file)
+└── README.md           # This file
 
-Provides symptom-based health suggestions
+What's Inside:
+app.py - Complete Flask backend with:
 
-Simple and user-friendly interface
+150+ disease database with symptoms
 
-Modular chatbot logic design
+Chat endpoint with symptom matching
 
-Localhost-based implementation
+Disease search API
 
-Easy to expand with advanced AI or ML models
+Frontend serving
 
-📂 Project Structure
+Auto-browser launch
 
-backend/
-   main.py
-   chatbot_logic.py
-🎯 Purpose of Project
+index.html - Complete frontend with:
 
-This project helps in understanding:
+Chat interface with message history
 
-Backend web development
+Real-time API communication
 
-Chatbot response logic
+Responsive design
 
-Basic healthcare assistance system design
+Loading indicators
 
-Client-server interaction fundamentals
+🛠️ Technologies
+Backend: Python, Flask, Flask-CORS
+
+Frontend: HTML5, CSS3, JavaScript (Vanilla)
+
+Database: In-memory Python list (150+ diseases)
+
+Deployment: Localhost with auto-browser launch
+
+📊 Medical Database
+150+ Diseases across 15+ medical categories
+
+Autoimmune: Lupus, Rheumatoid Arthritis, etc.
+
+Cancer: 20+ types with specific symptoms
+
+Neurological: Parkinson's, Alzheimer's, MS
+
+Cardiovascular: Hypertension, Heart conditions
+
+Respiratory: Asthma, COPD, Pneumonia
+
+And more...
+
+Each disease includes:
+
+Disease name and category
+
+Detailed symptom list (10-15 symptoms each)
+
+Severity rating (mild/moderate/high)
+
+📡 API Endpoints
+Endpoint	Method	Description
+/	GET	Serves frontend interface
+/chat	POST	Main chat endpoint
+/diseases	GET	List all diseases
+/health	GET	System health check
