@@ -1,0 +1,1098 @@
+[
+  {
+    "disease": "Common Cold",
+    "symptoms": ["runny nose", "sneezing", "cough", "sore throat", "congestion", "mild fever"],
+    "severity": "mild",
+    "category": "respiratory",
+    "medicine": "Rest, fluids, over-the-counter cold medications",
+    "advice": "Get plenty of rest, stay hydrated, use saline nasal spray"
+  },
+  {
+    "disease": "Influenza",
+    "symptoms": ["fever", "chills", "body aches", "fatigue", "cough", "headache"],
+    "severity": "moderate",
+    "category": "viral",
+    "medicine": "Antiviral medications (if caught early), acetaminophen for fever",
+    "advice": "Rest, fluids, avoid contact with others"
+  },
+  {
+    "disease": "Migraine",
+    "symptoms": ["headache", "nausea", "sensitivity to light", "sensitivity to sound", "vomiting"],
+    "severity": "moderate",
+    "category": "neurological",
+    "medicine": "Pain relievers, triptans, anti-nausea medications",
+    "advice": "Rest in dark quiet room, apply cold compress"
+  },
+  {
+    "disease": "Strep Throat",
+    "symptoms": ["sore throat", "fever", "swollen lymph nodes", "difficulty swallowing", "red tonsils"],
+    "severity": "moderate",
+    "category": "bacterial",
+    "medicine": "Antibiotics, pain relievers",
+    "advice": "Complete full course of antibiotics, gargle warm salt water"
+  },
+  {
+    "disease": "Gastroenteritis",
+    "symptoms": ["nausea", "vomiting", "diarrhea", "stomach pain", "fever", "dehydration"],
+    "severity": "moderate",
+    "category": "gastrointestinal",
+    "medicine": "Anti-diarrheal medications, electrolyte solutions",
+    "advice": "Stay hydrated, eat bland foods, rest"
+  },
+  {
+    "disease": "Lupus Erythematosus",
+    "symptoms": ["butterfly-shaped facial rash", "fatigue", "fever", "joint pain/swelling", "skin lesions worsened by sun", "fingers/toes turning white/blue in cold", "shortness of breath", "chest pain", "dry eyes", "headaches", "confusion", "memory loss"],
+    "category": "Autoimmune",
+    "severity": "high",
+    "medicine": "NSAIDs, antimalarial drugs, corticosteroids, immunosuppressants",
+    "advice": "Avoid sun exposure, manage stress, regular exercise, healthy diet"
+  },
+  {
+    "disease": "Sjögren's Syndrome",
+    "symptoms": ["dry eyes", "dry mouth", "dry skin", "vaginal dryness", "persistent cough", "swollen salivary glands", "joint pain/stiffness", "skin rashes", "prolonged fatigue"],
+    "category": "Autoimmune",
+    "severity": "moderate",
+    "medicine": "Artificial tears, saliva stimulants, NSAIDs, immunosuppressants",
+    "advice": "Stay hydrated, use humidifier, practice good oral hygiene"
+  },
+  {
+    "disease": "Scleroderma",
+    "symptoms": ["hardening/tightening of skin", "Raynaud's phenomenon", "GERD", "swelling of hands/feet", "joint pain", "calcium deposits under skin", "narrowed blood vessels in hands/feet", "shortness of breath", "dry cough"],
+    "category": "Autoimmune",
+    "severity": "high",
+    "medicine": "Blood pressure medications, immunosuppressants, pain relievers",
+    "advice": "Protect hands from cold, manage GERD, gentle exercise, skin care"
+  },
+  {
+    "disease": "Vasculitis",
+    "symptoms": ["fever", "fatigue", "weight loss", "muscle/joint pain", "nerve problems", "weakness", "skin lesions/ulcers", "abdominal pain", "kidney problems", "vision changes"],
+    "category": "Autoimmune",
+    "severity": "high",
+    "medicine": "Corticosteroids, immunosuppressants",
+    "advice": "Regular monitoring, avoid infections, healthy lifestyle"
+  },
+  {
+    "disease": "Sarcoidosis",
+    "symptoms": ["fatigue", "fever", "swollen lymph nodes", "weight loss", "persistent dry cough", "shortness of breath", "wheezing", "chest pain", "skin rashes/lumps", "eye pain/redness/blurred vision"],
+    "category": "Autoimmune",
+    "severity": "moderate",
+    "medicine": "Corticosteroids, immunosuppressants",
+    "advice": "Regular checkups, avoid calcium/vitamin D supplements, stop smoking"
+  },
+  {
+    "disease": "Fibromyalgia",
+    "symptoms": ["widespread pain", "fatigue", "sleep disturbances", "cognitive difficulties ('fibro fog')", "morning stiffness", "headaches", "irritable bowel syndrome", "depression/anxiety", "numbness/tingling"],
+    "category": "Chronic Pain",
+    "severity": "moderate",
+    "medicine": "Pain relievers, antidepressants, anticonvulsants",
+    "advice": "Regular exercise, stress management, adequate sleep, physical therapy"
+  },
+  {
+    "disease": "Chronic Fatigue Syndrome",
+    "symptoms": ["severe fatigue not improved by rest", "post-exertional malaise", "sleep problems", "cognitive impairment", "orthostatic intolerance", "muscle/joint pain", "headaches", "sore throat", "tender lymph nodes"],
+    "category": "Chronic",
+    "severity": "moderate",
+    "medicine": "Pain relievers, sleep aids, antidepressants",
+    "advice": "Pacing activities, energy management, gentle exercise, counseling"
+  },
+  {
+    "disease": "Endometriosis",
+    "symptoms": ["painful periods", "chronic pelvic pain", "pain during intercourse", "pain with bowel movements/urination", "excessive bleeding", "infertility", "fatigue", "bloating", "nausea"],
+    "category": "Reproductive",
+    "severity": "moderate",
+    "medicine": "Pain relievers, hormonal contraceptives, GnRH agonists",
+    "advice": "Heat therapy, dietary changes, stress reduction, consider surgery options"
+  },
+  {
+    "disease": "Polycystic Ovary Syndrome",
+    "symptoms": ["irregular periods", "excess androgen", "polycystic ovaries", "weight gain", "excess hair growth", "acne", "male-pattern baldness", "darkening of skin", "headaches", "infertility"],
+    "category": "Endocrine",
+    "severity": "moderate",
+    "medicine": "Birth control pills, metformin, anti-androgen medications",
+    "advice": "Weight management, healthy diet, regular exercise, monitor blood sugar"
+  },
+  {
+    "disease": "Uterine Fibroids",
+    "symptoms": ["heavy menstrual bleeding", "prolonged periods", "pelvic pressure/pain", "frequent urination", "difficulty emptying bladder", "constipation", "back/leg pain", "pain during intercourse"],
+    "category": "Reproductive",
+    "severity": "moderate",
+    "medicine": "Pain relievers, hormonal medications, iron supplements",
+    "advice": "Monitor symptoms, consider minimally invasive procedures if severe"
+  },
+  {
+    "disease": "Prostate Cancer",
+    "symptoms": ["difficulty urinating", "decreased force in urine stream", "blood in urine/semen", "bone pain", "unexplained weight loss", "erectile dysfunction"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Hormone therapy, chemotherapy, targeted therapy",
+    "advice": "Regular screening, discuss treatment options with specialist"
+  },
+  {
+    "disease": "Breast Cancer",
+    "symptoms": ["breast lump/thickening", "change in breast size/shape", "dimpling of skin", "inverted nipple", "redness/pitting of breast skin", "nipple discharge", "breast/nipple pain", "swelling in armpit"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, hormone therapy, targeted therapy",
+    "advice": "Regular mammograms, breast self-exams, discuss treatment options"
+  },
+  {
+    "disease": "Lung Cancer",
+    "symptoms": ["persistent cough", "coughing up blood", "chest pain", "hoarseness", "weight loss", "shortness of breath", "fatigue", "wheezing", "repeated bronchitis/pneumonia"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, targeted therapy, immunotherapy",
+    "advice": "Quit smoking, avoid secondhand smoke, regular screenings if high risk"
+  },
+  {
+    "disease": "Colorectal Cancer",
+    "symptoms": ["persistent change in bowel habits", "blood in stool", "persistent abdominal discomfort", "feeling bowel doesn't empty completely", "weakness/fatigue", "unexplained weight loss"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, targeted therapy",
+    "advice": "Regular colonoscopies after 45, high-fiber diet, exercise"
+  },
+  {
+    "disease": "Pancreatic Cancer",
+    "symptoms": ["abdominal pain radiating to back", "loss of appetite", "unintended weight loss", "jaundice", "dark urine", "light-colored stools", "new-onset diabetes", "blood clots", "fatigue"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, targeted therapy",
+    "advice": "Avoid smoking, maintain healthy weight, limit alcohol"
+  },
+  {
+    "disease": "Ovarian Cancer",
+    "symptoms": ["abdominal bloating", "quickly feeling full", "weight loss", "pelvic discomfort", "changes in bowel habits", "frequent urination", "fatigue", "back pain"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, targeted therapy, hormone therapy",
+    "advice": "Know family history, discuss genetic testing if high risk"
+  },
+  {
+    "disease": "Cervical Cancer",
+    "symptoms": ["vaginal bleeding after intercourse", "watery/bloody vaginal discharge", "pelvic pain", "pain during intercourse", "bleeding between periods/menopause"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, targeted therapy",
+    "advice": "Regular Pap smears, HPV vaccination, safe sex practices"
+  },
+  {
+    "disease": "Testicular Cancer",
+    "symptoms": ["lump/enlargement in testicle", "feeling of heaviness in scrotum", "dull ache in abdomen/groin", "sudden fluid collection in scrotum", "back pain", "breast tenderness/enlargement"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation",
+    "advice": "Regular self-exams, prompt medical attention for lumps"
+  },
+  {
+    "disease": "Melanoma",
+    "symptoms": ["new mole/changes in existing mole", "asymmetrical mole", "irregular borders", "color changes", "diameter >6mm", "evolving size/shape/color", "itching/bleeding"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Surgery, immunotherapy, targeted therapy, chemotherapy",
+    "advice": "Sun protection, regular skin checks, avoid tanning beds"
+  },
+  {
+    "disease": "Non-Hodgkin Lymphoma",
+    "symptoms": ["swollen lymph nodes", "abdominal pain/swelling", "chest pain/coughing", "fatigue", "fever", "night sweats", "weight loss"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, immunotherapy, targeted therapy",
+    "advice": "Prompt medical evaluation for persistent symptoms"
+  },
+  {
+    "disease": "Hodgkin Lymphoma",
+    "symptoms": ["painless swelling of lymph nodes", "fatigue", "fever", "night sweats", "weight loss", "severe itching", "pain in lymph nodes after alcohol", "shortness of breath"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation",
+    "advice": "Early diagnosis improves outcomes significantly"
+  },
+  {
+    "disease": "Multiple Myeloma",
+    "symptoms": ["bone pain (especially back/ribs)", "fatigue", "frequent infections", "unexplained fractures", "excessive thirst", "frequent urination", "constipation", "loss of appetite", "confusion"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Targeted therapy, immunotherapy, chemotherapy, corticosteroids",
+    "advice": "Manage bone health, stay hydrated, monitor kidney function"
+  },
+  {
+    "disease": "Bladder Cancer",
+    "symptoms": ["blood in urine", "painful urination", "frequent urination", "urgency", "pelvic pain", "back pain", "unexplained weight loss"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, immunotherapy, targeted therapy",
+    "advice": "Avoid smoking, limit chemical exposure, prompt evaluation of blood in urine"
+  },
+  {
+    "disease": "Kidney Cancer",
+    "symptoms": ["blood in urine", "persistent back pain", "loss of appetite", "unexplained weight loss", "fatigue", "fever", "lump in abdomen", "swelling in ankles/legs"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Targeted therapy, immunotherapy, chemotherapy",
+    "advice": "Maintain healthy weight, control blood pressure, avoid smoking"
+  },
+  {
+    "disease": "Liver Cancer",
+    "symptoms": ["unintended weight loss", "loss of appetite", "upper abdominal pain", "nausea/vomiting", "fatigue", "abdominal swelling", "jaundice", "white/chalky stools"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Targeted therapy, immunotherapy, chemotherapy",
+    "advice": "Limit alcohol, get hepatitis B vaccine, manage cirrhosis"
+  },
+  {
+    "disease": "Esophageal Cancer",
+    "symptoms": ["difficulty swallowing", "weight loss", "chest pain/pressure/burning", "worsening indigestion/heartburn", "coughing/hoarseness", "vomiting", "bone pain"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, targeted therapy",
+    "advice": "Avoid tobacco/alcohol, manage GERD, maintain healthy weight"
+  },
+  {
+    "disease": "Stomach Cancer",
+    "symptoms": ["difficulty swallowing", "abdominal pain", "feeling bloated after eating", "feeling full after small meals", "heartburn", "indigestion", "nausea", "unintended weight loss", "fatigue"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, radiation, targeted therapy",
+    "advice": "Healthy diet with fruits/vegetables, treat H. pylori infection"
+  },
+  {
+    "disease": "Brain Tumor",
+    "symptoms": ["new/worsening headaches", "nausea/vomiting", "vision problems", "seizures", "speech difficulties", "personality/behavior changes", "hearing problems", "balance problems", "memory problems"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, targeted therapy",
+    "advice": "Prompt neurological evaluation for persistent symptoms"
+  },
+  {
+    "disease": "Thyroid Cancer",
+    "symptoms": ["lump in neck", "hoarseness", "difficulty swallowing", "neck/throat pain", "swollen lymph nodes", "cough not from cold"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Radioactive iodine, targeted therapy",
+    "advice": "Regular neck checks, monitor for lumps"
+  },
+  {
+    "disease": "Bone Cancer",
+    "symptoms": ["bone pain", "swelling/tenderness near affected area", "weakened bones leading to fractures", "fatigue", "unintended weight loss"],
+    "category": "Cancer",
+    "severity": "high",
+    "medicine": "Chemotherapy, targeted therapy",
+    "advice": "Prompt evaluation of persistent bone pain"
+  },
+  {
+    "disease": "Osteoporosis",
+    "symptoms": ["back pain (from fractured vertebra)", "loss of height over time", "stooped posture", "bone fractures from minor falls"],
+    "category": "Bone",
+    "severity": "moderate",
+    "medicine": "Bisphosphonates, calcium/vitamin D supplements",
+    "advice": "Weight-bearing exercise, adequate calcium/vitamin D, fall prevention"
+  },
+  {
+    "disease": "Osteomyelitis",
+    "symptoms": ["fever", "pain in affected bone", "swelling/warmth/redness over affected area", "drainage of pus", "fatigue", "nausea", "reduced range of motion"],
+    "category": "Bone",
+    "severity": "high",
+    "medicine": "IV antibiotics, pain relievers",
+    "advice": "Complete full antibiotic course, may require surgical debridement"
+  },
+  {
+    "disease": "Paget's Disease of Bone",
+    "symptoms": ["bone pain", "joint pain/stiffness", "enlarged/deformed bones", "fractures", "hearing loss", "headaches", "tingling/numbness"],
+    "category": "Bone",
+    "severity": "moderate",
+    "medicine": "Bisphosphonates, calcium/vitamin D, pain relievers",
+    "advice": "Regular monitoring, exercise, hearing checks if skull affected"
+  },
+  {
+    "disease": "Scoliosis",
+    "symptoms": ["uneven shoulders", "one shoulder blade more prominent", "uneven waist", "one hip higher", "leaning to one side", "back pain", "fatigue"],
+    "category": "Bone",
+    "severity": "mild",
+    "medicine": "Pain relievers as needed",
+    "advice": "Regular monitoring, bracing for adolescents, physical therapy"
+  },
+  {
+    "disease": "Carpal Tunnel Syndrome",
+    "symptoms": ["tingling/numbness in thumb/index/middle fingers", "pain radiating up arm", "weakness in hand", "dropping objects", "worsening symptoms at night", "need to 'shake out' hand"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, corticosteroid injections",
+    "advice": "Wrist splints especially at night, ergonomic adjustments, rest breaks"
+  },
+  {
+    "disease": "Plantar Fasciitis",
+    "symptoms": ["stabbing pain in bottom of heel", "pain worst with first steps in morning", "pain after prolonged standing", "heel stiffness", "pain worsens after exercise"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, corticosteroid injections",
+    "advice": "Stretching exercises, proper footwear, ice massage, night splints"
+  },
+  {
+    "disease": "Rotator Cuff Injury",
+    "symptoms": ["dull ache deep in shoulder", "disturbed sleep", "difficulty reaching behind back", "arm weakness", "popping/clicking sounds with movement"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, corticosteroid injections",
+    "advice": "Rest, physical therapy, ice, gradual return to activities"
+  },
+  {
+    "disease": "Tennis Elbow",
+    "symptoms": ["pain/tenderness on outside of elbow", "pain worsens with gripping/lifting", "stiffness in elbow", "weakness in forearm", "pain radiating to wrist"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, corticosteroid injections",
+    "advice": "Rest, ice, physical therapy, proper equipment/technique"
+  },
+  {
+    "disease": "Cataracts",
+    "symptoms": ["clouded/blurred/dim vision", "increasing difficulty with night vision", "sensitivity to light/glare", "need for brighter light", "halos around lights", "frequent prescription changes", "fading/yellowing of colors", "double vision in one eye"],
+    "category": "Eye",
+    "severity": "moderate",
+    "medicine": "None (surgical treatment)",
+    "advice": "Regular eye exams, UV protection, consider surgery when vision affects daily life"
+  },
+  {
+    "disease": "Glaucoma",
+    "symptoms": ["gradual loss of peripheral vision", "tunnel vision in advanced stages", "severe eye pain", "nausea/vomiting", "red eyes", "halos around lights", "blurred vision", "headache"],
+    "category": "Eye",
+    "severity": "high",
+    "medicine": "Eye drops (prostaglandins, beta blockers), oral medications",
+    "advice": "Regular eye pressure checks, medication compliance, avoid eye trauma"
+  },
+  {
+    "disease": "Macular Degeneration",
+    "symptoms": ["blurred/reduced central vision", "dark/blurred areas in central vision", "distortion of straight lines", "difficulty recognizing faces", "need for brighter light", "decreased color brightness"],
+    "category": "Eye",
+    "severity": "high",
+    "medicine": "Anti-VEGF injections, vitamin supplements",
+    "advice": "Regular eye exams, Amsler grid monitoring, smoking cessation, healthy diet"
+  },
+  {
+    "disease": "Retinal Detachment",
+    "symptoms": ["sudden appearance of floaters", "flashes of light in one/both eyes", "blurred vision", "gradual reduced peripheral vision", "curtain-like shadow over visual field"],
+    "category": "Eye",
+    "severity": "high",
+    "medicine": "Emergency surgical treatment",
+    "advice": "Immediate medical attention required, protect eyes from trauma"
+  },
+  {
+    "disease": "Diabetic Retinopathy",
+    "symptoms": ["floaters", "blurred vision", "fluctuating vision", "impaired color vision", "dark/empty areas in vision", "vision loss"],
+    "category": "Eye",
+    "severity": "high",
+    "medicine": "Anti-VEGF injections, laser treatment",
+    "advice": "Strict blood sugar control, regular eye exams, blood pressure management"
+  },
+  {
+    "disease": "Conjunctivitis",
+    "symptoms": ["redness in one/both eyes", "itching in one/both eyes", "gritty feeling", "discharge forming crust", "tearing", "light sensitivity"],
+    "category": "Eye",
+    "severity": "mild",
+    "medicine": "Antibiotic/antihistamine eye drops, artificial tears",
+    "advice": "Good hygiene, avoid touching eyes, wash hands frequently"
+  },
+  {
+    "disease": "Blepharitis",
+    "symptoms": ["watery eyes", "red eyes", "gritty/burning sensation", "eyelid redness/swelling", "itching", "crusting of eyelashes", "blurred vision", "sensitivity to light", "loss of eyelashes"],
+    "category": "Eye",
+    "severity": "mild",
+    "medicine": "Antibiotic ointments, artificial tears",
+    "advice": "Warm compresses, eyelid hygiene, gentle cleaning of eyelids"
+  },
+  {
+    "disease": "Uveitis",
+    "symptoms": ["eye redness", "eye pain", "light sensitivity", "blurred vision", "dark floating spots", "decreased vision"],
+    "category": "Eye",
+    "severity": "moderate",
+    "medicine": "Corticosteroid eye drops, immunosuppressants",
+    "advice": "Prompt treatment to prevent complications, treat underlying cause"
+  },
+  {
+    "disease": "Dry Eye Syndrome",
+    "symptoms": ["stinging/burning sensation", "stringy mucus", "light sensitivity", "redness", "sensation of something in eye", "difficulty wearing contacts", "night driving problems", "watery eyes", "blurred vision", "eye fatigue"],
+    "category": "Eye",
+    "severity": "mild",
+    "medicine": "Artificial tears, anti-inflammatory eye drops",
+    "advice": "Use humidifier, take screen breaks, avoid dry/windy conditions"
+  },
+  {
+    "disease": "Otitis Media",
+    "symptoms": ["ear pain", "difficulty sleeping", "tugging at ear", "crying more than usual", "fussiness", "hearing difficulties", "loss of balance", "fever", "fluid drainage", "headache", "loss of appetite"],
+    "category": "Ear",
+    "severity": "moderate",
+    "medicine": "Antibiotics, pain relievers",
+    "advice": "Complete antibiotic course, follow-up to ensure resolution"
+  },
+  {
+    "disease": "Otitis Externa",
+    "symptoms": ["ear itching", "ear redness", "mild discomfort", "drainage of clear fluid", "fullness feeling", "decreased hearing", "severe pain", "fever", "swollen lymph nodes"],
+    "category": "Ear",
+    "severity": "moderate",
+    "medicine": "Antibiotic ear drops, pain relievers",
+    "advice": "Keep ears dry, avoid inserting objects, complete treatment course"
+  },
+  {
+    "disease": "Tinnitus",
+    "symptoms": ["ringing", "buzzing", "roaring", "clicking", "hissing", "phantom sounds", "volume fluctuation", "hearing loss"],
+    "category": "Ear",
+    "severity": "moderate",
+    "medicine": "No specific medication, treat underlying cause",
+    "advice": "Sound therapy, hearing aids if hearing loss, stress management"
+  },
+  {
+    "disease": "Meniere's Disease",
+    "symptoms": ["recurrent vertigo", "hearing loss", "tinnitus", "fullness in ear", "nausea/vomiting during attacks", "sweating", "headaches", "abdominal pain"],
+    "category": "Ear",
+    "severity": "moderate",
+    "medicine": "Diuretics, anti-vertigo medications, anti-nausea drugs",
+    "advice": "Low salt diet, avoid caffeine/alcohol, stress management"
+  },
+  {
+    "disease": "Vertigo",
+    "symptoms": ["spinning sensation", "tilting/swaying", "unbalanced feeling", "nausea", "vomiting", "abnormal eye movements", "headache", "sweating", "ringing in ears", "hearing loss"],
+    "category": "Neurological",
+    "severity": "moderate",
+    "medicine": "Antihistamines, benzodiazepines, anti-nausea medications",
+    "advice": "Vestibular rehabilitation, fall precautions, identify triggers"
+  },
+  {
+    "disease": "Sinusitis",
+    "symptoms": ["nasal congestion", "thick/discolored nasal discharge", "postnasal drip", "facial pain/pressure", "reduced sense of smell/taste", "cough", "fatigue", "fever", "headache", "bad breath", "tooth pain", "ear pressure"],
+    "category": "Respiratory",
+    "severity": "moderate",
+    "medicine": "Nasal corticosteroids, antibiotics (if bacterial), decongestants",
+    "advice": "Nasal saline irrigation, humidifier, adequate hydration"
+  },
+  {
+    "disease": "Rhinitis",
+    "symptoms": ["sneezing", "runny nose", "stuffy nose", "itchy nose/eyes/throat", "coughing", "postnasal drip", "fatigue"],
+    "category": "Respiratory",
+    "severity": "mild",
+    "medicine": "Antihistamines, nasal sprays, decongestants",
+    "advice": "Avoid triggers, use air purifiers, nasal saline rinses"
+  },
+  {
+    "disease": "Deviated Septum",
+    "symptoms": ["nasal congestion", "frequent nosebleeds", "facial pain", "noisy breathing during sleep", "preference for sleeping on particular side", "awareness of nasal cycle"],
+    "category": "Respiratory",
+    "severity": "mild",
+    "medicine": "Decongestants, antihistamines (for symptoms)",
+    "advice": "Nasal saline sprays, consider septoplasty if severe"
+  },
+  {
+    "disease": "Nasal Polyps",
+    "symptoms": ["runny nose", "persistent stuffiness", "postnasal drip", "decreased sense of smell", "loss of taste", "facial pain", "headache", "snoring", "itching around eyes"],
+    "category": "Respiratory",
+    "severity": "moderate",
+    "medicine": "Nasal corticosteroids, oral steroids, biologics",
+    "advice": "Nasal saline rinses, avoid irritants, consider surgery if medication fails"
+  },
+  {
+    "disease": "Sleep Apnea",
+    "symptoms": ["loud snoring", "episodes of stopped breathing", "gasping for air during sleep", "awakening with dry mouth", "morning headache", "insomnia", "excessive daytime sleepiness", "difficulty paying attention", "irritability"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "No specific medication",
+    "advice": "CPAP machine, weight loss, positional therapy, oral appliances"
+  },
+  {
+    "disease": "Insomnia",
+    "symptoms": ["difficulty falling asleep", "waking up during night", "waking up too early", "not feeling rested", "daytime tiredness", "irritability", "difficulty paying attention", "increased errors/accidents", "worry about sleep"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "Sleep aids (short-term), melatonin",
+    "advice": "Sleep hygiene, consistent sleep schedule, cognitive behavioral therapy"
+  },
+  {
+    "disease": "Narcolepsy",
+    "symptoms": ["excessive daytime sleepiness", "sudden loss of muscle tone", "sleep paralysis", "hallucinations", "disturbed nighttime sleep", "automatic behaviors", "memory problems"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "Stimulants, antidepressants, sodium oxybate",
+    "advice": "Scheduled naps, avoid shift work, support groups"
+  },
+  {
+    "disease": "Restless Legs Syndrome",
+    "symptoms": ["uncomfortable sensations in legs", "urge to move legs", "worsening symptoms at rest", "nighttime worsening", "leg twitching during sleep", "daytime sleepiness"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "Dopamine agonists, gabapentin, iron supplements (if deficient)",
+    "advice": "Regular exercise, avoid caffeine/alcohol, leg massages"
+  },
+  {
+    "disease": "Periodic Limb Movement Disorder",
+    "symptoms": ["repetitive cramping/jerking of legs during sleep", "excessive daytime sleepiness", "frequent awakenings", "bed partner complaints", "kicking movements"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "Benzodiazepines, anticonvulsants, dopamine agonists",
+    "advice": "Sleep hygiene, avoid stimulants before bed"
+  },
+  {
+    "disease": "Circadian Rhythm Disorders",
+    "symptoms": ["insomnia", "excessive daytime sleepiness", "difficulty waking up", "poor school/work performance", "inability to meet social obligations", "depression", "stress in relationships"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "Melatonin, wake-promoting agents",
+    "advice": "Light therapy, consistent sleep schedule, chronotherapy"
+  },
+  {
+    "disease": "Parasomnias",
+    "symptoms": ["sleepwalking", "sleep talking", "night terrors", "confusional arousals", "sleep-related eating", "REM sleep behavior disorder", "sleep paralysis"],
+    "category": "Sleep",
+    "severity": "moderate",
+    "medicine": "Benzodiazepines, antidepressants (for REM behavior disorder)",
+    "advice": "Safety measures, regular sleep schedule, avoid triggers"
+  },
+  {
+    "disease": "Hemorrhoids",
+    "symptoms": ["itching/irritation in anal region", "pain/discomfort", "swelling around anus", "bleeding", "sensitive/lump near anus", "leakage of feces"],
+    "category": "Gastrointestinal",
+    "severity": "mild",
+    "medicine": "Topical creams, stool softeners, pain relievers",
+    "advice": "High-fiber diet, adequate hydration, warm sitz baths"
+  },
+  {
+    "disease": "Anal Fissure",
+    "symptoms": ["pain during bowel movements", "pain after bowel movements", "blood on stool/toilet paper", "visible crack in skin around anus", "itching/irritation"],
+    "category": "Gastrointestinal",
+    "severity": "moderate",
+    "medicine": "Topical anesthetics, nitroglycerin ointment, stool softeners",
+    "advice": "High-fiber diet, adequate hydration, warm sitz baths"
+  },
+  {
+    "disease": "Anal Abscess",
+    "symptoms": ["constant throbbing pain", "pain worsened by sitting/moving", "irritability", "fatigue", "fever", "chills", "swelling around anus", "constipation", "painful bowel movements"],
+    "category": "Gastrointestinal",
+    "severity": "high",
+    "medicine": "Antibiotics, pain relievers",
+    "advice": "Surgical drainage usually required, complete antibiotic course"
+  },
+  {
+    "disease": "Anal Fistula",
+    "symptoms": ["skin irritation around anus", "constant pain", "pain worsened by sitting/moving/bowel movements", "bleeding", "fever", "chills", "fatigue", "redness/swelling", "pus drainage"],
+    "category": "Gastrointestinal",
+    "severity": "moderate",
+    "medicine": "Antibiotics, pain relievers",
+    "advice": "Surgical treatment often needed, maintain good hygiene"
+  },
+  {
+    "disease": "Diverticulitis",
+    "symptoms": ["abdominal pain (usually left lower)", "fever", "nausea/vomiting", "abdominal tenderness", "constipation/diarrhea", "rectal bleeding", "bloating", "loss of appetite"],
+    "category": "Gastrointestinal",
+    "severity": "high",
+    "medicine": "Antibiotics, pain relievers",
+    "advice": "Clear liquid diet initially, then high-fiber diet after recovery"
+  },
+  {
+    "disease": "Diverticulosis",
+    "symptoms": ["often asymptomatic", "mild cramping", "bloating", "constipation", "rectal bleeding", "painful bowel movements"],
+    "category": "Gastrointestinal",
+    "severity": "mild",
+    "medicine": "Fiber supplements, probiotics",
+    "advice": "High-fiber diet, adequate hydration, regular exercise"
+  },
+  {
+    "disease": "Pancreatitis",
+    "symptoms": ["upper abdominal pain", "abdominal pain radiating to back", "abdominal pain worse after eating", "fever", "rapid pulse", "nausea/vomiting", "tenderness when touching abdomen"],
+    "category": "Gastrointestinal",
+    "severity": "high",
+    "medicine": "Pain relievers, IV fluids",
+    "advice": "Avoid alcohol, low-fat diet, hospitalization usually required"
+  },
+  {
+    "disease": "Gallstones",
+    "symptoms": ["sudden/intensifying pain in upper right abdomen", "back pain between shoulder blades", "right shoulder pain", "nausea/vomiting", "fever/chills", "jaundice", "clay-colored stools"],
+    "category": "Gastrointestinal",
+    "severity": "moderate",
+    "medicine": "Pain relievers, bile acid pills (for small cholesterol stones)",
+    "advice": "Low-fat diet, maintain healthy weight, may need surgery"
+  },
+  {
+    "disease": "Cholecystitis",
+    "symptoms": ["severe pain in upper right abdomen", "pain radiating to right shoulder/back", "tenderness over abdomen", "nausea/vomiting", "fever", "bloating", "jaundice"],
+    "category": "Gastrointestinal",
+    "severity": "high",
+    "medicine": "IV antibiotics, pain relievers",
+    "advice": "Hospitalization, surgery often required (cholecystectomy)"
+  },
+  {
+    "disease": "Cirrhosis",
+    "symptoms": ["fatigue", "easy bruising/bleeding", "jaundice", "fluid accumulation in abdomen", "loss of appetite", "nausea", "swelling in legs", "weight loss", "itchy skin", "spider-like blood vessels", "confusion/drowsiness", "slurred speech"],
+    "category": "Liver",
+    "severity": "high",
+    "medicine": "Diuretics, lactulose, beta blockers",
+    "advice": "Avoid alcohol, low-sodium diet, hepatitis treatment if applicable"
+  },
+  {
+    "disease": "Pancreatic Insufficiency",
+    "symptoms": ["diarrhea", "weight loss", "steatorrhea", "abdominal pain/cramps", "gas/bloating", "fatigue", "frequent infections", "bone pain", "muscle cramps"],
+    "category": "Gastrointestinal",
+    "severity": "moderate",
+    "medicine": "Pancreatic enzyme replacement therapy, fat-soluble vitamins",
+    "advice": "Small frequent meals, avoid high-fat foods, vitamin supplements"
+  },
+  {
+    "disease": "Cystic Fibrosis",
+    "symptoms": ["persistent cough with thick mucus", "wheezing", "shortness of breath", "frequent lung infections", "nasal polyps", "poor growth/weight gain", "greasy foul-smelling stools", "intestinal blockage", "chronic/severe constipation", "male infertility"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "CFTR modulators, pancreatic enzymes, bronchodilators",
+    "advice": "Chest physical therapy, nutritional support, infection prevention"
+  },
+  {
+    "disease": "Alpha-1 Antitrypsin Deficiency",
+    "symptoms": ["shortness of breath", "wheezing", "reduced exercise ability", "chronic cough", "frequent respiratory infections", "fatigue", "rapid heartbeat upon standing", "vision problems", "unintended weight loss"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Augmentation therapy, bronchodilators",
+    "advice": "Avoid smoking, exercise, vaccinations, monitor liver function"
+  },
+  {
+    "disease": "Pulmonary Embolism",
+    "symptoms": ["sudden shortness of breath", "chest pain worse with breathing", "cough (may produce bloody sputum)", "leg pain/swelling", "fever", "excessive sweating", "rapid/irregular heartbeat", "lightheadedness/dizziness"],
+    "category": "Respiratory",
+    "severity": "high",
+    "medicine": "Anticoagulants, thrombolytics",
+    "advice": "Emergency medical attention, prevent recurrence with blood thinners"
+  },
+  {
+    "disease": "Pulmonary Hypertension",
+    "symptoms": ["shortness of breath during activity", "fatigue", "chest pain", "racing heartbeat", "pain in upper right abdomen", "decreased appetite", "dizziness/fainting", "swelling in ankles/legs", "bluish lips/skin"],
+    "category": "Cardiovascular",
+    "severity": "high",
+    "medicine": "Vasodilators, diuretics, anticoagulants",
+    "advice": "Oxygen therapy, low-sodium diet, exercise with caution"
+  },
+  {
+    "disease": "Pulmonary Fibrosis",
+    "symptoms": ["shortness of breath", "dry cough", "fatigue", "unexplained weight loss", "aching muscles/joints", "widening/rounding of fingertips"],
+    "category": "Respiratory",
+    "severity": "high",
+    "medicine": "Antifibrotic agents, corticosteroids",
+    "advice": "Oxygen therapy, pulmonary rehabilitation, avoid smoke"
+  },
+  {
+    "disease": "Bronchiectasis",
+    "symptoms": ["daily cough with large amounts of sputum", "shortness of breath", "chest pain", "coughing up blood", "wheezing", "clubbing of fingers", "fatigue", "weight loss", "frequent respiratory infections"],
+    "category": "Respiratory",
+    "severity": "moderate",
+    "medicine": "Antibiotics, bronchodilators, corticosteroids",
+    "advice": "Airway clearance techniques, vaccinations, hydration"
+  },
+  {
+    "disease": "Cystitis",
+    "symptoms": ["strong persistent urge to urinate", "burning sensation when urinating", "passing frequent small amounts of urine", "blood in urine", "pelvic discomfort", "low-grade fever"],
+    "category": "Urinary",
+    "severity": "moderate",
+    "medicine": "Antibiotics, pain relievers",
+    "advice": "Drink plenty of water, urinate frequently, wipe front to back"
+  },
+  {
+    "disease": "Prostatitis",
+    "symptoms": ["pain/burning during urination", "difficulty urinating", "frequent urination", "urgent need to urinate", "cloudy urine", "blood in urine", "pelvic pain", "painful ejaculation", "flu-like symptoms"],
+    "category": "Urinary",
+    "severity": "moderate",
+    "medicine": "Antibiotics, alpha blockers, pain relievers",
+    "advice": "Warm baths, avoid caffeine/alcohol, prostate massage"
+  },
+  {
+    "disease": "Pyelonephritis",
+    "symptoms": ["fever", "chills", "back/side/groin pain", "abdominal pain", "frequent urination", "strong persistent urge to urinate", "burning/painful urination", "nausea/vomiting", "pus/blood in urine", "foul-smelling urine"],
+    "category": "Urinary",
+    "severity": "high",
+    "medicine": "IV/oral antibiotics, pain relievers",
+    "advice": "Hospitalization often required, complete antibiotic course"
+  },
+  {
+    "disease": "Glomerulonephritis",
+    "symptoms": ["pink/cola-colored urine", "foamy urine", "high blood pressure", "fluid retention", "fatigue", "nausea/vomiting", "loss of appetite", "muscle cramps", "itching"],
+    "category": "Kidney",
+    "severity": "high",
+    "medicine": "Immunosuppressants, blood pressure medications, diuretics",
+    "advice": "Low-salt diet, fluid restriction, monitor blood pressure"
+  },
+  {
+    "disease": "Interstitial Cystitis",
+    "symptoms": ["chronic pelvic pain", "pain between anus/vagina/scrotum", "persistent urgent need to urinate", "frequent urination", "pain during sexual intercourse", "pain in penis/scrotum", "pain worsens during menstrual period"],
+    "category": "Urinary",
+    "severity": "moderate",
+    "medicine": "Pentosan polysulfate sodium, antihistamines, TCAs",
+    "advice": "Bladder training, dietary changes, stress management"
+  },
+  {
+    "disease": "Overactive Bladder",
+    "symptoms": ["sudden urge to urinate", "urge incontinence", "frequent urination", "nocturia"],
+    "category": "Urinary",
+    "severity": "moderate",
+    "medicine": "Anticholinergics, beta-3 agonists",
+    "advice": "Bladder training, pelvic floor exercises, scheduled voiding"
+  },
+  {
+    "disease": "Neurogenic Bladder",
+    "symptoms": ["urinary incontinence", "frequent urination", "urgency", "urinary retention", "recurrent UTIs", "kidney stones"],
+    "category": "Neurological",
+    "severity": "moderate",
+    "medicine": "Anticholinergics, botox injections",
+    "advice": "Intermittent catheterization, manage underlying condition"
+  },
+  {
+    "disease": "Hydronephrosis",
+    "symptoms": ["pain in side/back", "urinary symptoms", "nausea/vomiting", "fever", "failure to thrive in infants", "urinary tract infections"],
+    "category": "Kidney",
+    "severity": "moderate",
+    "medicine": "Antibiotics (for UTI), pain relievers",
+    "advice": "Treat underlying cause, may require surgical intervention"
+  },
+  {
+    "disease": "Polycystic Kidney Disease",
+    "symptoms": ["high blood pressure", "back/side pain", "headache", "increased abdominal size", "blood in urine", "kidney stones", "kidney failure", "UTIs"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Blood pressure medications, pain relievers",
+    "advice": "Monitor blood pressure, healthy lifestyle, genetic counseling"
+  },
+  {
+    "disease": "Nephrotic Syndrome",
+    "symptoms": ["severe swelling around eyes/ankles/feet", "foamy urine", "weight gain from fluid retention", "fatigue", "loss of appetite"],
+    "category": "Kidney",
+    "severity": "high",
+    "medicine": "Corticosteroids, immunosuppressants, diuretics",
+    "advice": "Low-salt diet, fluid restriction, monitor for infections"
+  },
+  {
+    "disease": "Renal Artery Stenosis",
+    "symptoms": ["high blood pressure", "bruit over kidneys", "decreased kidney function", "fluid retention", "headaches", "confusion", "blurred vision", "nausea/vomiting"],
+    "category": "Cardiovascular",
+    "severity": "moderate",
+    "medicine": "ACE inhibitors, ARBs, diuretics",
+    "advice": "Blood pressure control, may require angioplasty/stenting"
+  },
+  {
+    "disease": "Acute Kidney Injury",
+    "symptoms": ["decreased urine output", "fluid retention", "shortness of breath", "fatigue", "confusion", "nausea/vomiting", "chest pain/pressure", "seizures/coma in severe cases"],
+    "category": "Kidney",
+    "severity": "high",
+    "medicine": "Treat underlying cause, diuretics",
+    "advice": "Hospitalization, may require dialysis temporarily"
+  },
+  {
+    "disease": "Hemochromatosis",
+    "symptoms": ["joint pain", "fatigue", "weakness", "weight loss", "abdominal pain", "loss of sex drive", "impotence", "heart problems", "diabetes", "gray/bronze skin color"],
+    "category": "Genetic",
+    "severity": "moderate",
+    "medicine": "Phlebotomy (iron removal), chelation therapy",
+    "advice": "Avoid iron supplements/vitamin C, limit alcohol, monitor iron levels"
+  },
+  {
+    "disease": "Wilson's Disease",
+    "symptoms": ["fatigue", "lack of appetite", "abdominal pain", "jaundice", "golden-brown eye discoloration", "fluid buildup in legs/abdomen", "speech/swallowing problems", "uncontrolled movements", "muscle stiffness", "personality changes", "anxiety", "psychosis"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Chelating agents, zinc acetate",
+    "advice": "Lifelong medication, low-copper diet, avoid shellfish/nuts/chocolate"
+  },
+  {
+    "disease": "Porphyria",
+    "symptoms": ["severe abdominal pain", "pain in chest/back/legs", "constipation/diarrhea", "nausea/vomiting", "muscle pain/tingling/weakness", "reddish urine", "mental changes", "seizures", "rapid heartbeat", "high blood pressure", "breathing problems"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Hemin, glucose loading, pain relievers",
+    "advice": "Avoid triggers (alcohol, fasting, certain drugs), genetic counseling"
+  },
+  {
+    "disease": "Gaucher Disease",
+    "symptoms": ["abdominal complaints", "bone pain", "bone fractures", "fatigue", "easy bruising/bleeding", "enlarged liver/spleen", "seizures", "tremors", "swallowing difficulties"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Enzyme replacement therapy, substrate reduction therapy",
+    "advice": "Regular monitoring, bone density scans, genetic counseling"
+  },
+  {
+    "disease": "Niemann-Pick Disease",
+    "symptoms": ["clumsiness", "difficulty walking", "excessive eye movements", "loss of motor skills", "learning difficulties", "seizures", "difficulty swallowing/eating", "recurrent pneumonia"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Supportive care, miglustat for some types",
+    "advice": "Multidisciplinary care, physical/occupational therapy"
+  },
+  {
+    "disease": "Tay-Sachs Disease",
+    "symptoms": ["loss of motor skills", "increased startle response", "seizures", "vision/hearing loss", "muscle weakness", "movement problems", "paralysis", "cherry-red spot in eye"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Supportive care, anticonvulsants",
+    "advice": "Palliative care, genetic counseling for at-risk couples"
+  },
+  {
+    "disease": "Huntington's Disease",
+    "symptoms": ["involuntary jerking/writhing movements", "muscle problems", "slow/abnormal eye movements", "impaired gait/posture/balance", "difficulty swallowing", "slurred speech", "cognitive impairments", "difficulty organizing/prioritizing", "lack of flexibility", "lack of impulse control", "lack of awareness", "depression", "insomnia", "fatigue", "social withdrawal"],
+    "category": "Genetic",
+    "severity": "high",
+    "medicine": "Tetrabenazine, antipsychotics, antidepressants",
+    "advice": "Genetic counseling, physical/occupational therapy, support groups"
+  },
+  {
+    "disease": "Amyotrophic Lateral Sclerosis",
+    "symptoms": ["difficulty walking", "tripping/falling", "leg/foot weakness", "hand weakness/clumsiness", "slurred speech", "difficulty swallowing", "muscle cramps", "twitching in arms/shoulders/tongue", "inappropriate crying/laughing", "cognitive changes"],
+    "category": "Neurological",
+    "severity": "high",
+    "medicine": "Riluzole, edaravone",
+    "advice": "Multidisciplinary care, respiratory support, nutrition management"
+  },
+  {
+    "disease": "Muscular Dystrophy",
+    "symptoms": ["frequent falls", "difficulty rising from lying/sitting", "trouble running/jumping", "waddling gait", "walking on toes", "large calf muscles", "muscle pain/stiffness", "learning disabilities", "delayed growth", "breathing problems", "curved spine", "heart problems"],
+    "category": "Neurological",
+    "severity": "high",
+    "medicine": "Corticosteroids, heart medications",
+    "advice": "Physical therapy, respiratory care, genetic counseling"
+  },
+  {
+    "disease": "Myasthenia Gravis",
+    "symptoms": ["drooping of one/both eyelids", "blurred/double vision", "impaired speech", "difficulty swallowing", "chewing problems", "facial paralysis", "weakness in neck/arms/legs", "shortness of breath"],
+    "category": "Neurological",
+    "severity": "moderate",
+    "medicine": "Pyridostigmine, immunosuppressants, corticosteroids",
+    "advice": "Rest, avoid triggers, thymectomy may be recommended"
+  },
+  {
+    "disease": "Guillain-Barré Syndrome",
+    "symptoms": ["prickling/tingling in fingers/toes", "leg weakness spreading to upper body", "unsteady walking/inability to walk", "difficulty with eye/facial movements", "severe pain (especially at night)", "difficulty with bladder/bowel control", "rapid heart rate", "low/high blood pressure", "difficulty breathing"],
+    "category": "Neurological",
+    "severity": "high",
+    "medicine": "IVIG, plasmapheresis, pain relievers",
+    "advice": "Hospitalization, physical therapy during recovery"
+  },
+  {
+    "disease": "Peripheral Neuropathy",
+    "symptoms": ["gradual numbness/tingling in feet/hands", "sharp/burning pain", "extreme sensitivity to touch", "pain during activities", "lack of coordination", "muscle weakness", "paralysis if motor nerves affected", "heat intolerance", "excessive sweating", "bowel/bladder problems"],
+    "category": "Neurological",
+    "severity": "moderate",
+    "medicine": "Pain relievers, anticonvulsants, antidepressants",
+    "advice": "Manage underlying cause (diabetes, etc.), foot care, physical therapy"
+  },
+  {
+    "disease": "Trigeminal Neuralgia",
+    "symptoms": ["sudden severe shooting/electric shock-like pain", "spontaneous attacks", "pain triggered by touching face/chewing/speaking/brushing teeth", "bouts lasting seconds to minutes", "pain in areas supplied by trigeminal nerve"],
+    "category": "Neurological",
+    "severity": "high",
+    "medicine": "Anticonvulsants, muscle relaxants",
+    "advice": "Avoid triggers, surgical options if medication fails"
+  },
+  {
+    "disease": "Bell's Palsy",
+    "symptoms": ["rapid onset mild weakness to total paralysis on one side of face", "facial droop/difficulty making facial expressions", "drooling", "pain around jaw/behind ear", "increased sensitivity to sound", "headache", "loss of taste", "changes in tear/saliva production"],
+    "category": "Neurological",
+    "severity": "moderate",
+    "medicine": "Corticosteroids, antivirals (if viral cause suspected)",
+    "advice": "Eye protection, facial exercises, most recover within 6 months"
+  },
+  {
+    "disease": "Cerebral Palsy",
+    "symptoms": ["variations in muscle tone", "stiff muscles", "lack of coordination", "tremors", "difficulty walking"],
+    "category": "Neurological",
+    "severity": "high",
+    "medicine": "Muscle relaxants, anticonvulsants",
+    "advice": "Physical/occupational therapy, speech therapy, assistive devices"
+  },
+  {
+    "disease": "Spina Bifida",
+    "symptoms": ["visible sac on back", "muscle weakness/paralysis", "orthopedic problems", "bowel/bladder problems", "seizures", "vision problems", "latex allergy", "sleep apnea", "skin problems", "hydrocephalus", "Chiari malformation", "learning disabilities"],
+    "category": "Congenital",
+    "severity": "high",
+    "medicine": "Antibiotics (for UTIs), bowel/bladder medications",
+    "advice": "Multidisciplinary care, physical therapy, folic acid during pregnancy"
+  },
+  {
+    "disease": "Hydrocephalus",
+    "symptoms": ["unusually large head", "rapid increase in head size", "bulging soft spot", "vomiting", "sleepiness", "irritability", "poor feeding", "seizures", "eyes fixed downward", "developmental delays", "blurred/double vision", "abnormal eye movements", "problems with balance/coordination", "gait problems", "urinary incontinence", "cognitive changes", "memory loss", "poor concentration"],
+    "category": "Neurological",
+    "severity": "high",
+    "medicine": "Acetazolamide (temporarily)",
+    "advice": "Surgical shunt placement, regular monitoring, developmental support"
+  },
+  {
+    "disease": "Meningocele",
+    "symptoms": ["visible sac on back", "clear fluid in sac", "paralysis", "bowel/bladder problems", "hydrocephalus", "learning disabilities"],
+    "category": "Congenital",
+    "severity": "high",
+    "medicine": "Antibiotics (prevent infection)",
+    "advice": "Surgical repair, multidisciplinary care, physical therapy"
+  },
+  {
+    "disease": "Encephalocele",
+    "symptoms": ["protrusion of brain/membranes through skull", "hydrocephalus", "spastic quadriplegia", "microcephaly", "ataxia", "developmental delay", "vision problems", "mental/developmental delays", "seizures"],
+    "category": "Congenital",
+    "severity": "high",
+    "medicine": "Anticonvulsants",
+    "advice": "Surgical repair, developmental support, genetic counseling"
+  },
+  {
+    "disease": "Anencephaly",
+    "symptoms": ["absence of major portions of brain/skull/scalp", "stillbirth", "death shortly after birth"],
+    "category": "Congenital",
+    "severity": "high",
+    "medicine": "Supportive care only",
+    "advice": "Palliative care, genetic counseling for future pregnancies"
+  },
+  {
+    "disease": "Microcephaly",
+    "symptoms": ["significantly smaller head size", "poor appetite", "high-pitched cry", "seizures", "developmental delays", "intellectual disability", "problems with movement/balance", "hearing loss", "vision problems", "dwarfism/short stature"],
+    "category": "Congenital",
+    "severity": "high",
+    "medicine": "Anticonvulsants (if seizures)",
+    "advice": "Early intervention, physical/occupational therapy, special education"
+  },
+  {
+    "disease": "Macrocephaly",
+    "symptoms": ["larger than normal head circumference", "developmental delays", "learning disabilities", "seizures", "cortical thumbs", "optic nerve atrophy"],
+    "category": "Congenital",
+    "severity": "moderate",
+    "medicine": "Treat underlying cause",
+    "advice": "Regular monitoring, developmental assessments, genetic evaluation"
+  },
+  {
+    "disease": "Craniosynostosis",
+    "symptoms": ["misshapen skull", "abnormal/fontanel", "hard ridge along sutures", "slow/no growth of head", "increased intracranial pressure", "developmental delays", "intellectual disability", "blindness", "seizures", "sleep apnea"],
+    "category": "Congenital",
+    "severity": "moderate",
+    "medicine": "Pain relievers post-surgery",
+    "advice": "Surgical correction, helmet therapy, regular monitoring"
+  },
+  {
+    "disease": "Plagiocephaly",
+    "symptoms": ["flattened appearance on one side of head", "bald spot on flattened area", "one ear appearing forward", "misaligned eyes", "jaw misalignment"],
+    "category": "Congenital",
+    "severity": "mild",
+    "medicine": "None",
+    "advice": "Repositioning techniques, tummy time, helmet therapy if severe"
+  },
+  {
+    "disease": "Torticollis",
+    "symptoms": ["head tilted to one side", "chin tilted to opposite side", "limited range of motion", "headache", "neck pain", "uneven shoulders", "neck muscle swelling"],
+    "category": "Musculoskeletal",
+    "severity": "mild",
+    "medicine": "Muscle relaxants, pain relievers",
+    "advice": "Stretching exercises, physical therapy, heat application"
+  },
+  {
+    "disease": "Spondylolisthesis",
+    "symptoms": ["lower back pain", "muscle tightness", "pain/numbness/tingling in thighs/buttocks", "stiffness", "tenderness in affected area", "difficulty walking", "bladder/bowel problems in severe cases"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, pain relievers",
+    "advice": "Physical therapy, activity modification, bracing, surgery if severe"
+  },
+  {
+    "disease": "Spinal Stenosis",
+    "symptoms": ["numbness/weakness in leg/foot", "pain/cramping in legs when standing/walking", "back pain", "radiating pain", "loss of bladder/bowel control in severe cases"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, pain relievers",
+    "advice": "Physical therapy, activity modification, surgery if severe"
+  },
+  {
+    "disease": "Herniated Disc",
+    "symptoms": ["arm/leg pain", "numbness/tingling", "weakness", "pain worsened by certain movements", "pain radiating down sciatic nerve"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, muscle relaxants, corticosteroids",
+    "advice": "Rest, physical therapy, epidural injections, surgery if severe"
+  },
+  {
+    "disease": "Degenerative Disc Disease",
+    "symptoms": ["pain worsened by sitting/bending/lifting", "pain improved by walking/moving", "pain improved by changing positions/lying down", "periods of severe pain", "numbness/tingling in extremities", "weakness in leg muscles"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, pain relievers",
+    "advice": "Physical therapy, exercise, maintain healthy weight, ergonomics"
+  },
+  {
+    "disease": "Septic Arthritis",
+    "symptoms": ["severe joint pain", "joint swelling", "redness/warmth around joint", "fever", "chills", "inability to move affected joint", "guarding of joint"],
+    "category": "Infectious",
+    "severity": "high",
+    "medicine": "IV antibiotics, joint drainage",
+    "advice": "Hospitalization, prompt treatment to prevent joint damage"
+  },
+  {
+    "disease": "Osteochondritis Dissecans",
+    "symptoms": ["joint pain", "joint swelling/tenderness", "joint popping/locking", "joint weakness", "decreased range of motion", "difficulty bearing weight"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs",
+    "advice": "Rest, activity modification, physical therapy, surgery if severe"
+  },
+  {
+    "disease": "Avascular Necrosis",
+    "symptoms": ["joint pain (initially mild)", "pain worsening over time", "limited range of motion", "pain even when lying down", "collapse of joint", "arthritis"],
+    "category": "Musculoskeletal",
+    "severity": "moderate",
+    "medicine": "NSAIDs, osteoporosis medications",
+    "advice": "Rest, physical therapy, core decompression, joint replacement"
+  },
+  {
+    "disease": "Osteomalacia",
+    "symptoms": ["bone pain", "muscle weakness", "difficulty walking", "bone fractures", "muscle cramps", "numbness around mouth", "numbness in arms/legs"],
+    "category": "Bone",
+    "severity": "moderate",
+    "medicine": "Vitamin D and calcium supplements",
+    "advice": "Adequate sun exposure, treat underlying cause, physical therapy"
+  },
+  {
+    "disease": "Rickets",
+    "symptoms": ["delayed growth", "pain in spine/pelvis/legs", "muscle weakness", "bowed legs", "thickened wrists/ankles", "breastbone projection", "delayed motor skills", "enlarged ends of long bones"],
+    "category": "Pediatric",
+    "severity": "moderate",
+    "medicine": "Vitamin D and calcium supplements",
+    "advice": "Adequate nutrition, sun exposure, treat underlying cause"
+  },
+  {
+    "disease": "Hyperparathyroidism",
+    "symptoms": ["osteoporosis", "kidney stones", "excessive urination", "abdominal pain", "fatigue/weakness", "depression/forgetfulness", "bone/joint pain", "nausea/vomiting/loss of appetite", "frequent complaints of illness"],
+    "category": "Endocrine",
+    "severity": "moderate",
+    "medicine": "Calcimimetics, bisphosphonates",
+    "advice": "Surgery for primary hyperparathyroidism, monitor calcium levels"
+  },
+  {
+    "disease": "Hypoparathyroidism",
+    "symptoms": ["tingling in lips/fingers/toes", "muscle aches/cramps", "muscle spasms", "fatigue/weakness", "painful menstruation", "patchy hair loss", "dry coarse skin", "brittle nails", "anxiety/depression", "memory problems", "headaches", "seizures"],
+    "category": "Endocrine",
+    "severity": "moderate",
+    "medicine": "Calcium and vitamin D supplements",
+    "advice": "Monitor blood calcium levels, avoid high-phosphorus foods"
+  },
+  {
+    "disease": "Cushing's Syndrome",
+    "symptoms": ["weight gain (especially face/trunk)", "pink/purple stretch marks", "thinning fragile skin", "slow healing of cuts/bruises", "acne", "fatigue", "muscle weakness", "cognitive difficulties", "high blood pressure", "bone loss", "type 2 diabetes", "increased infections"],
+    "category": "Endocrine",
+    "severity": "moderate",
+    "medicine": "Cortisol-blocking medications",
+    "advice": "Treat underlying cause, surgery if tumor, medication adjustment"
+  },
+  {
+    "disease": "Addison's Disease",
+    "symptoms": ["extreme fatigue", "weight loss/decreased appetite", "hyperpigmentation", "low blood pressure", "salt craving", "hypoglycemia", "nausea/diarrhea/vomiting", "abdominal pain", "muscle/joint pain", "irritability", "depression", "body hair loss/sexual dysfunction in women"],
+    "category": "Endocrine",
+    "severity": "moderate",
+    "medicine": "Corticosteroids, fludrocortisone",
+    "advice": "Lifelong medication, stress dosing during illness, medical alert ID"
+  },
+  {
+    "disease": "Pheochromocytoma",
+    "symptoms": ["high blood pressure", "severe headache", "sweating", "rapid heartbeat", "tremors", "paleness", "shortness of breath", "anxiety/nervousness", "weight loss", "heat intolerance"],
+    "category": "Endocrine",
+    "severity": "high",
+    "medicine": "Alpha and beta blockers",
+    "advice": "Surgical removal, genetic testing, regular monitoring"
+  },
+  {
+    "disease": "Acromegaly",
+    "symptoms": ["enlarged hands/feet", "coarsened enlarged facial features", "excessive sweating", "body odor", "skin tags", "fatigue/weakness", "deepened voice", "snoring/sleep apnea", "impaired vision", "headaches", "enlarged tongue", "joint pain", "menstrual irregularities", "erectile dysfunction", "enlarged organs"],
+    "category": "Endocrine",
+    "severity": "moderate",
+    "medicine": "Somatostatin analogs, dopamine agonists",
+    "advice": "Surgery for pituitary tumor, radiation if needed, manage symptoms"
+  }
+]
