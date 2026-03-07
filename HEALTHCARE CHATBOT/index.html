@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            height: fit-content;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .sidebar-header h2 {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #555;
+        }
+        
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .menu-item i {
+            width: 24px;
+            font-size: 18px;
+        }
+        
+        .chat-area {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+        }
+        
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            background: #f8fafc;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            margin-left: auto;
+        }
+        
+        .message-content {
+            padding: 14px 20px;
+            border-radius: 20px;
+            position: relative;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .user-message .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message .message-content {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+            color: #333;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+        
+        .chat-input-area {
+            padding: 20px 25px;
+            background: white;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .send-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .right-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            height: fit-content;
+        }
+        
+        .panel-section {
+            margin-bottom: 30px;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .reminder-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s ease;
+        }
+        
+        .reminder-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .reminder-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        .reminder-time {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .reminder-dosage {
+            font-size: 13px;
+            color: #28a745;
+            font-weight: 500;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            margin: 5px 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background: #64748b;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h2 {
+            font-size: 22px;
+            color: #333;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        .time-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+        
+        .add-btn:hover {
+            background: #218838;
+        }
+        
+        .time-list {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .time-tag {
+            background: #e9ecef;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .time-tag span {
+            cursor: pointer;
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 13px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eaeaea;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-radius: 8px;
+        }
+        
+        .history-item:hover {
+            background: #f8fafc;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .history-symptoms {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .error {
+            color: #dc3545;
+            text-align: center;
+            padding: 20px;
+            background: #f8d7da;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="avatar">👤</div>
+                <h2>Health Assistant</h2>
+            </div>
+            
+            <div class="menu-item active" data-section="chat">
+                <i>💬</i>
+                <span>Chat</span>
+            </div>
+            <div class="menu-item" data-section="history">
+                <i>📋</i>
+                <span>History</span>
+            </div>
+            <div class="menu-item" data-section="reminders">
+                <i>⏰</i>
+                <span>Reminders</span>
+            </div>
+            <div class="menu-item" data-section="analytics">
+                <i>📊</i>
+                <span>Analytics</span>
+            </div>
+        </div>
+        
+        <div class="chat-area">
+            <div class="chat-header">
+                <h1>🏥 Healthcare Assistant</h1>
+                <p>Describe your symptoms or ask health questions</p>
+                <div class="status" id="connectionStatus">Connecting...</div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Hello! I'm your health assistant. Describe your symptoms or ask:
+                        <br><br>
+                        • "fever, cough, headache"<br>
+                        • "tell me about diabetes"<br>
+                        • "which doctor for asthma"<br>
+                        • "how to prevent flu"
+                    </div>
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="userInput" placeholder="Type your message...">
+                <button class="send-btn" id="sendBtn">➤</button>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="panel-section">
+                <div class="panel-title">
+                    <span>📌</span> Session
+                </div>
+                <div id="sessionInfo">
+                    <p style="font-size: 12px; color: #666;">ID: <span id="sessionId">Loading...</span></p>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <div class="panel-title">
+                    <span>⚡</span> Actions
+                </div>
+                <button class="btn" id="addReminderBtn">➕ Add Reminder</button>
+                <button class="btn btn-secondary" id="viewHistoryBtn">📋 View History</button>
+            </div>
+            
+            <div class="panel-section">
+                <div class="panel-title">
+                    <span>⏰</span> Reminders
+                </div>
+                <div id="activeReminders">
+                    <p style="color: #999; text-align: center;">No active reminders</p>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <div class="panel-title">
+                    <span>🔄</span> Recent
+                </div>
+                <div id="recentSearches">
+                    <p style="color: #999; text-align: center;">No recent searches</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chat History</h2>
+                <button class="close-btn" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div id="historyContent" class="loading">Loading...</div>
+        </div>
+    </div>
+    
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Medication Reminder</h2>
+                <button class="close-btn" onclick="closeModal('reminderModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Medication Name</label>
+                <input type="text" id="medName" placeholder="e.g., Amoxicillin">
+            </div>
+            
+            <div class="form-group">
+                <label>Dosage</label>
+                <input type="text" id="dosage" placeholder="e.g., 500mg">
+            </div>
+            
+            <div class="form-group">
+                <label>Schedule Times</label>
+                <div class="time-input-group">
+                    <input type="time" id="reminderTime">
+                    <button class="add-btn" onclick="addReminderTime()">Add</button>
+                </div>
+                <div class="time-list" id="timeList"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Duration (days)</label>
+                <input type="number" id="duration" value="30" min="1" max="365">
+            </div>
+            
+            <button class="btn" onclick="saveReminder()">Save Reminder</button>
+        </div>
+    </div>
+    
+    <script>
+        const state = {
+            sessionId: null,
+            userId: 1,
+            reminderTimes: [],
+            activeReminders: [],
+            searchHistory: []
+        };
+        
+        document.addEventListener('DOMContentLoaded', init);
+        
+        async function init() {
+            setupEventListeners();
+            await startSession();
+            await loadReminders();
+            await loadSearchHistory();
+            checkConnection();
+            setInterval(loadReminders, 30000);
+        }
+        
+        function setupEventListeners() {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', handleMenuClick);
+            });
+            
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            document.getElementById('userInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            document.getElementById('addReminderBtn').addEventListener('click', showAddReminderModal);
+            document.getElementById('viewHistoryBtn').addEventListener('click', viewHistory);
+        }
+        
+        function handleMenuClick(e) {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            e.currentTarget.classList.add('active');
+            
+            const section = e.currentTarget.dataset.section;
+            switch(section) {
+                case 'history': viewHistory(); break;
+                case 'reminders': showAddReminderModal(); break;
+                case 'analytics': fetchAnalytics(); break;
+            }
+        }
+        
+        async function startSession() {
+            try {
+                const res = await fetch('/api/session/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: state.userId,
+                        device_info: { browser: navigator.userAgent }
+                    })
+                });
+                const data = await res.json();
+                state.sessionId = data.session_id;
+                document.getElementById('sessionId').textContent = state.sessionId.slice(0, 20) + '...';
+            } catch (error) {
+                console.error('Session error:', error);
+            }
+        }
+        
+        async function checkConnection() {
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                document.getElementById('connectionStatus').textContent = 
+                    `✅ Connected - ${data.disease_count} diseases`;
+            } catch {
+                const status = document.getElementById('connectionStatus');
+                status.textContent = '❌ Disconnected';
+                status.style.background = '#dc3545';
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            input.value = '';
+            
+            const typingIndicator = showTypingIndicator();
+            
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        symptoms: message,
+                        session_id: state.sessionId,
+                        user_id: state.userId
+                    })
+                });
+                
+                const data = await res.json();
+                typingIndicator.remove();
+                
+                if (data.error) {
+                    addMessage('bot', `Error: ${data.error}`);
+                    return;
+                }
+                
+                if (data.matches?.length) {
+                    const response = formatMatchesResponse(data.matches);
+                    addMessage('bot', response);
+                    updateSearchHistory(message, data.matches[0]?.disease);
+                } else {
+                    addMessage('bot', "No matching conditions found. Try different symptoms.");
+                }
+            } catch (error) {
+                typingIndicator.remove();
+                addMessage('bot', `Error: ${error.message}`);
+            }
+        }
+        
+        function formatMatchesResponse(matches) {
+            let text = `Found ${matches.length} possible conditions:\n\n`;
+            matches.forEach((match, i) => {
+                text += `${i+1}. ${match.disease} (${match.match_percentage}% match)\n`;
+                text += `   👨‍⚕️ ${match.specialist}\n`;
+                text += `   💊 ${match.medicine}\n\n`;
+            });
+            text += "Need more details about any of these?";
+            return text;
+        }
+        
+        function addMessage(type, content) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = content.replace(/\n/g, '<br>');
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date().toLocaleTimeString();
+            
+            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(timeDiv);
+            messagesDiv.appendChild(messageDiv);
+            
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const indicator = document.createElement('div');
+            indicator.className = 'message bot-message';
+            indicator.innerHTML = '<div class="message-content">🤖 Typing...</div>';
+            messagesDiv.appendChild(indicator);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return indicator;
+        }
+        
+        async function viewHistory() {
+            const modal = document.getElementById('historyModal');
+            const content = document.getElementById('historyContent');
+            modal.classList.add('active');
+            content.innerHTML = '<div class="loading">Loading...</div>';
+            
+            try {
+                const res = await fetch(`/api/history/user/${state.userId}`);
+                const data = await res.json();
+                
+                if (data.history?.length) {
+                    let html = '';
+                    data.history.forEach(session => {
+                        html += `
+                            <div class="history-item" onclick="loadSession('${session.session_id}')">
+                                <div class="history-date">${new Date(session.start_time).toLocaleString()}</div>
+                                <div class="history-symptoms">${session.messages.length} messages</div>
+                            </div>
+                        `;
+                    });
+                    content.innerHTML = html;
+                } else {
+                    content.innerHTML = '<p style="text-align: center; color: #999;">No history found</p>';
+                }
+            } catch (error) {
+                content.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        window.loadSession = async function(sessionId) {
+            try {
+                const res = await fetch(`/api/history/${sessionId}`);
+                const data = await res.json();
+                
+                let html = `<h3>Session ${sessionId.slice(0, 20)}...</h3>`;
+                html += `<p>Total: ${data.total} messages</p>`;
+                
+                data.messages.forEach(msg => {
+                    html += `
+                        <div style="margin:15px 0; padding:15px; background:#f8fafc; border-radius:8px;">
+                            <strong>You:</strong> ${msg.user}<br>
+                            <strong>Bot:</strong> ${msg.bot}<br>
+                            <small>${new Date(msg.time).toLocaleString()}</small>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('historyContent').innerHTML = html;
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        };
+        
+        function showAddReminderModal() {
+            state.reminderTimes = [];
+            document.getElementById('timeList').innerHTML = '';
+            document.getElementById('reminderModal').classList.add('active');
+        }
+        
+        window.addReminderTime = function() {
+            const timeInput = document.getElementById('reminderTime');
+            const time = timeInput.value;
+            if (!time) return alert('Select a time');
+            
+            state.reminderTimes.push(time);
+            
+            document.getElementById('timeList').innerHTML = state.reminderTimes.map(t => 
+                `<span class="time-tag">${t} <span onclick="removeTime('${t}')">✕</span></span>`
+            ).join('');
+            
+            timeInput.value = '';
+        };
+        
+        window.removeTime = function(time) {
+            state.reminderTimes = state.reminderTimes.filter(t => t !== time);
+            document.getElementById('timeList').innerHTML = state.reminderTimes.map(t => 
+                `<span class="time-tag">${t} <span onclick="removeTime('${t}')">✕</span></span>`
+            ).join('');
+        };
+        
+        async function saveReminder() {
+            const medName = document.getElementById('medName').value;
+            const dosage = document.getElementById('dosage').value;
+            const duration = document.getElementById('duration').value;
+            
+            if (!medName || !dosage || !state.reminderTimes.length) {
+                return alert('Please fill all fields');
+            }
+            
+            try {
+                const res = await fetch('/api/notifications/medication-reminder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: state.userId,
+                        medication_name: medName,
+                        dosage: dosage,
+                        schedule_times: state.reminderTimes,
+                        duration_days: parseInt(duration)
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.reminders_created) {
+                    alert(`✅ Created ${data.reminders_created} reminders`);
+                    closeModal('reminderModal');
+                    await loadReminders();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function loadReminders() {
+            try {
+                const res = await fetch(`/api/notifications/user/${state.userId}?status=pending`);
+                const data = await res.json();
+                state.activeReminders = data.notifications || [];
+                
+                const container = document.getElementById('activeReminders');
+                
+                if (state.activeReminders.length) {
+                    let html = '';
+                    state.activeReminders.slice(0, 3).forEach(r => {
+                        html += `
+                            <div class="reminder-card">
+                                <div class="reminder-title">${r.title}</div>
+                                <div class="reminder-time">⏰ ${new Date(r.scheduled_time).toLocaleString()}</div>
+                                <div class="reminder-dosage">${r.message}</div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p style="color: #999; text-align: center;">No active reminders</p>';
+                }
+            } catch (error) {
+                console.error('Reminder error:', error);
+            }
+        }
+        
+        async function loadSearchHistory() {
+            const saved = localStorage.getItem('searchHistory');
+            if (saved) {
+                state.searchHistory = JSON.parse(saved);
+                updateSearchDisplay();
+            }
+        }
+        
+        function updateSearchHistory(symptoms, match) {
+            state.searchHistory.unshift({
+                symptoms, match, time: new Date().toISOString()
+            });
+            
+            if (state.searchHistory.length > 5) {
+                state.searchHistory.pop();
+            }
+            
+            localStorage.setItem('searchHistory', JSON.stringify(state.searchHistory));
+            updateSearchDisplay();
+        }
+        
+        function updateSearchDisplay() {
+            const container = document.getElementById('recentSearches');
+            
+            if (state.searchHistory.length) {
+                let html = '';
+                state.searchHistory.forEach(s => {
+                    html += `
+                        <div class="history-item" onclick="searchAgain('${s.symptoms}')">
+                            <div class="history-symptoms">🔍 ${s.symptoms}</div>
+                            <div class="history-date">${new Date(s.time).toLocaleString()}</div>
+                            ${s.match ? `<span class="badge badge-success">${s.match}</span>` : ''}
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<p style="color: #999; text-align: center;">No recent searches</p>';
+            }
+        }
+        
+        window.searchAgain = function(symptoms) {
+            document.getElementById('userInput').value = symptoms;
+            sendMessage();
+        };
+        
+        async function fetchAnalytics() {
+            try {
+                const res = await fetch('/api/analytics?days=30');
+                const data = await res.json();
+                
+                let message = '📊 Analytics (30 days)\n\n';
+                message += `Sessions: ${data.total_sessions}\n`;
+                message += `Messages: ${data.total_messages}\n`;
+                message += `Avg: ${data.avg_messages_per_session.toFixed(1)}/session\n\n`;
+                
+                if (data.popular_searches?.length) {
+                    message += 'Popular searches:\n';
+                    data.popular_searches.forEach(s => {
+                        message += `• ${s.disease}: ${s.count} times\n`;
+                    });
+                }
+                
+                addMessage('bot', message);
+            } catch (error) {
+                alert('Analytics error: ' + error.message);
+            }
+        }
+        
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        };
+    </script>
+</body>
+</html>
