@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedVitals AI - Smart Healthcare Assistant</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <h2>MedVitals AI</h2>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-section="chat">
+                    <i class="fa-solid fa-comment-medical"></i>
+                    <span>Symptom Checker</span>
+                </div>
+                <div class="menu-item" data-section="reminders">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Set Reminders</span>
+                </div>
+                <div class="menu-item" data-section="history">
+                    <i class="fa-solid fa-history"></i>
+                    <span>Chat History</span>
+                </div>
+                <div class="menu-item" data-section="analytics">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Analytics</span>
+                </div>
+            </nav>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div class="user-info">
+                    <h4>Prakhar Singh</h4>
+                    <p>Patient Profile #1</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <header class="app-header">
+                <div class="header-title">
+                    <h1>Symptom Analysis Hub</h1>
+                    <p>Powered by Enhanced Disease Matching Algorithms</p>
+                </div>
+                <div class="header-status">
+                    <span id="connectionStatus" class="status-badge status-loading">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Checking connection...
+                    </span>
+                    <span class="session-badge">
+                        <i class="fa-solid fa-key"></i> Session: <span id="sessionId">Initializing...</span>
+                    </span>
+                    <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <section class="chat-container">
+                <div id="chatMessages" class="chat-messages">
+                    <!-- Default welcome message -->
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="message-wrapper">
+                            <div class="message-content">
+                                <p><strong>Hello! I am MedVitals AI, your health assistant.</strong></p>
+                                <p>Describe your symptoms in natural language (e.g., <em>"I have a throbbing headache, fever, and nausea"</em>) or comma-separated values (e.g., <em>"cough, sore throat, runny nose"</em>).</p>
+                                <p class="disclaimer-note"><i class="fa-solid fa-triangle-exclamation"></i> Disclaimer: This is an informational tool, not a substitute for professional medical diagnosis or treatment.</p>
+                            </div>
+                            <span class="message-time">Just now</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input area with autocomplete suggestions -->
+                <div class="chat-input-wrapper">
+                    <div class="autocomplete-container" id="autocompleteContainer">
+                        <!-- Suggestion items dynamically inserted here -->
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="userInput" class="chat-input" placeholder="Type symptoms (e.g. fever, headache, dry cough)..." autocomplete="off">
+                        <button id="sendBtn" class="send-btn" title="Send Message">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Panels for Quick Actions, Reminders, and Recent Activity -->
+        <aside class="right-panel">
+            <!-- Quick Actions Section -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Actions</h3>
+                <div class="action-grid">
+                    <button class="action-btn" id="addReminderBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Reminder</span>
+                    </button>
+                    <button class="action-btn" id="viewHistoryBtn">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>View History</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Medication Reminders Section -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-bell"></i> Active Reminders</h3>
+                <div id="activeReminders" class="reminders-list">
+                    <div class="no-data-placeholder">
+                        <i class="fa-solid fa-prescription-bottle-medical"></i>
+                        <p>No active reminders</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Searches Section -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> Recent Searches</h3>
+                <div id="recentSearches" class="recent-searches-list">
+                    <div class="no-data-placeholder">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>No recent symptom checks</p>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
+
+    <!-- Add Reminder Modal -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-backdrop" onclick="closeModal('reminderModal')"></div>
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-bell"></i> Add Medication Reminder</h2>
+                <button class="close-btn" onclick="closeModal('reminderModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-permission-prompt" id="notificationPrompt">
+                    <div class="prompt-text">
+                        <i class="fa-solid fa-bell-slash"></i>
+                        <span>Enable notifications for real-time dosage alerts.</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary" onclick="requestNotificationPermission()">Enable</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medName">Medication Name</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-pills"></i>
+                        <input type="text" id="medName" placeholder="e.g., Amoxicillin" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dosage">Dosage Strength</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-weight-hanging"></i>
+                        <input type="text" id="dosage" placeholder="e.g., 500mg or 2 tablets" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Schedule Times</label>
+                    <div class="time-input-group">
+                        <input type="time" id="reminderTime">
+                        <button type="button" class="btn btn-secondary" onclick="addReminderTime()">
+                            <i class="fa-solid fa-plus"></i> Add Time
+                        </button>
+                    </div>
+                    <div class="time-tags-list" id="timeList">
+                        <!-- Added times will appear here as badges -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">Duration (days)</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <input type="number" id="duration" value="30" min="1" max="365">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('reminderModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveReminder()">Save Reminder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal" id="historyModal">
+        <div class="modal-backdrop" onclick="closeModal('historyModal')"></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-history"></i> Chat History Archive</h2>
+                <button class="close-btn" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div class="modal-body history-modal-body" id="historyContent">
+                <div class="loading-spinner">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> Loading archives...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

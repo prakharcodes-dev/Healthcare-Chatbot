@@ -1,145 +1,94 @@
-🏥 Healthcare Chatbot 
-📋 Overview
+# 🏥 MedVitals AI - Smart Healthcare Chatbot & Assistant
 
-This advanced healthcare chatbot helps users identify potential medical conditions based on their symptoms. It features a comprehensive disease database with 370+ conditions across multiple medical categories, providing intelligent symptom matching, disease information, prevention tips, doctor recommendations, and basic health guidance.
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms. The application features a comprehensive disease database of **550 conditions**, fuzzy matching for misspelled symptoms, an autocomplete suggestion panel, and a scheduling system for medication reminders.
 
-The system also includes full chat history tracking, medication reminders, user health profiles, and an analytics dashboard.
+---
 
-✨ Key Features
-🔍 Smart Symptom Analysis
+## ✨ Features
 
-Natural language processing for symptom input
+- **🔍 Intelligent Symptom Checker**: 
+  - Supports natural language symptom inputs (e.g., *"I have a severe headache, nausea, and high fever"*) or list-based inputs.
+  - Custom fuzzy matching algorithm to identify misspelled symptoms.
+  - Weighted matching where early symptoms are prioritized, combined with vector-based cosine similarity.
+- **⚡ Autocomplete suggestions**:
+  - Displays instant autocomplete suggestions as you type. Clicking suggestions appends symptoms dynamically using comma-separated tokens.
+- **⏰ Medication Reminders**:
+  - Set drug alerts with specific schedules, dosage quantities, and durations.
+  - Features real-time browser desktop notifications for active schedules.
+- **📊 Usage Analytics**:
+  - Visual metrics for session tracking, message counters, most searched diseases, and top reported symptoms.
+- **📚 Massive Database**:
+  - Expanded to **550 diseases** across 20+ clinical categories (Viral, Bacterial, Parasitic, Fungal, Psychiatric, Autoimmune, and Dermatological).
+- **📋 Personalized Insights**:
+  - Tailored health recommendations based on user history and seasonal disease alerts.
 
-Multiple input formats supported:
-Comma-separated: fever, headache, fatigue
-Space-separated: fever headache fatigue
-Natural language: i have fever and headache
+---
 
-✅ Fuzzy matching for misspelled symptoms
-✅ Weighted scoring (first symptoms count more)
+## 📁 Project Architecture
 
-📚 Comprehensive Database
+The application is structured cleanly using modular MVC best practices:
 
-370+ diseases across 20+ medical categories (↑30 new diseases added)
+```
+HEALTHCARE CHATBOT/
+├── backend/                  # Flask backend package
+│   ├── __init__.py           # App factory & service initializations
+│   ├── config.py             # App configurations & database path bindings
+│   ├── extensions.py         # SQLAlchemy & Background Scheduler shares
+│   ├── history.py            # Chat session loggers & usage analytics managers
+│   ├── matcher.py            # Cosine similarity & weighted fuzzy symptom matching
+│   ├── models.py             # Database schemas (User, Sessions, Notifications)
+│   ├── notifications.py      # Job schedulers & notification triggers
+│   └── utils.py              # Symptom sanitizers & sentiment analyzers
+├── data/                     # Data storage
+│   └── diseases.json         # Alphabetized database of 550 conditions
+├── frontend/                 # Client-side interface
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── style.css     # Design system (custom teal & indigo theme)
+│   │   └── js/
+│   │       └── main.js       # Autocomplete, reminder scan, and API clients
+│   └── templates/
+│       └── index.html        # Clean, modular HTML structure
+├── instance/                 # Local data directory
+│   └── healthcare_chatbot.db # SQLite database
+├── run.py                    # Server entrypoint
+├── requirements.txt          # Python dependencies
+└── README.md                 # Project documentation
+```
 
-Each disease includes:
+---
 
-Detailed symptom list
+## 🚀 Installation & Running
 
-Severity rating (mild / moderate / high)
+### 1. Prerequisites
+Make sure you have **Python 3.8+** installed.
 
-Medical category
+### 2. Install Dependencies
+Install all required libraries using pip:
+```bash
+pip install -r requirements.txt
+```
 
-Recommended medicines
+### 3. Run the Server
+Start the Flask development server:
+```bash
+python run.py
+```
+Upon startup:
+- The backend loads the **550 disease** records from `data/diseases.json`.
+- The SQLite database tables are created automatically if they do not exist.
+- A background scheduler is initialized.
+- Your default web browser will automatically open to `http://127.0.0.1:5000`.
 
-Health advice
+---
 
-Prevention tips
+## ⚠️ Important Disclaimers
 
-Specialist doctor consultation
+### 🩺 Medical Disclaimer
+This chatbot is for **informational and educational purposes only**. It does not constitute medical advice, professional diagnosis, or treatment recommendations. Always consult a qualified medical professional (such as a physician or specialist) before starting any drug regimen or if you are feeling unwell.
 
-Confidence scoring
+### 🚨 Emergency Protocol
+In case of a medical emergency, call your local emergency services (e.g., 911 or 112) immediately.
 
-Matched symptoms tracking
-
-🧠 Intelligent Matching Algorithm
-
-Partial and exact symptom matching
-
-Match score calculation (0–100%)
-
-✅ Vector-based similarity matching
-✅ Confidence scoring system
-✅ Severity bonus calculation
-
-Top 10 most relevant results displayed
-
-🆕 Updated Reminder System
-⏰ Medication Reminders (Upgraded)
-
-The reminder system has been enhanced with improved time management and scheduling capabilities.
-
-New Time Features
-
-✅ Multiple time selection for a single medication
-✅ Improved time formatting and validation
-✅ Flexible reminder duration control
-✅ Accurate scheduling with background scheduler
-✅ Real-time reminder tracking
-
-Reminder Capabilities
-
-Add reminder modal
-
-Multiple time selection
-
-Duration setting
-
-Active reminders display
-
-Real-time updates
-
-Delete reminder option
-
-Automatic reminder notifications
-
-📊 Disease Database Categories (Updated)
-Category	Count	Examples
-🦠 Autoimmune	18+	Lupus, Sjögren's, Scleroderma
-🎗️ Cancer	35+	Breast, Lung, Leukemia
-🧠 Neurological	28+	Alzheimer's, Parkinson's
-❤️ Cardiovascular	22+	Hypertension, Stroke
-🌬️ Respiratory	20+	Asthma, COPD, Pneumonia
-🦴 Bone & Joint	25+	Arthritis, Gout
-👁️ Eye	18+	Cataracts, Glaucoma
-👂 Ear	14+	Tinnitus, Vertigo
-💤 Sleep	12+	Sleep Apnea, Insomnia
-🫁 Gastrointestinal	28+	IBS, Crohn's
-🧬 Genetic	22+	Cystic Fibrosis
-🔬 Infectious	20+	TB, Lyme Disease
-🩺 Endocrine	18+	Diabetes, Thyroid
-🚻 Reproductive	20+	Endometriosis
-🫀 Kidney	14+	Kidney Stones
-🦷 Dental	10+	Gingivitis
-🧪 Metabolic	12+	Porphyria
-🫁 Liver	8+	Cirrhosis
-🧠 Psychiatric	10+	Depression
-🩸 Blood	12+	Anemia
-
-TOTAL: 370+ Diseases (↑30 New Diseases Added)
-
-⚠️ Important Notes
-Medical Disclaimer
-
-This chatbot is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
-
-Always seek the advice of a qualified healthcare professional.
-
-Emergency Protocol
-
-🚨 In case of emergency, contact emergency medical services immediately.
-
-Privacy Note
-
-All chat history and health data are stored locally in the SQLite database.
-No external data sharing occurs except optional email notifications.
-
-Development Status
-
-⚠️ The chatbot is under active development:
-
-Database now contains 370+ diseases
-
-Matching algorithms continuously improving
-
-Reminder system upgraded
-
-New features being added regularly
-
-User feedback integrated
-
-✅ Only 2 real changes were made:
-
-340+ → 370+ diseases
-
-Reminder time system upgraded
+### 🔒 Privacy Note
+All conversation logs, medication reminders, and health session files are kept entirely local in the SQLite database (`instance/healthcare_chatbot.db`) and your browser's local storage. No health profile data is transmitted externally.
