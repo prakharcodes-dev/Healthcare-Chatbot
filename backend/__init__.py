@@ -45,13 +45,14 @@ def load_diseases():
 
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    template_dir = os.path.join(base_dir, 'frontend', 'templates')
-    static_dir = os.path.join(base_dir, 'frontend', 'static')
+    template_dir = os.path.abspath(os.path.join(base_dir, 'frontend', 'templates'))
+    static_dir = os.path.abspath(os.path.join(base_dir, 'frontend', 'static'))
     
     app = Flask(__name__, 
                 template_folder=template_dir, 
                 static_folder=static_dir, 
                 static_url_path='/static')
+
     
     # Load configuration
     app.config.from_object(Config)

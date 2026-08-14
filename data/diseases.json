@@ -10892,5 +10892,1860 @@
     "prevention_tips": "Use insect repellent, wear long-sleeved clothing, control mosquitoes around the home, practice safe sex, avoid travel to active transmission areas if pregnant",
     "specialist": "Infectious Disease Specialist",
     "age_group": "all ages (critical risk to unborn fetuses)"
+  },
+  {
+    "disease": "Acute Disseminated Encephalomyelitis",
+    "symptoms": [
+      "fever",
+      "headache",
+      "confusion",
+      "stiff neck",
+      "seizures",
+      "vision changes",
+      "muscle weakness"
+    ],
+    "severity": "high",
+    "category": "Neurological",
+    "medicine": "High-dose intravenous corticosteroids, IVIG, plasma exchange",
+    "advice": "Immediate hospitalization, neurological monitoring, physical rehabilitation",
+    "prevention_tips": "Prompt vaccination and treatment of viral infections",
+    "specialist": "Neurologist",
+    "age_group": "children and young adults"
+  },
+  {
+    "disease": "Addisonian Crisis",
+    "symptoms": [
+      "severe abdominal pain",
+      "extreme weakness",
+      "low blood pressure",
+      "high fever",
+      "dizziness",
+      "confusion",
+      "fainting"
+    ],
+    "severity": "high",
+    "category": "Endocrine",
+    "medicine": "IV hydrocortisone, IV normal saline, dextrose infusion",
+    "advice": "Emergency ICU admission, continuous electrolyte monitoring, blood pressure stabilization",
+    "prevention_tips": "Increase steroid dosage during stress/illness for adrenal insufficiency patients",
+    "specialist": "Endocrinologist",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Alkaptonuria",
+    "symptoms": [
+      "dark urine",
+      "joint pain",
+      "black cartilage pigmentation",
+      "ear cartilage darkening",
+      "back stiffness",
+      "kidney stones"
+    ],
+    "severity": "moderate",
+    "category": "Genetic / Metabolic",
+    "medicine": "Nitisinone, high-dose Vitamin C, pain management medications",
+    "advice": "Low-protein diet (restrict tyrosine/phenylalanine), regular joint and cardiac monitoring",
+    "prevention_tips": "Genetic counseling for families with history of homogentisate deficiency",
+    "specialist": "Medical Geneticist",
+    "age_group": "adults"
+  },
+  {
+    "disease": "Amyloidosis",
+    "symptoms": [
+      "severe fatigue",
+      "swollen legs",
+      "shortness of breath",
+      "numbness in hands",
+      "enlarged tongue",
+      "easy bruising",
+      "protein in urine"
+    ],
+    "severity": "high",
+    "category": "Hematologic / Systemic",
+    "medicine": "Chemotherapy (bortezomib, melphalan), targeted therapies (daratumumab), tafamidis",
+    "advice": "Organ function monitoring, dietary sodium restriction, cardiology follow-up",
+    "prevention_tips": "Early diagnosis and management of underlying inflammatory conditions",
+    "specialist": "Hematologist / Nephrologist",
+    "age_group": "older adults"
+  },
+  {
+    "disease": "Aortic Aneurysm",
+    "symptoms": [
+      "throbbing abdominal pain",
+      "deep chest pain",
+      "back pain",
+      "shortness of breath",
+      "cough",
+      "hoarseness"
+    ],
+    "severity": "high",
+    "category": "Cardiovascular",
+    "medicine": "Beta-blockers, ACE inhibitors, statins, antihypertensives",
+    "advice": "Regular ultrasound/CT surveillance, avoid heavy lifting, surgical repair if large",
+    "prevention_tips": "Control blood pressure, quit smoking, manage cholesterol levels",
+    "specialist": "Vascular Surgeon / Cardiologist",
+    "age_group": "adults over 60"
+  },
+  {
+    "disease": "Aplastic Anemia",
+    "symptoms": [
+      "fatigue",
+      "pale skin",
+      "frequent infections",
+      "unexplained bruising",
+      "nosebleeds",
+      "bleeding gums",
+      "rapid heart rate"
+    ],
+    "severity": "high",
+    "category": "Hematologic",
+    "medicine": "Immunosuppressants (cyclosporine, ATG), eltrombopag, blood transfusions",
+    "advice": "Bone marrow transplant evaluation, avoid crowds and infected individuals",
+    "prevention_tips": "Avoid toxic chemical exposure (benzene, pesticides, radiation)",
+    "specialist": "Hematologist",
+    "age_group": "children and older adults"
+  },
+  {
+    "disease": "Arteriovenous Malformation (AVM)",
+    "symptoms": [
+      "severe headache",
+      "seizures",
+      "numbness in limbs",
+      "muscle weakness",
+      "dizziness",
+      "vision impairment",
+      "confusion"
+    ],
+    "severity": "high",
+    "category": "Neurological / Vascular",
+    "medicine": "Anticonvulsants (levetiracetam), pain relievers, antihypertensives",
+    "advice": "Endovascular embolization, stereotactic radiosurgery, or neurosurgical resection",
+    "prevention_tips": "Regular neuroimaging for individuals with familial neurovascular syndromes",
+    "specialist": "Neurosurgeon",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Autoimmune Hepatitis",
+    "symptoms": [
+      "fatigue",
+      "yellow skin and eyes (jaundice)",
+      "abdominal pain",
+      "joint pain",
+      "nausea",
+      "dark urine",
+      "spider veins"
+    ],
+    "severity": "high",
+    "category": "Hepatology / Autoimmune",
+    "medicine": "Prednisone, azathioprine, mycophenolate mofetil",
+    "advice": "Long-term immunosuppression, regular liver function test monitoring, avoid alcohol",
+    "prevention_tips": "Routine medical checkups for patients with co-existing autoimmune diseases",
+    "specialist": "Hepatologist / Gastroenterologist",
+    "age_group": "women, all ages"
+  },
+  {
+    "disease": "Barrett's Esophagus",
+    "symptoms": [
+      "frequent heartburn",
+      "difficulty swallowing",
+      "chest pain",
+      "acid regurgitation",
+      "sour taste in mouth",
+      "chronic cough"
+    ],
+    "severity": "moderate",
+    "category": "Gastrointestinal",
+    "medicine": "Proton pump inhibitors (omeprazole, esomeprazole), H2 blockers",
+    "advice": "Regular endoscopic biopsy surveillance, avoid late-night meals, elevate bed head",
+    "prevention_tips": "Prompt and effective management of GERD, avoid smoking and alcohol",
+    "specialist": "Gastroenterologist",
+    "age_group": "adults over 50"
+  },
+  {
+    "disease": "Bartholin Gland Abscess",
+    "symptoms": [
+      "painful vulvar lump",
+      "difficulty walking or sitting",
+      "fever",
+      "localized redness",
+      "swallowing discomfort",
+      "discharge"
+    ],
+    "severity": "mild",
+    "category": "Gynecologic",
+    "medicine": "Antibiotics (ceftriaxone, doxycycline), oral analgesics",
+    "advice": "Warm sitz baths, incision and drainage with Word catheter placement if necessary",
+    "prevention_tips": "Maintain good intimate hygiene, practice safe sex to prevent STIs",
+    "specialist": "Gynecologist",
+    "age_group": "women of reproductive age"
+  },
+  {
+    "disease": "Behcet's Disease",
+    "symptoms": [
+      "painful mouth ulcers",
+      "genital sores",
+      "eye inflammation (uveitis)",
+      "skin lesions",
+      "joint pain",
+      "digestive issues"
+    ],
+    "severity": "high",
+    "category": "Autoimmune / Rheumatologic",
+    "medicine": "Colchicine, corticosteroids, immunosuppressants (azathioprine, infliximab)",
+    "advice": "Regular eye examinations, multi-system inflammatory monitoring, gentle oral care",
+    "prevention_tips": "Early immunomodulatory treatment to prevent blindness and vascular complications",
+    "specialist": "Rheumatologist / Ophthalmologist",
+    "age_group": "young adults (20-40)"
+  },
+  {
+    "disease": "Biliary Atresia",
+    "symptoms": [
+      "jaundice in newborns",
+      "pale or clay-colored stools",
+      "dark urine",
+      "swollen abdomen",
+      "poor weight gain",
+      "irritability"
+    ],
+    "severity": "high",
+    "category": "Pediatric / Hepatology",
+    "medicine": "Fat-soluble vitamin supplements (A, D, E, K), ursodeoxycholic acid, antibiotics",
+    "advice": "Early Kasai portoenterostomy surgery before 60 days of life, liver transplant evaluation",
+    "prevention_tips": "Early screening for newborn jaundice lasting beyond 2 weeks",
+    "specialist": "Pediatric Gastroenterologist / Surgeon",
+    "age_group": "infants"
+  },
+  {
+    "disease": "Brugada Syndrome",
+    "symptoms": [
+      "fainting spells (syncope)",
+      "irregular heartbeat",
+      "palpitations",
+      "gasping during sleep",
+      "sudden cardiac arrest"
+    ],
+    "severity": "high",
+    "category": "Cardiovascular / Genetic",
+    "medicine": "Quinidine (in selected cases), avoid fever-inducing states",
+    "advice": "Implantable Cardioverter-Defibrillator (ICD) placement, prompt fever reduction with antipyretics",
+    "prevention_tips": "Avoid medications on Brugada drug-avoidance lists, perform genetic family screening",
+    "specialist": "Electrophysiologist / Cardiologist",
+    "age_group": "adults (especially men 30-50)"
+  },
+  {
+    "disease": "Bullous Pemphigoid",
+    "symptoms": [
+      "large tense fluid-filled blisters",
+      "intensely itchy skin",
+      "red raised skin patches",
+      "sores inside mouth"
+    ],
+    "severity": "moderate",
+    "category": "Dermatologic / Autoimmune",
+    "medicine": "Topical or systemic corticosteroids (clobetasol, prednisone), doxycycline, nicotinamide",
+    "advice": "Gentle wound care, avoid skin trauma, monitor for secondary bacterial infections",
+    "prevention_tips": "Avoid known drug triggers (e.g., furosemide, DPP-4 inhibitors)",
+    "specialist": "Dermatologist",
+    "age_group": "elderly (over 60)"
+  },
+  {
+    "disease": "Buerger's Disease (Thromboangiitis Obliterans)",
+    "symptoms": [
+      "pain in hands and feet",
+      "pale or bluish fingers/toes",
+      "cold sensation in limbs",
+      "painful open sores on digits",
+      "tingling"
+    ],
+    "severity": "high",
+    "category": "Vascular",
+    "medicine": "Iloprost infusion, calcium channel blockers, pain medications",
+    "advice": "Complete and immediate cessation of all tobacco products (cigarettes, cigars, chewing tobacco)",
+    "prevention_tips": "Do not consume tobacco or nicotine in any form",
+    "specialist": "Vascular Specialist",
+    "age_group": "young adult male smokers (20-45)"
+  },
+  {
+    "disease": "Burkitt Lymphoma",
+    "symptoms": [
+      "rapidly growing abdominal mass",
+      "jaw swelling",
+      "abdominal pain",
+      "fever",
+      "night sweats",
+      "unintentional weight loss"
+    ],
+    "severity": "high",
+    "category": "Oncologic / Hematologic",
+    "medicine": "Intensive combination chemotherapy (CODOX-M/IVAC, rituximab), intrathecal chemotherapy",
+    "advice": "Immediate inpatient oncology admission, tumor lysis syndrome prophylaxis with rasburicase",
+    "prevention_tips": "Malaria prevention in endemic areas, early HIV detection and antiretroviral therapy",
+    "specialist": "Oncologist / Hematologist",
+    "age_group": "children and young adults"
+  },
+  {
+    "disease": "Calciphylaxis",
+    "symptoms": [
+      "extremely painful skin ulcers",
+      "purple skin discoloration",
+      "hard skin nodules",
+      "non-healing wounds",
+      "black eschar"
+    ],
+    "severity": "high",
+    "category": "Dermatologic / Nephrologic",
+    "medicine": "Sodium thiosulfate, hyperbaric oxygen, wound analgesics",
+    "advice": "Optimize calcium-phosphate balance, gentle wound care, stop Warfarin if applicable",
+    "prevention_tips": "Strict mineral bone disease management in end-stage renal disease patients",
+    "specialist": "Nephrologist / Dermatologist",
+    "age_group": "dialysis patients"
+  },
+  {
+    "disease": "Cardiac Tamponade",
+    "symptoms": [
+      "severe shortness of breath",
+      "chest tightness",
+      "low blood pressure",
+      "distended neck veins",
+      "rapid heart rate",
+      "dizziness"
+    ],
+    "severity": "high",
+    "category": "Cardiovascular / Emergency",
+    "medicine": "IV fluids, oxygen therapy, vasopressors",
+    "advice": "Emergency pericardiocentesis or pericardial window surgery",
+    "prevention_tips": "Timely treatment of pericarditis, chest trauma, and cardiac catheterization monitoring",
+    "specialist": "Cardiologist / Trauma Surgeon",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Cavernous Sinus Thrombosis",
+    "symptoms": [
+      "severe headache",
+      "bulging eye (proptosis)",
+      "inability to move eye",
+      "facial numbness",
+      "high fever",
+      "drooping eyelid",
+      "vision loss"
+    ],
+    "severity": "high",
+    "category": "Neurological / Emergency",
+    "medicine": "High-dose IV antibiotics (ceftriaxone, vancomycin), IV anticoagulation (heparin)",
+    "advice": "Immediate ICU hospitalization, surgical drainage of primary sinus infection",
+    "prevention_tips": "Prompt treatment of facial boils, nasal furuncles, and sinus infections",
+    "specialist": "Neurosurgeon / Infectious Disease",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Celiac Artery Compression Syndrome",
+    "symptoms": [
+      "post-meal abdominal pain",
+      "unintentional weight loss",
+      "nausea",
+      "vomiting",
+      "bloating",
+      "fear of eating"
+    ],
+    "severity": "moderate",
+    "category": "Vascular / Gastrointestinal",
+    "medicine": "Pain relievers, antispasmodics",
+    "advice": "Surgical or laparoscopic release of median arcuate ligament",
+    "prevention_tips": "Medical evaluation for persistent unexplained post-prandial epigastric pain",
+    "specialist": "Vascular Surgeon / Gastroenterologist",
+    "age_group": "young active individuals (20-40)"
+  },
+  {
+    "disease": "Charcot-Marie-Tooth Disease",
+    "symptoms": [
+      "high foot arches",
+      "clawed toes",
+      "foot drop",
+      "frequent tripping",
+      "muscle wasting in lower legs",
+      "numbness in feet and hands"
+    ],
+    "severity": "moderate",
+    "category": "Neurological / Genetic",
+    "medicine": "Pain management (gabapentin), vitamin supplements",
+    "advice": "Orthotic braces (AFOs), physical and occupational therapy, supportive footwear",
+    "prevention_tips": "Genetic counseling, avoid neurotoxic medications (e.g. vincristine)",
+    "specialist": "Neurologist / Orthopedic Specialist",
+    "age_group": "children and young adults"
+  },
+  {
+    "disease": "Chlamydia Pneumoniae Infection",
+    "symptoms": [
+      "gradual onset fever",
+      "dry hacking cough",
+      "sore throat",
+      "hoarseness",
+      "headache",
+      "fatigue",
+      "chest tightness"
+    ],
+    "severity": "moderate",
+    "category": "Respiratory / Infectious",
+    "medicine": "Doxycycline, azithromycin, or levofloxacin",
+    "advice": "Complete full antibiotic regimen, rest, increase fluid intake",
+    "prevention_tips": "Cover mouth when coughing, maintain hand hygiene in dormitories and schools",
+    "specialist": "Pulmonologist / Primary Care",
+    "age_group": "school children and young adults"
+  },
+  {
+    "disease": "Cholangitis (Acute Ascending)",
+    "symptoms": [
+      "right upper abdominal pain",
+      "jaundice",
+      "high fever with chills",
+      "low blood pressure",
+      "confusion",
+      "dark urine"
+    ],
+    "severity": "high",
+    "category": "Gastrointestinal / Emergency",
+    "medicine": "IV broad-spectrum antibiotics (piperacillin-tazobactam), IV fluid resuscitation",
+    "advice": "Emergency biliary decompression via ERCP or PTC",
+    "prevention_tips": "Prompt treatment of gallstones and biliary strictures",
+    "specialist": "Gastroenterologist / Hepatobiliary Surgeon",
+    "age_group": "adults over 50"
+  },
+  {
+    "disease": "Choriocarcinoma",
+    "symptoms": [
+      "vaginal bleeding",
+      "pelvic pain",
+      "hemoptysis (coughing blood)",
+      "shortness of breath",
+      "high hCG levels",
+      "headache"
+    ],
+    "severity": "high",
+    "category": "Oncologic / Gynecologic",
+    "medicine": "Methotrexate, actinomycin D, EMA-CO chemotherapy combination",
+    "advice": "Serial quantitative serum beta-hCG monitoring, staging CT scans",
+    "prevention_tips": "Routine post-molar pregnancy surveillance with serum hCG measurements",
+    "specialist": "Gynecologic Oncologist",
+    "age_group": "women of childbearing age"
+  },
+  {
+    "disease": "Chronic Inflammatory Demyelinating Polyneuropathy (CIDP)",
+    "symptoms": [
+      "progressive muscle weakness in arms and legs",
+      "numbness",
+      "tingling",
+      "loss of reflexes",
+      "balance problems",
+      "fatigue"
+    ],
+    "severity": "high",
+    "category": "Neurological / Autoimmune",
+    "medicine": "IVIG (intravenous immunoglobulin), corticosteroids, plasmapheresis, immunosuppressants",
+    "advice": "Long-term physical therapy, fall risk precautions, occupational therapy",
+    "prevention_tips": "Early diagnostic nerve conduction studies upon onset of unexplained weakness",
+    "specialist": "Neurologist",
+    "age_group": "adults over 40"
+  },
+  {
+    "disease": "Cluster Headache",
+    "symptoms": [
+      "severe severe pain around one eye",
+      "eye redness",
+      "tearing",
+      "nasal congestion",
+      "drooping eyelid",
+      "restlessness",
+      "pacing"
+    ],
+    "severity": "moderate",
+    "category": "Neurological",
+    "medicine": "Subcutaneous sumatriptan, 100% high-flow oxygen, verapamil (preventative)",
+    "advice": "Avoid alcohol during cluster cycles, maintain consistent sleep schedule",
+    "prevention_tips": "Strict avoidance of known triggers during cluster periods",
+    "specialist": "Neurologist / Headache Specialist",
+    "age_group": "adults 20-50"
+  },
+  {
+    "disease": "Complex Regional Pain Syndrome (CRPS)",
+    "symptoms": [
+      "continuous burning pain in arm or leg",
+      "swelling",
+      "changes in skin color and temperature",
+      "hypersensitivity to touch",
+      "joint stiffness"
+    ],
+    "severity": "moderate",
+    "category": "Neurological / Pain",
+    "medicine": "Gabapentin, bisphosphonates, topical lidocaine, ketamine infusions, nerve blocks",
+    "advice": "Early physical and occupational therapy, spinal cord stimulation evaluation",
+    "prevention_tips": "Early mobilization and Vitamin C administration following limb fractures/surgeries",
+    "specialist": "Pain Management Specialist / Neurologist",
+    "age_group": "adults (more common in women)"
+  },
+  {
+    "disease": "Creutzfeldt-Jakob Disease",
+    "symptoms": [
+      "rapid memory loss",
+      "personality changes",
+      "muscle jerks (myoclonus)",
+      "unsteady gait",
+      "speech difficulty",
+      "blindness"
+    ],
+    "severity": "high",
+    "category": "Neurological / Prion",
+    "medicine": "Palliative comfort care, anticonvulsants (clonazepam for myoclonus)",
+    "advice": "Hospice care, supportive safety measures, family support",
+    "prevention_tips": "Strict sterilization of surgical instruments, blood donor screening guidelines",
+    "specialist": "Neurologist",
+    "age_group": "older adults (60-70)"
+  },
+  {
+    "disease": "Cryoglobulinemia",
+    "symptoms": [
+      "purple skin spots (purpura)",
+      "joint pain",
+      "weakness",
+      "numbness in toes/fingers",
+      "kidney dysfunction",
+      "Raynaud phenomenon"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Hematologic",
+    "medicine": "Direct-acting antivirals (for Hepatitis C), rituximab, corticosteroids, plasmapheresis",
+    "advice": "Keep extremities warm, treat underlying viral infections, monitor renal function",
+    "prevention_tips": "Prevention and treatment of Hepatitis C and B infections",
+    "specialist": "Rheumatologist / Hematologist",
+    "age_group": "adults"
+  },
+  {
+    "disease": "Cryptococcal Meningitis",
+    "symptoms": [
+      "headache",
+      "fever",
+      "neck stiffness",
+      "confusion",
+      "sensitivity to light (photophobia)",
+      "nausea",
+      "vomiting"
+    ],
+    "severity": "high",
+    "category": "Fungal / Neurological",
+    "medicine": "Liposomal Amphotericin B plus flucytosine, followed by oral fluconazole",
+    "advice": "Therapeutic lumbar punctures to manage high intracranial pressure, HIV care integration",
+    "prevention_tips": "Primary fluconazole prophylaxis in advanced immunocompromised/HIV patients",
+    "specialist": "Infectious Disease Specialist / Neurologist",
+    "age_group": "immunocompromised individuals"
+  },
+  {
+    "disease": "Dermatitis Herpetiformis",
+    "symptoms": [
+      "intensely itchy blisters",
+      "red bumps on elbows and knees",
+      "burning skin sensation",
+      "buttocks rash"
+    ],
+    "severity": "mild",
+    "category": "Dermatologic / Autoimmune",
+    "medicine": "Dapsone, topical corticosteroids",
+    "advice": "Strict lifelong gluten-free diet, regular skin checkups",
+    "prevention_tips": "Avoid gluten containing foods (wheat, barley, rye)",
+    "specialist": "Dermatologist / Gastroenterologist",
+    "age_group": "adults (30-50)"
+  },
+  {
+    "disease": "Dermatomyositis",
+    "symptoms": [
+      "purple rash on upper eyelids (heliotrope rash)",
+      "knuckle rash (Gottron papules)",
+      "muscle weakness in shoulders/hips",
+      "difficulty climbing stairs",
+      "fatigue"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Autoimmune",
+    "medicine": "Corticosteroids (prednisone), methotrexate, azathioprine, IVIG, rituximab",
+    "advice": "Sun protection, physical therapy to preserve muscle strength, age-appropriate cancer screening",
+    "prevention_tips": "Use high-SPF sunscreen, early treatment of autoimmune symptoms",
+    "specialist": "Rheumatologist / Dermatologist",
+    "age_group": "adults 40-60 and children 5-15"
+  },
+  {
+    "disease": "Disseminated Intravascular Coagulation (DIC)",
+    "symptoms": [
+      "bleeding from IV sites",
+      "widespread bruising",
+      "small red spots (petechiae)",
+      "blood clots in limbs",
+      "shortness of breath",
+      "low blood pressure"
+    ],
+    "severity": "high",
+    "category": "Hematologic / Emergency",
+    "medicine": "Fresh frozen plasma, platelets, cryoprecipitate, low-dose heparin (in select cases)",
+    "advice": "Immediate ICU stabilization, aggressive treatment of underlying cause (sepsis, trauma, obstetric shock)",
+    "prevention_tips": "Early aggressive management of systemic sepsis and major surgical trauma",
+    "specialist": "Hematologist / Critical Care Specialist",
+    "age_group": "critically ill hospitalized patients"
+  },
+  {
+    "disease": "Dupuytren's Contracture",
+    "symptoms": [
+      "thickening of palm skin",
+      "painless palm nodules",
+      "inability to fully straighten ring or pinky finger",
+      "hand stiffness"
+    ],
+    "severity": "mild",
+    "category": "Orthopedic",
+    "medicine": "Collagenase clostridium histolyticum injections, steroid injections",
+    "advice": "Hand physical therapy, enzyme injection, or surgical fasciectomy if function impaired",
+    "prevention_tips": "Avoid repetitive tight gripping tools, limit alcohol consumption",
+    "specialist": "Hand Surgeon / Orthopedist",
+    "age_group": "men over 50"
+  },
+  {
+    "disease": "Echinococcosis (Hydatid Disease)",
+    "symptoms": [
+      "abdominal pain in right upper quadrant",
+      "liver cyst mass",
+      "coughing up blood",
+      "jaundice",
+      "allergic reactions",
+      "hives"
+    ],
+    "severity": "high",
+    "category": "Parasitic",
+    "medicine": "Albendazole, mebendazole, PAIR procedure (Puncture, Aspiration, Injection, Re-aspiration)",
+    "advice": "Surgical cyst resection under albendazole cover, avoid cyst rupture during removal",
+    "prevention_tips": "Deworm domestic dogs, wash hands after handling pets, wash raw vegetables thoroughly",
+    "specialist": "Infectious Disease Specialist / Hepatobiliary Surgeon",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Ehlers-Danlos Syndrome",
+    "symptoms": [
+      "hyper-extensible loose joints",
+      "stretchy skin",
+      "fragile easily bruised skin",
+      "joint dislocations",
+      "chronic musculoskeletal pain",
+      "fatigue"
+    ],
+    "severity": "moderate",
+    "category": "Genetic / Connective Tissue",
+    "medicine": "Pain relievers, Vitamin C, blood pressure lowering meds (for vascular type)",
+    "advice": "Low-impact physical exercise (swimming), joint bracing, avoid contact sports",
+    "prevention_tips": "Genetic testing, echo surveillance for vascular aortic dilatation",
+    "specialist": "Medical Geneticist / Rheumatologist",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Eisenmenger Syndrome",
+    "symptoms": [
+      "bluish skin coloration (cyanosis)",
+      "clubbing of fingers",
+      "shortness of breath",
+      "fatigue",
+      "dizziness",
+      "chest pain",
+      "heart palpitations"
+    ],
+    "severity": "high",
+    "category": "Cardiovascular / Congenital",
+    "medicine": "Endothelin receptor antagonists (bosentan), sildenafil, prostacyclins",
+    "advice": "Avoid high altitudes, pregnancy, and strenuous exercise; oxygen therapy",
+    "prevention_tips": "Early surgical repair of congenital heart defects (VSD, ASD, PDA) in infancy",
+    "specialist": "Adult Congenital Heart Disease Specialist",
+    "age_group": "teens and adults"
+  },
+  {
+    "disease": "Empyema (Thoracic)",
+    "symptoms": [
+      "pus in chest cavity",
+      "fever",
+      "chills",
+      "chest pain worsening with deep breathing",
+      "persistent cough",
+      "shortness of breath",
+      "night sweats"
+    ],
+    "severity": "high",
+    "category": "Pulmonary / Infectious",
+    "medicine": "IV broad-spectrum antibiotics, intrapleural tissue plasminogen activator (tPA)/DNase",
+    "advice": "Tube thoracostomy chest drain, video-assisted thoracoscopic surgery (VATS) decortication",
+    "prevention_tips": "Prompt medical treatment of acute pneumonia and aspiration episodes",
+    "specialist": "Pulmonologist / Thoracic Surgeon",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Eosinophilic Esophagitis",
+    "symptoms": [
+      "food sticking in esophagus (dysphagia)",
+      "chest pain",
+      "heartburn",
+      "vomiting",
+      "abdominal pain",
+      "failure to thrive in children"
+    ],
+    "severity": "moderate",
+    "category": "Gastrointestinal / Allergic",
+    "medicine": "Swallowed topical steroids (fluticasone, budesonide), proton pump inhibitors, dupilumab",
+    "advice": "Six-food elimination diet (dairy, wheat, egg, soy, nuts, seafood), endoscopic dilation if strictures",
+    "prevention_tips": "Identify and avoid dietary allergens, treat co-existing atopic conditions",
+    "specialist": "Gastroenterologist / Allergist",
+    "age_group": "children and young adults"
+  },
+  {
+    "disease": "Eosinophilic Granulomatosis with Polyangiitis (Churg-Strauss)",
+    "symptoms": [
+      "severe asthma",
+      "high blood eosinophil count",
+      "sinusitis",
+      "numbness in limbs",
+      "purple skin spots",
+      "fever",
+      "weight loss"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Autoimmune",
+    "medicine": "High-dose corticosteroids, mepolizumab, cyclophosphamide, azathioprine",
+    "advice": "Regular cardiac, lung, and neurological evaluation",
+    "prevention_tips": "Careful monitoring when tapering asthma medications in chronic sinus sufferers",
+    "specialist": "Rheumatologist / Pulmonologist",
+    "age_group": "adults 30-50"
+  },
+  {
+    "disease": "Ependymoma",
+    "symptoms": [
+      "morning headache",
+      "nausea",
+      "vomiting",
+      "unsteady walking",
+      "dizziness",
+      "seizures",
+      "back pain (if spinal)"
+    ],
+    "severity": "high",
+    "category": "Neurological / Oncologic",
+    "medicine": "Chemotherapy agents (carboplatin, vincristine, etoposide), anticonvulsants",
+    "advice": "Maximal surgical resection followed by focal radiation therapy",
+    "prevention_tips": "Neuro-oncology screening for individuals with Neurofibromatosis Type 2",
+    "specialist": "Neuro-Oncologist / Neurosurgeon",
+    "age_group": "young children and adults"
+  },
+  {
+    "disease": "Erythema Nodosum",
+    "symptoms": [
+      "painful tender red bumps on shins",
+      "fever",
+      "joint pain",
+      "ankle swelling",
+      "fatigue"
+    ],
+    "severity": "mild",
+    "category": "Dermatologic",
+    "medicine": "NSAIDs (naproxen), potassium iodide, systemic corticosteroids",
+    "advice": "Limb elevation, rest, investigate underlying cause (strep, sarcoidosis, IBD)",
+    "prevention_tips": "Prompt medical evaluation for new painful tender shin nodules",
+    "specialist": "Dermatologist / Rheumatologist",
+    "age_group": "young women (20-40)"
+  },
+  {
+    "disease": "Ewing Sarcoma",
+    "symptoms": [
+      "bone pain worsening at night",
+      "swelling near bone",
+      "fever",
+      "unexplained bone fracture",
+      "fatigue",
+      "weight loss"
+    ],
+    "severity": "high",
+    "category": "Oncologic / Pediatric",
+    "medicine": "VDC/IE chemotherapy (vincristine, doxorubicin, cyclophosphamide, ifosfamide, etoposide)",
+    "advice": "Combination multimodal therapy (chemotherapy, surgical resection, radiation)",
+    "prevention_tips": "Early orthopedic oncology evaluation for localized persistent bone pain in adolescents",
+    "specialist": "Pediatric Oncologist / Orthopedic Oncologist",
+    "age_group": "teens and young adults (10-20)"
+  },
+  {
+    "disease": "Fabry Disease",
+    "symptoms": [
+      "burning pain in hands and feet",
+      "dark red skin spots (angiokeratomas)",
+      "decreased sweating",
+      "cloudy cornea",
+      "kidney damage",
+      "chest pain"
+    ],
+    "severity": "high",
+    "category": "Genetic / Metabolic",
+    "medicine": "Enzyme replacement therapy (agalsidase beta), migalastat, gabapentin",
+    "advice": "Avoid temperature extremes, regular cardiac and renal function monitoring",
+    "prevention_tips": "Genetic screening for families with early-onset stroke, kidney failure, or burning pain",
+    "specialist": "Medical Geneticist / Nephrologist",
+    "age_group": "children and adults"
+  },
+  {
+    "disease": "Factitious Disorder",
+    "symptoms": [
+      "falsifying physical or psychological symptoms",
+      "frequent hospital visits",
+      "extensive knowledge of medical terms",
+      "eagerness for medical tests or surgery",
+      "inconsistent medical history"
+    ],
+    "severity": "moderate",
+    "category": "Psychiatric",
+    "medicine": "Psychotherapy, treatment of co-existing mood/anxiety disorders",
+    "advice": "Cognitive behavioral therapy, non-judgmental psychiatric support, single primary doctor coordination",
+    "prevention_tips": "Early psychological intervention and avoid unnecessary invasive procedures",
+    "specialist": "Psychiatrist / Psychologist",
+    "age_group": "adults"
+  },
+  {
+    "disease": "Familial Mediterranean Fever",
+    "symptoms": [
+      "recurrent episodes of fever",
+      "painful abdominal attacks",
+      "chest pain",
+      "painful swollen joints",
+      "red leg rash"
+    ],
+    "severity": "moderate",
+    "category": "Genetic / Autoinflammatory",
+    "medicine": "Colchicine (lifelong), anakinra or canakinumab (for colchicine-resistant cases)",
+    "advice": "Strict adherence to daily colchicine to prevent AA amyloidosis and kidney failure",
+    "prevention_tips": "Genetic testing (MEFV gene), family screening",
+    "specialist": "Rheumatologist / Geneticist",
+    "age_group": "onset before age 20"
+  },
+  {
+    "disease": "Fetal Alcohol Spectrum Disorder (FASD)",
+    "symptoms": [
+      "smooth philtrum",
+      "thin upper lip",
+      "small eye openings",
+      "learning disabilities",
+      "poor impulse control",
+      "growth deficits",
+      "hyperactivity"
+    ],
+    "severity": "high",
+    "category": "Pediatric / Neurodevelopmental",
+    "medicine": "Stimulants (methylphenidate), behavioral therapy, educational support",
+    "advice": "Special education interventions, occupational and speech therapy, structured home environment",
+    "prevention_tips": "Complete avoidance of alcohol consumption during pregnancy",
+    "specialist": "Developmental Pediatrician",
+    "age_group": "children and adults"
+  },
+  {
+    "disease": "Friedreich's Ataxia",
+    "symptoms": [
+      "unsteady gait (ataxia)",
+      "difficulty walking",
+      "slurred speech",
+      "scoliosis",
+      "high foot arches",
+      "heart muscle disease (cardiomyopathy)",
+      "diabetes"
+    ],
+    "severity": "high",
+    "category": "Neurological / Genetic",
+    "medicine": "Omaveloxolone, antioxidants (coenzyme Q10, idebenone), cardiac meds",
+    "advice": "Physical therapy, speech therapy, regular cardiac monitoring with echocardiogram",
+    "prevention_tips": "Genetic counseling for carrier detection (FXN gene mutation)",
+    "specialist": "Neurologist / Cardiologist",
+    "age_group": "children and teens (5-15)"
+  },
+  {
+    "disease": "Gangrene (Gas)",
+    "symptoms": [
+      "severe sudden wound pain",
+      "skin turns pale then dark purple/black",
+      "foul-smelling discharge",
+      "crackling sound under skin (crepitus)",
+      "high fever",
+      "confusion"
+    ],
+    "severity": "high",
+    "category": "Infectious / Emergency",
+    "medicine": "IV high-dose penicillin plus clindamycin, IV fluids",
+    "advice": "Immediate surgical debridement or amputation, hyperbaric oxygen therapy",
+    "prevention_tips": "Thorough cleaning and debridement of deep traumatic wounds and compound fractures",
+    "specialist": "General Surgeon / Infectious Disease",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Geographic Tongue",
+    "symptoms": [
+      "map-like smooth red patches on tongue",
+      "white or light-colored borders",
+      "sensitivity to spicy or acidic foods",
+      "burning tongue sensation"
+    ],
+    "severity": "mild",
+    "category": "Oral / Dermatologic",
+    "medicine": "Topical corticosteroid rinse, OTC pain relievers, zinc supplements",
+    "advice": "Avoid hot, spicy, acidic, or salty foods; maintain oral hygiene",
+    "prevention_tips": "Avoid known oral food triggers, manage stress",
+    "specialist": "Dentist / Oral Pathologist",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Giant Cell Arteritis",
+    "symptoms": [
+      "severe temporal headache",
+      "scalp tenderness",
+      "jaw pain while chewing (claudication)",
+      "sudden vision loss",
+      "fever",
+      "weight loss"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Emergency",
+    "medicine": "High-dose oral or IV corticosteroids (prednisone/methylprednisolone), tocilizumab",
+    "advice": "Immediate steroid therapy before biopsy to prevent irreversible blindness",
+    "prevention_tips": "Prompt medical evaluation of new temporal headache in patients over 50",
+    "specialist": "Rheumatologist / Ophthalmologist",
+    "age_group": "adults over 50"
+  },
+  {
+    "disease": "Gilbert's Syndrome",
+    "symptoms": [
+      "mild jaundice during stress or fasting",
+      "fatigue",
+      "abdominal discomfort",
+      "mild weakness"
+    ],
+    "severity": "mild",
+    "category": "Hepatology / Genetic",
+    "medicine": "No specific medication required",
+    "advice": "Maintain well-balanced meals, avoid prolonged fasting, stay hydrated, manage stress",
+    "prevention_tips": "Reassurance that condition is benign and non-progressive",
+    "specialist": "Primary Care / Hepatologist",
+    "age_group": "teens and young adults"
+  },
+  {
+    "disease": "Glomerulonephritis (Post-Streptococcal)",
+    "symptoms": [
+      "dark cola-colored urine",
+      "swelling in face and eyes",
+      "decreased urination",
+      "high blood pressure",
+      "fatigue",
+      "joint pain"
+    ],
+    "severity": "high",
+    "category": "Renal / Pediatric",
+    "medicine": "Loop diuretics (furosemide), antihypertensives (ACE inhibitors), antibiotics (penicillin)",
+    "advice": "Sodium and fluid restriction, monitor blood pressure and kidney function",
+    "prevention_tips": "Prompt antibiotic treatment of streptococcal pharyngitis and impetigo",
+    "specialist": "Pediatric Nephrologist / Nephrologist",
+    "age_group": "children 5-12"
+  },
+  {
+    "disease": "Granuloma Annulare",
+    "symptoms": [
+      "ring-shaped raised bumps on skin",
+      "red or skin-colored skin lesions",
+      "mild itching",
+      "bumps on hands or feet"
+    ],
+    "severity": "mild",
+    "category": "Dermatologic",
+    "medicine": "Topical or intralesional corticosteroids, tacrolimus ointment, cryotherapy",
+    "advice": "Reassurance that lesions often resolve spontaneously within 1-2 years",
+    "prevention_tips": "Protect skin from minor bug bites and sun injuries",
+    "specialist": "Dermatologist",
+    "age_group": "children and young adults"
+  },
+  {
+    "disease": "Granulomatosis with Polyangiitis (Wegener's)",
+    "symptoms": [
+      "chronic sinus pain",
+      "bloody nasal discharge",
+      "coughing blood",
+      "shortness of breath",
+      "kidney failure",
+      "joint pain",
+      "hearing loss"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Autoimmune",
+    "medicine": "Rituximab, cyclophosphamide, high-dose corticosteroids, avacopan",
+    "advice": "Close monitoring of urine protein, chest X-rays, ANCA antibody titers",
+    "prevention_tips": "Pneumocystis jirovecii prophylaxis (trimethoprim-sulfamethoxazole) during therapy",
+    "specialist": "Rheumatologist / Nephrologist / Pulmonologist",
+    "age_group": "adults 40-65"
+  },
+  {
+    "disease": "Graves' Ophthalmopathy",
+    "symptoms": [
+      "bulging eyes (proptosis)",
+      "gritty feeling in eyes",
+      "double vision",
+      "eye redness",
+      "swollen eyelids",
+      "sensitivity to light"
+    ],
+    "severity": "moderate",
+    "category": "Endocrine / Ophthalmology",
+    "medicine": "Teprotumumab, IV glucocorticoids, selenium supplements, lubricating eye drops",
+    "advice": "Elevate head while sleeping, wear sunglasses, prism glasses for double vision",
+    "prevention_tips": "Quit smoking immediately (smoking dramatically worsens eye disease)",
+    "specialist": "Ophthalmologist / Endocrinologist",
+    "age_group": "adults with Graves' disease"
+  },
+  {
+    "disease": "Guillain-Barre Syndrome",
+    "symptoms": [
+      "ascending muscle weakness starting in legs",
+      "tingling in fingers and toes",
+      "loss of reflexes",
+      "difficulty walking",
+      "breathing difficulty",
+      "facial paralysis"
+    ],
+    "severity": "high",
+    "category": "Neurological / Emergency",
+    "medicine": "Intravenous Immunoglobulin (IVIG), Plasmapheresis (plasma exchange)",
+    "advice": "Immediate ICU monitoring for respiratory failure, physical and occupational therapy",
+    "prevention_tips": "Prompt hygiene and food safety to avoid Campylobacter jejuni enteritis",
+    "specialist": "Neurologist / Critical Care",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Hashimoto's Encephalopathy",
+    "symptoms": [
+      "confusion",
+      "seizures",
+      "memory loss",
+      "hallucinations",
+      "tremors",
+      "unsteady gait",
+      "speech difficulty"
+    ],
+    "severity": "high",
+    "category": "Neurological / Autoimmune",
+    "medicine": "High-dose corticosteroids (prednisone, methylprednisolone), IVIG",
+    "advice": "Hospitalization, EEG monitoring, thyroid peroxidase (TPO) antibody testing",
+    "prevention_tips": "Routine neurological evaluation for patients with autoimmune thyroiditis exhibiting confusion",
+    "specialist": "Neurologist / Endocrinologist",
+    "age_group": "adults (average age 40-50)"
+  },
+  {
+    "disease": "Heat Stroke",
+    "symptoms": [
+      "high body temperature above 104F (40C)",
+      "altered mental state",
+      "confusion",
+      "hot dry skin or heavy sweating",
+      "nausea",
+      "rapid breathing",
+      "racing heart rate"
+    ],
+    "severity": "high",
+    "category": "Environmental / Emergency",
+    "medicine": "IV normal saline, cold water immersion, antipyretics are NOT recommended",
+    "advice": "Immediate cold water immersion, fan evaporation cooling, emergency ICU transfer",
+    "prevention_tips": "Stay hydrated, avoid strenuous exercise during extreme heat, never leave anyone in parked car",
+    "specialist": "Emergency Medicine Physician",
+    "age_group": "athletes, elderly, young children"
+  },
+  {
+    "disease": "Henoch-Schonlein Purpura (IgA Vasculitis)",
+    "symptoms": [
+      "purple spots on legs and buttocks",
+      "joint pain and swelling",
+      "crampy abdominal pain",
+      "blood in urine",
+      "vomiting"
+    ],
+    "severity": "moderate",
+    "category": "Pediatric / Rheumatologic",
+    "medicine": "NSAIDs for joint pain, oral corticosteroids for severe abdominal pain",
+    "advice": "Bed rest, hydration, serial urinalysis monitoring for kidney involvement",
+    "prevention_tips": "Early medical checkup following upper respiratory tract infections",
+    "specialist": "Pediatric Rheumatologist / Nephrologist",
+    "age_group": "children 2-11"
+  },
+  {
+    "disease": "Hereditary Angioedema",
+    "symptoms": [
+      "recurrent swelling of hands, feet, face",
+      "severe abdominal cramps",
+      "vomiting",
+      "throat swelling",
+      "difficulty breathing"
+    ],
+    "severity": "high",
+    "category": "Genetic / Immunologic",
+    "medicine": "C1 esterase inhibitor concentrates (Berinert, Ruconest), icatibant, ecallantide",
+    "advice": "Carry emergency subcutaneous icatibant, medical alert bracelet",
+    "prevention_tips": "Avoid ACE inhibitors, long-term prophylaxis with lanadelumab or berotralstat",
+    "specialist": "Allergist / Immunologist",
+    "age_group": "onset in childhood/puberty"
+  },
+  {
+    "disease": "Hereditary Hemorrhagic Telangiectasia (Osler-Weber-Rendu)",
+    "symptoms": [
+      "recurrent nosebleeds",
+      "red skin spots on lips/tongue/fingers",
+      "iron deficiency anemia",
+      "shortness of breath",
+      "coughing blood",
+      "seizures"
+    ],
+    "severity": "moderate",
+    "category": "Genetic / Vascular",
+    "medicine": "Iron supplements, tranexamic acid, bevacizumab, nasal moisturizing gels",
+    "advice": "Screening for brain and lung arteriovenous malformations (AVMs), humidified air",
+    "prevention_tips": "Genetic testing (ENG, ACVRL1 genes), prophylactic antibiotic coverage prior to dental work if lung AVM present",
+    "specialist": "Hematologist / Otolaryngologist",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Hirschsprung Disease",
+    "symptoms": [
+      "failure to pass meconium within 48 hours",
+      "swollen abdomen",
+      "vomiting green fluid",
+      "severe constipation",
+      "diarrhea with gas"
+    ],
+    "severity": "high",
+    "category": "Pediatric / Gastrointestinal",
+    "medicine": "IV fluids, antibiotics for enterocolitis prophylaxis",
+    "advice": "Rectal irrigations, surgical pull-through procedure to remove aganglionic bowel",
+    "prevention_tips": "Early evaluation of delayed meconium passage in newborns",
+    "specialist": "Pediatric Surgeon / Gastroenterologist",
+    "age_group": "newborns and infants"
+  },
+  {
+    "disease": "Hyperaldosteronism (Conn's Syndrome)",
+    "symptoms": [
+      "high blood pressure resistant to medication",
+      "low potassium",
+      "muscle weakness",
+      "cramps",
+      "excessive thirst",
+      "frequent urination"
+    ],
+    "severity": "moderate",
+    "category": "Endocrine",
+    "medicine": "Spironolactone, eplerenone, antihypertensives",
+    "advice": "Adrenal CT scan, adrenal vein sampling, surgical adrenalectomy for unilateral adenoma",
+    "prevention_tips": "Screening hypertensive patients with hypokalemia or resistant hypertension",
+    "specialist": "Endocrinologist / Nephrologist",
+    "age_group": "adults 30-50"
+  },
+  {
+    "disease": "Hyperemesis Gravidarum",
+    "symptoms": [
+      "severe persistent nausea during pregnancy",
+      "intractable vomiting",
+      "weight loss over 5%",
+      "dehydration",
+      "dizziness",
+      "ketones in urine"
+    ],
+    "severity": "high",
+    "category": "Obstetric",
+    "medicine": "IV fluids with thiamine (B1), ondansetron, metoclopramide, pyridoxine/doxylamine",
+    "advice": "Hospitalization, enteral or parenteral nutrition if oral intake impossible",
+    "prevention_tips": "Start prenatal vitamins before conception, ginger supplements, small dry frequent meals",
+    "specialist": "Obstetrician",
+    "age_group": "pregnant women"
+  },
+  {
+    "disease": "Hypertrophic Cardiomyopathy",
+    "symptoms": [
+      "shortness of breath during exercise",
+      "chest pain",
+      "fainting (syncope)",
+      "heart palpitations",
+      "heart murmur",
+      "sudden cardiac arrest"
+    ],
+    "severity": "high",
+    "category": "Cardiovascular / Genetic",
+    "medicine": "Beta-blockers (metoprolol), non-dihydropyridine calcium channel blockers (verapamil), mavacamten",
+    "advice": "Implantable Cardioverter-Defibrillator (ICD) for high risk, avoid strenuous competitive sports",
+    "prevention_tips": "Genetic screening of first-degree relatives, periodic echocardiograms",
+    "specialist": "Cardiologist",
+    "age_group": "teens and young athletes"
+  },
+  {
+    "disease": "Idiopathic Pulmonary Fibrosis",
+    "symptoms": [
+      "progressive dry cough",
+      "shortness of breath on exertion",
+      "fatigue",
+      "clubbing of fingers",
+      "unexplained weight loss"
+    ],
+    "severity": "high",
+    "category": "Pulmonary",
+    "medicine": "Pirfenidone, nintedanib",
+    "advice": "Supplemental oxygen therapy, pulmonary rehabilitation, lung transplant evaluation",
+    "prevention_tips": "Avoid smoking, protect lungs from wood dust and silica exposure",
+    "specialist": "Pulmonologist",
+    "age_group": "adults over 65"
+  },
+  {
+    "disease": "IgA Nephropathy (Berger's Disease)",
+    "symptoms": [
+      "recurrent blood in urine following upper respiratory infection",
+      "foamy urine",
+      "flank pain",
+      "high blood pressure",
+      "swelling in legs"
+    ],
+    "severity": "moderate",
+    "category": "Nephrologic",
+    "medicine": "ACE inhibitors or ARBs, SGLT2 inhibitors, sparsentan, corticosteroids",
+    "advice": "Low-sodium diet, strict blood pressure control (<120/80 mmHg), regular kidney function checks",
+    "prevention_tips": "Regular urine tests for individuals with microscopic hematuria",
+    "specialist": "Nephrologist",
+    "age_group": "young adults (15-35)"
+  },
+  {
+    "disease": "Inclusion Body Myositis",
+    "symptoms": [
+      "gradual quadriceps muscle weakness",
+      "frequent tripping and falling",
+      "weak finger grip",
+      "difficulty opening jars",
+      "swallowing difficulty (dysphagia)"
+    ],
+    "severity": "moderate",
+    "category": "Neurological / Rheumatologic",
+    "medicine": "Symptomatic treatment, pain management, physical therapy",
+    "advice": "Fall prevention, occupational therapy adaptive devices, speech therapy for swallowing",
+    "prevention_tips": "Early specialized neuromuscular evaluation for asymmetrical quadriceps weakness",
+    "specialist": "Neurologist / Neuromuscular Specialist",
+    "age_group": "adults over 50"
+  },
+  {
+    "disease": "Intussusception",
+    "symptoms": [
+      "sudden severe intermittent abdominal pain",
+      "currant jelly stool (blood and mucus)",
+      "infant pulling knees to chest",
+      "vomiting green bile",
+      "lethargy"
+    ],
+    "severity": "high",
+    "category": "Pediatric / Emergency",
+    "medicine": "IV fluids, IV antibiotics",
+    "advice": "Emergency air or contrast enema reduction, surgical reduction if enema unsuccessful",
+    "prevention_tips": "Early medical evaluation for infants presenting with severe episodic crying and legs flexed",
+    "specialist": "Pediatric Surgeon / Emergency Physician",
+    "age_group": "infants 6-36 months"
+  },
+  {
+    "disease": "Juvenile Idiopathic Arthritis",
+    "symptoms": [
+      "persistent joint pain",
+      "swelling in knees/ankles/wrists",
+      "morning joint stiffness",
+      "limping",
+      "fever",
+      "rash"
+    ],
+    "severity": "moderate",
+    "category": "Pediatric / Rheumatologic",
+    "medicine": "NSAIDs (ibuprofen, naproxen), methotrexate, TNF inhibitors (etanercept, adalimumab)",
+    "advice": "Regular eye screening for uveitis, physical therapy, encourage normal physical activity",
+    "prevention_tips": "Early rheumatology consultation to prevent permanent joint damage",
+    "specialist": "Pediatric Rheumatologist",
+    "age_group": "children under 16"
+  },
+  {
+    "disease": "Kaposi Sarcoma",
+    "symptoms": [
+      "painless purple or brown skin spots",
+      "lesions on mucous membranes",
+      "swelling in legs",
+      "shortness of breath",
+      "bloody stool"
+    ],
+    "severity": "high",
+    "category": "Oncologic / Dermatologic",
+    "medicine": "Antiretroviral therapy (ART for HIV), liposomal doxorubicin, paclitaxel",
+    "advice": "Optimize immune system function, routine skin and mucosal surveillance",
+    "prevention_tips": "Prevention and effective antiretroviral treatment of HIV infection",
+    "specialist": "Oncologist / Infectious Disease",
+    "age_group": "immunocompromised / HIV patients"
+  },
+  {
+    "disease": "Keratoconus",
+    "symptoms": [
+      "progressive blurred vision",
+      "increased sensitivity to light and glare",
+      "frequent prescription changes",
+      "double vision in one eye",
+      "halos around lights"
+    ],
+    "severity": "mild",
+    "category": "Ophthalmology",
+    "medicine": "Rigid gas permeable contact lenses, scleral lenses, riboflavin (for corneal cross-linking)",
+    "advice": "Corneal collagen cross-linking (CXL) to stop progression, avoid rubbing eyes",
+    "prevention_tips": "Strictly refrain from eye rubbing, treat ocular allergies promptly",
+    "specialist": "Ophthalmologist / Cornea Specialist",
+    "age_group": "teens and young adults"
+  },
+  {
+    "disease": "Krabbe Disease",
+    "symptoms": [
+      "extreme irritability in infants",
+      "muscle stiffness",
+      "loss of developmental milestones",
+      "seizures",
+      "blindness",
+      "deafness",
+      "feeding difficulties"
+    ],
+    "severity": "high",
+    "category": "Genetic / Pediatric",
+    "medicine": "Anticonvulsants, muscle relaxants (baclofen), hematopoietic stem cell transplantation",
+    "advice": "Palliative comfort care, physical therapy, early stem cell transplant before symptom onset",
+    "prevention_tips": "Newborn screening and preconception genetic counseling (GALC gene)",
+    "specialist": "Pediatric Neurologist / Geneticist",
+    "age_group": "infants"
+  },
+  {
+    "disease": "Kuru",
+    "symptoms": [
+      "unsteady walking (ataxia)",
+      "involuntary tremors",
+      "slurred speech",
+      "uncontrolled laughter",
+      "dementia",
+      "inability to stand"
+    ],
+    "severity": "high",
+    "category": "Prion / Neurological",
+    "medicine": "Palliative supportive care",
+    "advice": "Symptom management, supportive end-of-life care",
+    "prevention_tips": "Strict prohibition of endocannibalistic funerary rituals",
+    "specialist": "Neurologist",
+    "age_group": "historical / endemic areas"
+  },
+  {
+    "disease": "Lambert-Eaton Myasthenic Syndrome (LEMS)",
+    "symptoms": [
+      "muscle weakness in legs improving with exercise",
+      "dry mouth",
+      "impotence",
+      "drooping eyelids",
+      "absent deep tendon reflexes"
+    ],
+    "severity": "high",
+    "category": "Neurological / Paraneoplastic",
+    "medicine": "Amifampridine (3,4-DAP), pyridostigmine, IVIG, immunosuppressants",
+    "advice": "Screen extensively for small cell lung cancer (SCLC) with CT/PET imaging",
+    "prevention_tips": "Smoking cessation to prevent underlying small cell lung carcinoma",
+    "specialist": "Neurologist / Oncologist",
+    "age_group": "older adults"
+  },
+  {
+    "disease": "Legg-Calve-Perthes Disease",
+    "symptoms": [
+      "painless limping in child",
+      "hip pain or stiffness",
+      "pain radiating to knee or thigh",
+      "limited hip range of motion",
+      "shortened leg"
+    ],
+    "severity": "moderate",
+    "category": "Pediatric / Orthopedic",
+    "medicine": "NSAIDs for pain relief",
+    "advice": "Activity restriction, physical therapy, hip containment bracing or osteotomy surgery",
+    "prevention_tips": "Early orthopedic evaluation for limp or persistent hip pain in young boys",
+    "specialist": "Pediatric Orthopedist",
+    "age_group": "children 4-10 (boys)"
+  },
+  {
+    "disease": "Lichen Sclerosus",
+    "symptoms": [
+      "white patchy skin on vulva or anus",
+      "intense itching",
+      "painful sexual intercourse",
+      "easy skin tearing and bleeding",
+      "painful urination"
+    ],
+    "severity": "moderate",
+    "category": "Dermatologic / Gynecologic",
+    "medicine": "Ultra-potent topical corticosteroids (clobetasol propionate), calcineurin inhibitors",
+    "advice": "Avoid tight clothing and scented soaps, long-term surveillance for squamous cell carcinoma",
+    "prevention_tips": "Gentle skin care, routine annual vulvar examinations",
+    "specialist": "Dermatologist / Gynecologist",
+    "age_group": "postmenopausal women and young girls"
+  },
+  {
+    "disease": "Ludwig's Angina",
+    "symptoms": [
+      "swelling under tongue and neck",
+      "difficulty breathing",
+      "difficulty swallowing",
+      "drooling",
+      "fever",
+      "neck pain",
+      "protruding tongue"
+    ],
+    "severity": "high",
+    "category": "ENT / Emergency",
+    "medicine": "IV broad-spectrum antibiotics (ampicillin-sulbactam, clindamycin, vancomycin)",
+    "advice": "Immediate airway securing (awake fiberoptic intubation or tracheostomy), surgical incision and drainage",
+    "prevention_tips": "Prompt treatment of lower molar tooth infections and dental abscesses",
+    "specialist": "ENT Specialist / Maxillofacial Surgeon",
+    "age_group": "adults"
+  },
+  {
+    "disease": "Lymphangioleiomyomatosis (LAM)",
+    "symptoms": [
+      "shortness of breath on exertion",
+      "spontaneous collapsed lung (pneumothorax)",
+      "coughing up blood",
+      "chest pain",
+      "chylous pleural effusion"
+    ],
+    "severity": "high",
+    "category": "Pulmonary / Genetic",
+    "medicine": "Sirolimus (rapamycin)",
+    "advice": "Avoid estrogen-containing medications, bronchodilators, lung transplant evaluation",
+    "prevention_tips": "Screening chest CT for women with Tuberous Sclerosis Complex",
+    "specialist": "Pulmonologist",
+    "age_group": "women of childbearing age (20-40)"
+  },
+  {
+    "disease": "Maple Syrup Urine Disease",
+    "symptoms": [
+      "sweet maple syrup smell in urine",
+      "poor feeding in newborn",
+      "vomiting",
+      "lethargy",
+      "muscle hypertonia",
+      "developmental delay",
+      "seizures"
+    ],
+    "severity": "high",
+    "category": "Genetic / Metabolic",
+    "medicine": "BCAA-free formula, IV glucose/lipids during acute metabolic crisis, thiamine",
+    "advice": "Strict dietary restriction of branched-chain amino acids (leucine, isoleucine, valine), liver transplantation",
+    "prevention_tips": "Newborn screening program, genetic carrier counseling (BCKDHA/BCKDHB genes)",
+    "specialist": "Pediatric Metabolic Specialist",
+    "age_group": "infants"
+  },
+  {
+    "disease": "Marfan Syndrome",
+    "symptoms": [
+      "tall thin build",
+      "disproportionately long arms and legs",
+      "sunken or chest deformity",
+      "flexible joints",
+      "nearsightedness",
+      "aortic dilatation"
+    ],
+    "severity": "high",
+    "category": "Genetic / Connective Tissue",
+    "medicine": "Beta-blockers (atenolol), ARBs (losartan) to slow aortic root expansion",
+    "advice": "Annual echocardiograms, avoid contact sports and isometric lifting, elective aortic repair",
+    "prevention_tips": "Genetic counseling and familial screening (FBN1 gene mutation)",
+    "specialist": "Cardiologist / Geneticist",
+    "age_group": "all ages"
+  },
+  {
+    "disease": "Mastocytosis",
+    "symptoms": [
+      "reddish brown skin spots (urticaria pigmentosa)",
+      "flushing",
+      "hives",
+      "abdominal cramps",
+      "diarrhea",
+      "anaphylaxis",
+      "bone pain"
+    ],
+    "severity": "moderate",
+    "category": "Hematologic / Immunologic",
+    "medicine": "H1 and H2 antihistamines, cromolyn sodium, midostaurin, avapritinib, epinephrine auto-injector",
+    "advice": "Carry EpiPen, avoid known triggers (hot baths, alcohol, NSAIDs, insect venom)",
+    "prevention_tips": "Identify and document individual mast cell degranulation triggers",
+    "specialist": "Allergist / Hematologist",
+    "age_group": "children and adults"
+  },
+  {
+    "disease": "Meckel's Diverticulum",
+    "symptoms": [
+      "painless rectal bleeding",
+      "brick-red or dark stool",
+      "abdominal cramps",
+      "bowel obstruction",
+      "navel tenderness"
+    ],
+    "severity": "moderate",
+    "category": "Pediatric / Gastrointestinal",
+    "medicine": "IV fluids, blood transfusion for severe anemia",
+    "advice": "Diagnostic Meckel scan (Technetium-99m), laparoscopic surgical resection",
+    "prevention_tips": "Early evaluation for unexplained painless lower GI bleeding in children",
+    "specialist": "Pediatric Surgeon / Gastroenterologist",
+    "age_group": "children under 2"
+  },
+  {
+    "disease": "Mesenteric Ischemia (Acute)",
+    "symptoms": [
+      "severe sudden abdominal pain out of proportion to exam",
+      "nausea",
+      "vomiting",
+      "bloody stool",
+      "diarrhea",
+      "confusion"
+    ],
+    "severity": "high",
+    "category": "Vascular / Emergency",
+    "medicine": "Broad-spectrum IV antibiotics, IV heparin anticoagulation, papaverine infusion",
+    "advice": "Emergency CT angiography, endovascular revascularization or surgical embolectomy/resection",
+    "prevention_tips": "Control atrial fibrillation, vascular disease, and hypercoagulable states",
+    "specialist": "Vascular Surgeon / General Surgeon",
+    "age_group": "older adults"
+  },
+  {
+    "disease": "Microscopic Polyangiitis",
+    "symptoms": [
+      "rapidly progressive kidney failure",
+      "coughing blood",
+      "fever",
+      "weight loss",
+      "purpura skin rash",
+      "joint pain",
+      "numbness"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Autoimmune",
+    "medicine": "Rituximab, cyclophosphamide, corticosteroids, avacopan",
+    "advice": "Monitor MPO-ANCA titers, serial renal function and urinalysis, plasma exchange if severe",
+    "prevention_tips": "Early nephrology evaluation for unexplained hematuria and protein in urine",
+    "specialist": "Nephrologist / Rheumatologist",
+    "age_group": "adults 50-70"
+  },
+  {
+    "disease": "Mucormycosis (Black Fungus)",
+    "symptoms": [
+      "facial swelling on one side",
+      "black lesions on nasal bridge or palate",
+      "fever",
+      "headache",
+      "nasal congestion",
+      "eye pain",
+      "coughing blood"
+    ],
+    "severity": "high",
+    "category": "Fungal / Emergency",
+    "medicine": "IV Liposomal Amphotericin B, posaconazole, isavuconazole",
+    "advice": "Urgent surgical debridement of necrotic tissue, control underlying hyperglycemia",
+    "prevention_tips": "Strict blood sugar control in diabetics, avoid dusty construction environments while immunocompromised",
+    "specialist": "Infectious Disease Specialist / ENT Surgeon",
+    "age_group": "diabetics and immunocompromised patients"
+  },
+  {
+    "disease": "Myelofibrosis",
+    "symptoms": [
+      "severe fatigue",
+      "fullness or pain in left upper abdomen",
+      "enlarged spleen",
+      "easy bruising",
+      "night sweats",
+      "fever",
+      "bone pain"
+    ],
+    "severity": "high",
+    "category": "Hematologic / Oncologic",
+    "medicine": "Ruxolitinib, fedratinib, hydroxyurea, blood transfusions, androgen therapy",
+    "advice": "Stem cell transplant evaluation, regular complete blood counts, spleen monitoring",
+    "prevention_tips": "Routine blood test monitoring for patients with essential thrombocythemia or polycythemia vera",
+    "specialist": "Hematologist / Oncologist",
+    "age_group": "adults over 60"
+  },
+  {
+    "disease": "Pemphigus Vulgaris",
+    "symptoms": [
+      "painful mouth sores",
+      "fragile skin blisters that pop easily",
+      "raw skin erosions",
+      "painful swallowing",
+      "peeling skin"
+    ],
+    "severity": "high",
+    "category": "Dermatologic / Autoimmune",
+    "medicine": "Rituximab, systemic corticosteroids (prednisone), azathioprine, mycophenolate mofetil",
+    "advice": "Gentle skin and oral wound care, avoid hard or acidic foods, infection prevention",
+    "prevention_tips": "Early diagnosis and immunomodulatory therapy to prevent extensive skin loss",
+    "specialist": "Dermatologist",
+    "age_group": "adults 40-60"
+  },
+  {
+    "disease": "Peyronie's Disease",
+    "symptoms": [
+      "painful penile curvature during erection",
+      "hard fibrous plaque underneath penile skin",
+      "erectile dysfunction",
+      "shortening of penis"
+    ],
+    "severity": "mild",
+    "category": "Urologic",
+    "medicine": "Collagenase clostridium histolyticum (Xiaflex) injections, pentoxifylline, oral Vitamin E",
+    "advice": "Penile traction therapy, surgical plaque excision or plication if severe",
+    "prevention_tips": "Avoid penile micro-trauma during sexual intercourse",
+    "specialist": "Urologist",
+    "age_group": "men 40-70"
+  },
+  {
+    "disease": "Pneumocystis Jirovecii Pneumonia (PCP)",
+    "symptoms": [
+      "progressive shortness of breath",
+      "dry non-productive cough",
+      "fever",
+      "chest tightness",
+      "fatigue",
+      "night sweats"
+    ],
+    "severity": "high",
+    "category": "Fungal / Pulmonary",
+    "medicine": "Trimethoprim-sulfamethoxazole (TMP-SMX), adjunctive corticosteroids, atovaquone",
+    "advice": "Supplemental oxygen, arterial blood gas evaluation, HIV antiviral therapy",
+    "prevention_tips": "Prophylactic TMP-SMX for patients with CD4 count below 200 cells/uL",
+    "specialist": "Pulmonologist / Infectious Disease",
+    "age_group": "immunocompromised / HIV patients"
+  },
+  {
+    "disease": "Polyarteritis Nodosa",
+    "symptoms": [
+      "severe leg pain",
+      "purplish lacy skin rash (livedo reticularis)",
+      "painful skin nodules",
+      "high blood pressure",
+      "abdominal pain",
+      "kidney damage"
+    ],
+    "severity": "high",
+    "category": "Rheumatologic / Vasculitis",
+    "medicine": "Corticosteroids, cyclophosphamide, antiviral therapy (if Hepatitis B positive)",
+    "advice": "Check Hepatitis B status, monitor renal function and blood pressure",
+    "prevention_tips": "Hepatitis B vaccination and prompt treatment of viral hepatitis",
+    "specialist": "Rheumatologist / Nephrologist",
+    "age_group": "adults 40-60"
+  },
+  {
+    "disease": "Progressive Multifocal Leukoencephalopathy (PML)",
+    "symptoms": [
+      "clumsiness",
+      "progressive weakness on one side of body",
+      "vision loss",
+      "speech impairment",
+      "memory loss",
+      "confusion"
+    ],
+    "severity": "high",
+    "category": "Neurological / Viral",
+    "medicine": "Reconstitution of immune system (ART for HIV, stop immunosuppressive drug like natalizumab), pembrolizumab",
+    "advice": "Plasma exchange to remove offending biologic drugs, supportive neuro-rehabilitation",
+    "prevention_tips": "Regular Anti-JCV antibody testing before and during natalizumab therapy for MS",
+    "specialist": "Neurologist / Infectious Disease",
+    "age_group": "severely immunocompromised adults"
+  },
+  {
+    "disease": "Raynaud's Phenomenon",
+    "symptoms": [
+      "fingers turn white then blue then red in cold",
+      "numbness",
+      "prickling sensation in digits",
+      "cold hands and feet",
+      "throbbing pain upon warming"
+    ],
+    "severity": "mild",
+    "category": "Vascular / Rheumatologic",
+    "medicine": "Dihydropyridine calcium channel blockers (nifedipine, amlodipine), topical nitroglycerin",
+    "advice": "Wear warm gloves/socks, keep core body warm, avoid caffeine and emotional stress",
+    "prevention_tips": "Stop smoking, avoid vasoconstrictive medications (e.g. decongestants)",
+    "specialist": "Rheumatologist / Primary Care",
+    "age_group": "young women (15-30)"
+  },
+  {
+    "disease": "Restless Legs Syndrome",
+    "symptoms": [
+      "irresistible urge to move legs",
+      "uncomfortable creeping crawling leg sensations",
+      "symptoms worse during rest/evening",
+      "temporary relief with movement"
+    ],
+    "severity": "mild",
+    "category": "Neurological",
+    "medicine": "Iron supplements (if ferritin low), pramipexole, ropinirole, gabapentin enacarbil, pregabalin",
+    "advice": "Regular moderate exercise, warm leg baths, avoid alcohol, nicotine, and caffeine before bed",
+    "prevention_tips": "Check and maintain adequate serum ferritin levels (>50 ng/mL)",
+    "specialist": "Neurologist / Sleep Specialist",
+    "age_group": "middle-aged and older adults"
+  },
+  {
+    "disease": "Retinoblastoma",
+    "symptoms": [
+      "white glow in pupil in photos (leukocoria)",
+      "crossed eyes (strabismus)",
+      "eye redness",
+      "swelling",
+      "poor vision"
+    ],
+    "severity": "high",
+    "category": "Pediatric / Oncologic",
+    "medicine": "Intra-arterial chemotherapy (melphalan), systemic chemotherapy, cryotherapy, laser therapy",
+    "advice": "Urgent ophthalmology referral, globe-sparing treatment evaluation",
+    "prevention_tips": "Prompt investigation of abnormal red-reflex in infant photos, RB1 gene testing",
+    "specialist": "Ocular Oncologist / Pediatric Ophthalmologist",
+    "age_group": "infants and young children under 5"
+  },
+  {
+    "disease": "Stiff-Person Syndrome",
+    "symptoms": [
+      "progressive muscle stiffness in trunk and limbs",
+      "painful muscle spasms triggered by noise or stress",
+      "hunched posture",
+      "difficulty walking",
+      "anxiety"
+    ],
+    "severity": "high",
+    "category": "Neurological / Autoimmune",
+    "medicine": "High-dose diazepam, baclofen, IVIG, plasmapheresis, rituximab",
+    "advice": "Physical therapy, trigger reduction, monitor anti-GAD antibody levels",
+    "prevention_tips": "Routine neurological follow-up for patients with Type 1 diabetes and thyroiditis showing muscle stiffness",
+    "specialist": "Neurologist",
+    "age_group": "adults 30-60"
+  },
+  {
+    "disease": "Takayasu Arteritis",
+    "symptoms": [
+      "absent or weak pulse in arms",
+      "different blood pressure between arms",
+      "dizziness",
+      "fainting",
+      "arm claudication pain",
+      "hypertension"
+    ],
+    "severity": "high",
+    "category": "Vascular / Rheumatologic",
+    "medicine": "Corticosteroids (prednisone), methotrexate, tocilizumab, infliximab",
+    "advice": "Vascular imaging surveillance, surgical or endovascular angioplasty for critical stenosis",
+    "prevention_tips": "Early evaluation of pulselessness or limb blood pressure discrepancy in young women",
+    "specialist": "Rheumatologist / Vascular Surgeon",
+    "age_group": "young women under 40"
+  },
+  {
+    "disease": "Tuberous Sclerosis Complex",
+    "symptoms": [
+      "facial skin spots (angiofibromas)",
+      "ash-leaf pale skin spots",
+      "seizures",
+      "developmental delay",
+      "kidney cysts",
+      "benign brain tumors (subependymal nodules)"
+    ],
+    "severity": "high",
+    "category": "Genetic / Neurological",
+    "medicine": "mTOR inhibitors (everolimus, sirolimus), vigabatrin (for infantile spasms), anti-seizure meds",
+    "advice": "Multidisciplinary surveillance (MRI brain, CT chest, renal ultrasound), epilepsy monitoring",
+    "prevention_tips": "Genetic carrier testing (TSC1 and TSC2 genes)",
+    "specialist": "Pediatric Neurologist / Geneticist",
+    "age_group": "children and adults"
+  },
+  {
+    "disease": "Usher Syndrome",
+    "symptoms": [
+      "congenital hearing loss",
+      "night blindness (retinitis pigmentosa)",
+      "gradual loss of peripheral vision",
+      "balance problems"
+    ],
+    "severity": "moderate",
+    "category": "Genetic / ENT / Ophthalmology",
+    "medicine": "Vitamin A palmitate supplements, low-vision aids, hearing aids",
+    "advice": "Cochlear implants, orientation and mobility training, sign language",
+    "prevention_tips": "Genetic counseling and carrier screening for MYO7A, USH2A genes",
+    "specialist": "Ophthalmologist / Otolaryngologist / Geneticist",
+    "age_group": "children and young adults"
+  },
+  {
+    "disease": "Von Hippel-Lindau Disease",
+    "symptoms": [
+      "headache",
+      "unsteady walking",
+      "dizziness",
+      "high blood pressure",
+      "vision changes",
+      "flank pain",
+      "blood in urine"
+    ],
+    "severity": "high",
+    "category": "Genetic / Oncologic",
+    "medicine": "Belzutifan (HIF-2-alpha inhibitor), targeted therapies",
+    "advice": "Lifetime surveillance (annual brain/spine MRI, abdominal ultrasound, eye exam)",
+    "prevention_tips": "Genetic screening for VHL gene mutations in family members",
+    "specialist": "Medical Oncologist / Geneticist / Neurosurgeon",
+    "age_group": "young adults"
+  },
+  {
+    "disease": "Wiskott-Aldrich Syndrome",
+    "symptoms": [
+      "eczema",
+      "recurrent bacterial infections",
+      "easy bruising",
+      "bloody diarrhea",
+      "low blood platelet count (thrombocytopenia)",
+      "nosebleeds"
+    ],
+    "severity": "high",
+    "category": "Genetic / Immunologic",
+    "medicine": "Prophylactic antibiotics, IVIG, eltrombopag, stem cell transplantation",
+    "advice": "Hematopoietic stem cell transplant evaluation, avoid aspirin and NSAIDs",
+    "prevention_tips": "Genetic counseling (WAS gene mutation), prenatal diagnosis",
+    "specialist": "Pediatric Immunologist / Hematologist",
+    "age_group": "young boys"
+  },
+  {
+    "disease": "X-Linked Agammaglobulinemia",
+    "symptoms": [
+      "recurrent severe ear infections",
+      "recurrent pneumonia",
+      "sinusitis",
+      "chronic diarrhea",
+      "absent tonsils and lymph nodes"
+    ],
+    "severity": "high",
+    "category": "Genetic / Immunologic",
+    "medicine": "Intravenous or subcutaneous immunoglobulin (IVIG/SCIG), prophylactic antibiotics",
+    "advice": "Lifelong immunoglobulin replacement therapy, prompt treatment of infections",
+    "prevention_tips": "Preconception genetic testing for BTK gene mutations",
+    "specialist": "Immunologist",
+    "age_group": "infants after 6 months"
+  },
+  {
+    "disease": "Zollinger-Ellison Syndrome",
+    "symptoms": [
+      "severe burning abdominal pain",
+      "recurrent peptic ulcers",
+      "severe heartburn",
+      "diarrhea",
+      "nausea",
+      "vomiting blood",
+      "weight loss"
+    ],
+    "severity": "high",
+    "category": "Endocrine / Gastrointestinal",
+    "medicine": "High-dose proton pump inhibitors (omeprazole), somatostatin analogs (octreotide)",
+    "advice": "Gastrinoma resection surgery, screen for Multiple Endocrine Neoplasia Type 1 (MEN1)",
+    "prevention_tips": "Screening for gastrin levels in patients with recurrent atypical peptic ulcers",
+    "specialist": "Gastroenterologist / Endocrinologist",
+    "age_group": "adults 30-50"
   }
 ]

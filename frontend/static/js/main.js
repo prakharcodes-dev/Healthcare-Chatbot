@@ -33,6 +33,7 @@ async function init() {
 }
 
 // Event Listeners Setup
+// Event Listeners Setup
 function setupEventListeners() {
     // Menu items
     document.querySelectorAll('.menu-item').forEach(item => {
@@ -59,6 +60,7 @@ function setupEventListeners() {
 
     // Panel actions
     document.getElementById('addReminderBtn').addEventListener('click', showAddReminderModal);
+    document.getElementById('testReminderBtn')?.addEventListener('click', testReminderAlert);
     document.getElementById('viewHistoryBtn').addEventListener('click', viewHistory);
     document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
 }
@@ -166,7 +168,7 @@ async function sendMessage() {
     }
 }
 
-// Format Matches in structured card components
+// Format Matches in structured card components with clear title headers
 function formatMatchesResponse(matches) {
     let html = `<div class="matches-response">`;
     html += `<p class="match-header-text"><i class="fa-solid fa-list-check"></i> Found <strong>${matches.length} possible conditions</strong> based on your symptoms:</p>`;
@@ -179,10 +181,12 @@ function formatMatchesResponse(matches) {
             ? 'badge-severity-moderate' 
             : 'badge-severity-mild';
             
+        const symptomsStr = Array.isArray(match.symptoms) ? match.symptoms.join(', ') : (match.symptoms || 'N/A');
+
         html += `
             <div class="disease-card">
                 <div class="disease-card-header">
-                    <span class="disease-name">${match.disease}</span>
+                    <span class="disease-name"><strong><i class="fa-solid fa-disease"></i> Disease Name:</strong> ${match.disease}</span>
                     <div class="disease-badge-row">
                         <span class="badge ${severityClass}">${match.severity} severity</span>
                         <span class="badge badge-match">${match.match_percentage}% match</span>
@@ -190,13 +194,16 @@ function formatMatchesResponse(matches) {
                 </div>
                 
                 <div class="disease-detail">
-                    <strong><i class="fa-solid fa-stethoscope"></i> Recommended Specialist:</strong> ${match.specialist}
+                    <strong><i class="fa-solid fa-head-side-cough"></i> Symptoms:</strong> ${symptomsStr}
                 </div>
                 <div class="disease-detail">
-                    <strong><i class="fa-solid fa-capsules"></i> Care & Medicines:</strong> ${match.medicine}
+                    <strong><i class="fa-solid fa-triangle-exclamation"></i> Caution / Severity:</strong> <span style="text-transform:capitalize;">${match.severity} Severity</span> — ${match.advice}
                 </div>
                 <div class="disease-detail">
-                    <strong><i class="fa-solid fa-clipboard-question"></i> Health Advice:</strong> ${match.advice}
+                    <strong><i class="fa-solid fa-capsules"></i> Treatment & Care:</strong> ${match.medicine}
+                </div>
+                <div class="disease-detail">
+                    <strong><i class="fa-solid fa-user-doctor"></i> Recommended Specialist:</strong> ${match.specialist}
                 </div>
                 <div class="disease-detail">
                     <strong><i class="fa-solid fa-shield-halved"></i> Prevention:</strong> ${match.prevention_tips}
@@ -673,18 +680,81 @@ window.deleteReminder = function(reminderId) {
     }
 };
 
-// Start scanning local reminders
-function startReminderChecker() {
-    // Check every 30 seconds
-    setInterval(checkActiveLocalReminders, 30000);
+// Play Web Audio API synthesized medical alert chime
+function playReminderSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+
+        // Note 1: E5 (659.25 Hz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.3);
+
+        // Note 2: A5 (880 Hz)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.3);
+        gain2.gain.setValueAtTime(0.4, now + 0.3);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.3);
+        osc2.stop(now + 0.7);
+    } catch (e) {
+        console.warn('Audio context alert chime not supported or blocked:', e);
+    }
 }
 
-// Alert browser notification for schedule times matches
+// Trigger comprehensive audio sound, desktop notification, and in-chat banner
+function triggerReminderAlert(medName, dosage) {
+    playReminderSound();
+    
+    if ("Notification" in window && Notification.permission === 'granted') {
+        new Notification(`💊 Medication Time: ${medName}`, {
+            body: `Take ${dosage}. Don't skip your dose!`,
+            icon: "🩺",
+            requireInteraction: true
+        });
+    }
+
+    addMessage('bot', `
+        <div style="background-color: var(--primary-light); border: 2px solid var(--primary); padding: 16px; border-radius: var(--radius-md); text-align: center;">
+            <h4 style="color: var(--primary-hover); font-size: 15px; margin-bottom: 6px;">
+                <i class="fa-solid fa-bell-ring fa-bounce"></i> 💊 MEDICATION REMINDER ALERT
+            </h4>
+            <p style="font-size: 14px; font-weight: 600; color: var(--text-main);">It is time to take your dose of <strong>${medName}</strong> (${dosage}).</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Scheduled reminder active • Stay on track with your prescription.</p>
+        </div>
+    `);
+}
+
+function testReminderAlert() {
+    triggerReminderAlert("Amoxicillin (Test Dose)", "500mg - 1 tablet");
+}
+
+// Start scanning local reminders every 10 seconds
+function startReminderChecker() {
+    setInterval(checkActiveLocalReminders, 10000);
+}
+
+// Alert browser notification and sound chime for scheduled time matches
 function checkActiveLocalReminders() {
     const now = new Date();
     const currentTime = now.toTimeString().slice(0, 5); // "HH:MM"
     
     state.activeReminders.forEach(reminder => {
+        if (!reminder.schedule_times) return;
         reminder.schedule_times.forEach(scheduledTime => {
             if (scheduledTime === currentTime) {
                 const storageKey = `last_notified_${reminder.id}_${scheduledTime}`;
@@ -693,13 +763,7 @@ function checkActiveLocalReminders() {
                 
                 // Ensure we don't alert multiple times within the same minute
                 if (!lastNotified || parseInt(lastNotified) < tenMinutesAgo) {
-                    if (Notification.permission === 'granted') {
-                        new Notification(`💊 Medication Time: ${reminder.medication_name}`, {
-                            body: `Take ${reminder.dosage}. Don't skip your dose.`,
-                            icon: "🩺",
-                            requireInteraction: true
-                        });
-                    }
+                    triggerReminderAlert(reminder.medication_name, reminder.dosage);
                     localStorage.setItem(storageKey, now.getTime().toString());
                 }
             }

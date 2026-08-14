@@ -3,11 +3,37 @@ import os
 import hashlib
 from datetime import datetime
 
+TYPO_MAP = {
+    'pian': 'pain',
+    'pqain': 'pain',
+    'paain': 'pain',
+    'pinn': 'pain',
+    'blede': 'bleed',
+    'bleding': 'bleeding',
+    'headace': 'headache',
+    'headachee': 'headache',
+    'nausia': 'nausea',
+    'vomting': 'vomiting',
+    'fevr': 'fever',
+    'coug': 'cough',
+    'coughingg': 'cough',
+    'diziness': 'dizziness',
+    'fatguing': 'fatigue',
+    'chils': 'chills',
+    'sweling': 'swelling',
+    'stomachach': 'stomach ache',
+}
+
 def clean_symptoms(text):
     if not text:
         return []
     
     text = text.lower().strip()
+    
+    # Replace common known typo words
+    for typo, correction in TYPO_MAP.items():
+        text = re.sub(r'\b' + typo + r'\b', correction, text)
+        
     symptoms = [s.strip() for s in text.split(',')] if ',' in text else text.split()
     
     filler_words = ['i have', 'i am feeling', 'i feel', 'suffering from', 'with', 'and', 'or']
@@ -37,3 +63,4 @@ def analyze_sentiment(text):
     
     total = pos_count + neg_count
     return 0.5 if total == 0 else pos_count / total
+

@@ -38,12 +38,23 @@ class EnhancedDiseaseMatcher:
         
         return vectors
     
-    def _fuzzy_match(self, user_symptom, symptom_list, threshold=80):
+    def _fuzzy_match(self, user_symptom, symptom_list, threshold=70):
         matches = []
+        user_lower = user_symptom.lower()
         for symptom in symptom_list:
-            score = fuzz.ratio(user_symptom.lower(), symptom.lower())
-            if score >= threshold:
-                matches.append((symptom, score))
+            sym_lower = symptom.lower()
+            score = fuzz.ratio(user_lower, sym_lower)
+            partial_score = fuzz.partial_ratio(user_lower, sym_lower)
+            token_set_score = fuzz.token_set_ratio(user_lower, sym_lower)
+            
+            # Check individual word matches for typos (e.g., "pian" matching "abdominal pain")
+            word_scores = [fuzz.ratio(user_lower, word) for word in sym_lower.split()]
+            max_word_score = max(word_scores) if word_scores else 0
+            
+            best_symptom_score = max(score, int(partial_score * 0.9), token_set_score, max_word_score)
+            
+            if best_symptom_score >= threshold:
+                matches.append((symptom, best_symptom_score))
         return sorted(matches, key=lambda x: x[1], reverse=True)
     
     def _cosine_similarity(self, v1, v2):

@@ -112,14 +112,18 @@
             <!-- Quick Actions Section -->
             <section class="panel-section">
                 <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Actions</h3>
-                <div class="action-grid">
+                <div class="action-grid" style="grid-template-columns: 1fr 1fr;">
                     <button class="action-btn" id="addReminderBtn">
                         <i class="fa-solid fa-plus"></i>
                         <span>Add Reminder</span>
                     </button>
-                    <button class="action-btn" id="viewHistoryBtn">
+                    <button class="action-btn" id="testReminderBtn">
+                        <i class="fa-solid fa-bell-ring"></i>
+                        <span>Test Alert</span>
+                    </button>
+                    <button class="action-btn" id="viewHistoryBtn" style="grid-column: span 2;">
                         <i class="fa-solid fa-clock-rotate-left"></i>
-                        <span>View History</span>
+                        <span>View Chat History</span>
                     </button>
                 </div>
             </section>
