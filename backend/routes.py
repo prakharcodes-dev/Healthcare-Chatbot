@@ -3,11 +3,12 @@ from datetime import datetime
 from collections import Counter
 from flask import Blueprint, request, jsonify, current_app, render_template
 from fuzzywuzzy import process
-from backend.models import ChatSession, ChatMessage, DiseaseSearch, UserHealthProfile, Notification
+from backend.models import ChatSession, ChatMessage, DiseaseSearch, UserHealthProfile, Notification, HealthLog
 from backend.utils import clean_symptoms, generate_session_id, analyze_sentiment
 from backend.extensions import db
 
 api_bp = Blueprint('api', __name__)
+
 
 @api_bp.route('/')
 def home():
@@ -48,6 +49,87 @@ def end_session(session_id):
         return jsonify({'error': 'Session not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+def evaluate_health_metric_status(metric_type, val_pri, val_sec=None):
+    metric_type = (metric_type or '').lower().strip()
+    if metric_type == 'temperature':
+        if val_pri < 97.0:
+            return 'Low'
+        elif 97.0 <= val_pri <= 99.5:
+            return 'Normal'
+        elif 99.5 < val_pri <= 102.0:
+            return 'Elevated'
+        else:
+            return 'High'
+    elif metric_type == 'blood_pressure':
+        sys = val_pri
+        dia = val_sec if val_sec is not None else 80
+        if sys < 120 and dia < 80:
+            return 'Normal'
+        elif 120 <= sys <= 129 and dia < 80:
+            return 'Elevated'
+        elif (130 <= sys <= 139) or (80 <= dia <= 89):
+            return 'High (Stage 1)'
+        else:
+            return 'High (Stage 2)'
+    elif metric_type == 'blood_glucose':
+        if val_pri < 70:
+            return 'Low'
+        elif 70 <= val_pri <= 99:
+            return 'Normal'
+        elif 100 <= val_pri <= 125:
+            return 'Elevated'
+        else:
+            return 'High'
+    elif metric_type == 'weight':
+        return 'Normal'
+    return 'Normal'
+
+def build_structured_chat_response(user_symptoms, final_matches):
+    if not final_matches:
+        return {
+            'possible_causes': [],
+            'why': f"No disease matches found in dataset for reported symptoms: {', '.join(user_symptoms)}.",
+            'what_you_can_do': "Rest, stay hydrated, monitor your health closely, and consult a doctor if you feel unwell.",
+            'seek_medical_care_if': "Symptoms persist, worsen over 24-48 hours, or new unexplained symptoms develop.",
+            'emergency_warning': "If you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma, call emergency services (911/112) immediately."
+        }
+    
+    top_3 = final_matches[:3]
+    top_match = top_3[0]
+    
+    possible_causes = [m['disease'] for m in final_matches[:5]]
+    symptoms_str = ", ".join(user_symptoms)
+    why_text = f"Your reported symptoms ({symptoms_str}) overlap significantly with the diagnostic criteria for these conditions, especially {top_match['disease']} ({top_match['match_percentage']}% match)."
+    
+    care_items = []
+    if top_match.get('treatment'):
+        care_items.append(f"Treatment protocol: {top_match['treatment']}")
+    elif top_match.get('medicine'):
+        care_items.append(f"Medications: {top_match['medicine']}")
+    if top_match.get('advice'):
+        care_items.append(f"Care advice: {top_match['advice']}")
+    if top_match.get('prevention'):
+        care_items.append(f"Prevention: {top_match['prevention']}")
+        
+    what_you_can_do = " | ".join(care_items) if care_items else "Rest, maintain proper fluid intake, and seek medical consultation."
+    
+    spec = top_match.get('specialist', 'Primary Care Physician')
+    seek_care = top_match.get('when_to_seek_care') or f"Consult a {spec} if symptoms persist beyond 3-5 days or progressively worsen."
+    
+    is_high = any('high' in m.get('severity', '').lower() or 'severe' in m.get('severity', '').lower() for m in top_3)
+    if is_high:
+        emergency = f"EMERGENCY WARNING: High-severity condition detected ({top_match['disease']}). Seek immediate emergency medical care (Call 911/112) if you experience severe shortness of breath, sudden chest pain, stiff neck with high fever, confusion, or severe bleeding."
+    else:
+        emergency = "EMERGENCY WARNING: Call emergency services (911/112) or go to the nearest emergency room immediately if you develop sudden chest pain, severe shortness of breath, loss of consciousness, or severe bleeding."
+        
+    return {
+        'possible_causes': possible_causes,
+        'why': why_text,
+        'what_you_can_do': what_you_can_do,
+        'seek_medical_care_if': seek_care,
+        'emergency_warning': emergency
+    }
 
 @api_bp.route('/predict', methods=['POST'])
 def predict():
@@ -97,13 +179,14 @@ def predict():
             top_match
         )
         
+        structured_resp = build_structured_chat_response(user_symptoms, final_matches)
         sentiment = analyze_sentiment(str(symptoms_input))
         response_time = (datetime.utcnow() - start_time).total_seconds()
         
         chat_history.add_message(
             session_id,
             str(symptoms_input),
-            json.dumps([m['disease'] for m in final_matches[:3]]),
+            json.dumps(structured_resp),
             'symptom',
             sentiment,
             response_time
@@ -111,6 +194,7 @@ def predict():
         
         response = {
             'matches': final_matches,
+            'structured_response': structured_resp,
             'user_symptoms': user_symptoms,
             'total_matches': len(final_matches),
             'session_id': session_id,
@@ -124,6 +208,7 @@ def predict():
     
     except Exception as e:
         return jsonify({'error': str(e), 'matches': []}), 500
+
 
 @api_bp.route('/api/history/<session_id>', methods=['GET'])
 def get_session_history(session_id):
@@ -294,3 +379,337 @@ def suggest():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ==========================================================================
+# 🧠 Better Medical Knowledge Search API Routes
+# ==========================================================================
+
+@api_bp.route('/api/knowledge/search', methods=['POST'])
+def search_medical_knowledge():
+    try:
+        data = request.get_json() or {}
+        query = data.get('query', '').strip()
+        category = data.get('category', '').strip().lower()
+        limit = int(data.get('limit', 12))
+
+        
+        diseases = current_app.config.get('DISEASES', [])
+        
+        if not query and not category:
+            return jsonify({'results': diseases[:limit], 'total': len(diseases)})
+            
+        filtered = diseases
+        if category:
+            filtered = [d for d in filtered if category in d.get('category', '').lower()]
+            
+        if not query:
+            return jsonify({'results': filtered[:limit], 'total': len(filtered)})
+            
+        results = []
+        query_lower = query.lower()
+        
+        for d in filtered:
+            score = 0
+            d_name = d['disease'].lower()
+            symptoms = [s.lower() for s in d.get('symptoms', [])]
+            causes = d.get('causes', '').lower()
+            risk_factors = d.get('risk_factors', '').lower()
+            
+            if query_lower == d_name:
+                score += 100
+            elif query_lower in d_name:
+                score += 75
+            
+            if any(query_lower in s for s in symptoms):
+                score += 50
+                
+            if query_lower in causes:
+                score += 30
+                
+            if query_lower in risk_factors:
+                score += 20
+                
+            if score > 0:
+                results.append((d, score))
+                
+        if len(results) < 3:
+            all_names = {d['disease'].lower(): d for d in filtered}
+            fuzzy_matches = process.extract(query_lower, list(all_names.keys()), limit=5)
+            for fm in fuzzy_matches:
+                if fm[1] > 60 and all_names[fm[0]] not in [r[0] for r in results]:
+                    results.append((all_names[fm[0]], fm[1]))
+                    
+        results.sort(key=lambda x: x[1], reverse=True)
+        final_list = [r[0] for r in results[:limit]]
+        
+        return jsonify({'results': final_list, 'total': len(final_list), 'query': query})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/api/knowledge/<disease_name>', methods=['GET'])
+def get_disease_knowledge(disease_name):
+    try:
+        diseases = current_app.config.get('DISEASES', [])
+        d_name_clean = disease_name.strip().lower()
+        
+        for d in diseases:
+            if d['disease'].lower() == d_name_clean:
+                return jsonify({'disease': d})
+                
+        all_names = {d['disease'].lower(): d for d in diseases}
+        match = process.extractOne(d_name_clean, list(all_names.keys()))
+        if match and match[1] > 70:
+            return jsonify({'disease': all_names[match[0]]})
+            
+        return jsonify({'error': 'Disease not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ==========================================================================
+# 📊 Health Trend Tracking API Routes
+# ==========================================================================
+
+def generate_vitals_clinical_assessment(summary_data, single_log=None):
+    statuses = []
+    
+    for metric, data in summary_data.items():
+        if data.get('latest'):
+            st = data['latest'].get('status', 'Normal')
+            statuses.append(st)
+            
+    is_high = any('High' in s for s in statuses)
+    is_elevated = any('Elevated' in s for s in statuses)
+    is_low = any('Low' in s for s in statuses)
+    
+    if is_high:
+        verdict_status = 'Attention Required'
+        verdict_icon = 'fa-triangle-exclamation'
+        verdict_class = 'status-high'
+        verdict_title = 'Attention Required: Elevated Vital Readings Detected ⚠️'
+        verdict_message = 'One or more of your recent vital readings are higher than standard target thresholds. Please rest quietly, stay hydrated, and consult your primary physician if readings remain high.'
+    elif is_elevated or is_low:
+        verdict_status = 'Mild Variation'
+        verdict_icon = 'fa-circle-info'
+        verdict_class = 'status-elevated'
+        verdict_title = 'Mild Variation Detected: Generally Stable 👍'
+        verdict_message = 'Your vitals show mild variation from baseline levels, but your overall condition is stable and manageable. Continue monitoring over the next 24 hours.'
+    elif len(statuses) > 0:
+        verdict_status = 'Good & Stable'
+        verdict_icon = 'fa-circle-check'
+        verdict_class = 'status-normal'
+        verdict_title = 'Your Vitals Look Great! Condition is Normal & Good 👍'
+        verdict_message = 'All your recorded health vitals (Body Temperature, Weight, Blood Pressure, and Blood Glucose) are in healthy, safe, and optimal target ranges. There is no cause for concern!'
+    else:
+        verdict_status = 'No Data Yet'
+        verdict_icon = 'fa-heart-pulse'
+        verdict_class = 'status-normal'
+        verdict_title = 'Welcome to Health Trend Tracker 📊'
+        verdict_message = 'Record your vital readings above (Temperature, Weight, Blood Pressure, Blood Glucose) to generate immediate clinical feedback and trend analysis.'
+
+    single_feedback = None
+    if single_log:
+        mtype = single_log.get('metric_type', '').lower()
+        val_pri = single_log.get('value_primary')
+        val_sec = single_log.get('value_secondary')
+        unit = single_log.get('unit', '')
+        st = single_log.get('status', 'Normal')
+        
+        if mtype == 'temperature':
+            if st == 'Normal':
+                single_feedback = f"Body Temperature ({val_pri} {unit}) is in the ideal normal range (97.0-99.5°F). Your condition is good — nothing to worry about!"
+            elif st == 'Elevated':
+                single_feedback = f"Body Temperature ({val_pri} {unit}) indicates a low-grade fever. Rest, stay hydrated with fluids, and monitor symptoms."
+            elif st == 'High':
+                single_feedback = f"Body Temperature ({val_pri} {unit}) indicates a high fever! Rest, apply cool compresses, and consult a physician if fever persists."
+            else:
+                single_feedback = f"Body Temperature ({val_pri} {unit}) recorded successfully."
+        elif mtype == 'blood_pressure':
+            bp_str = f"{val_pri}/{val_sec}" if val_sec else f"{val_pri}"
+            if st == 'Normal':
+                single_feedback = f"Blood Pressure ({bp_str} {unit}) is optimal and healthy (<120/80 mmHg). Your condition is good & normal!"
+            elif st == 'Elevated':
+                single_feedback = f"Blood Pressure ({bp_str} {unit}) is slightly elevated. Rest quietly for 10 minutes and reduce dietary sodium."
+            else:
+                single_feedback = f"Blood Pressure ({bp_str} {unit}) is elevated ({st}). Rest, avoid stress, and consult your physician if readings stay high."
+        elif mtype == 'blood_glucose':
+            if st == 'Normal':
+                single_feedback = f"Blood Glucose ({val_pri} {unit}) is in the normal fasting range (70-99 mg/dL). Excellent glycemic control!"
+            elif st == 'Low':
+                single_feedback = f"Blood Glucose ({val_pri} {unit}) is low (<70 mg/dL). Consume fast-acting carbohydrates (juice/fruit) and re-check in 15 mins."
+            else:
+                single_feedback = f"Blood Glucose ({val_pri} {unit}) is elevated ({st}). Stay hydrated, follow dietary guidelines, and monitor your levels."
+        elif mtype == 'weight':
+            single_feedback = f"Body Weight ({val_pri} {unit}) recorded successfully. Regular tracking helps monitor body composition trends over time!"
+
+    return {
+        'status': verdict_status,
+        'icon': verdict_icon,
+        'css_class': verdict_class,
+        'title': verdict_title,
+        'message': verdict_message,
+        'single_feedback': single_feedback
+    }
+
+
+@api_bp.route('/api/health-trends/log', methods=['POST'])
+def add_health_log():
+    try:
+        data = request.get_json() or {}
+        user_id = data.get('user_id', 1)
+        metric_type = data.get('metric_type', '').lower().strip()
+        val_pri = float(data.get('value_primary', 0))
+        val_sec = float(data['value_secondary']) if data.get('value_secondary') is not None and str(data.get('value_secondary')).strip() != '' else None
+        unit = data.get('unit', '')
+        notes = data.get('notes', '')
+
+        notes = data.get('notes', '')
+        
+        if not metric_type or val_pri <= 0:
+            return jsonify({'error': 'Invalid metric type or reading value'}), 400
+            
+        status = evaluate_health_metric_status(metric_type, val_pri, val_sec)
+        
+        log_entry = HealthLog(
+            user_id=user_id,
+            metric_type=metric_type,
+            value_primary=val_pri,
+            value_secondary=val_sec,
+            unit=unit,
+            notes=notes,
+            status=status,
+            timestamp=datetime.utcnow()
+        )
+        db.session.add(log_entry)
+        db.session.commit()
+
+        log_dict = {
+            'id': log_entry.id,
+            'metric_type': log_entry.metric_type,
+            'value_primary': log_entry.value_primary,
+            'value_secondary': log_entry.value_secondary,
+            'unit': log_entry.unit,
+            'status': log_entry.status,
+            'notes': log_entry.notes,
+            'timestamp': log_entry.timestamp.isoformat()
+        }
+        
+        # Build summary data for assessment
+        metrics = ['temperature', 'weight', 'blood_pressure', 'blood_glucose']
+        summary_temp = {}
+        for m in metrics:
+            logs = HealthLog.query.filter_by(user_id=user_id, metric_type=m).order_by(HealthLog.timestamp.desc()).all()
+            if logs:
+                summary_temp[m] = {'latest': {'status': logs[0].status, 'val_pri': logs[0].value_primary}}
+            else:
+                summary_temp[m] = {'latest': None}
+                
+        assessment = generate_vitals_clinical_assessment(summary_temp, log_dict)
+        
+        return jsonify({
+            'message': 'Health log recorded successfully',
+            'log': log_dict,
+            'assessment': assessment
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/api/health-trends/user/<int:user_id>', methods=['GET'])
+def get_user_health_logs(user_id):
+    try:
+        metric_type = request.args.get('metric_type')
+        limit = request.args.get('limit', 100, type=int)
+        
+        query = HealthLog.query.filter_by(user_id=user_id)
+        if metric_type:
+            query = query.filter_by(metric_type=metric_type.lower())
+            
+        logs = query.order_by(HealthLog.timestamp.desc()).limit(limit).all()
+        
+        result = [{
+            'id': l.id,
+            'metric_type': l.metric_type,
+            'value_primary': l.value_primary,
+            'value_secondary': l.value_secondary,
+            'unit': l.unit,
+            'status': l.status,
+            'notes': l.notes,
+            'timestamp': l.timestamp.isoformat()
+        } for l in logs]
+        
+        return jsonify({'logs': result, 'total': len(result)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/api/health-trends/<int:log_id>', methods=['DELETE'])
+def delete_health_log(log_id):
+    try:
+        log_entry = HealthLog.query.get(log_id)
+        if log_entry:
+            db.session.delete(log_entry)
+            db.session.commit()
+            return jsonify({'message': 'Health log deleted'})
+        return jsonify({'error': 'Log entry not found'}), 404
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/api/health-trends/summary/<int:user_id>', methods=['GET'])
+def get_health_trends_summary(user_id):
+    try:
+        metrics = ['temperature', 'weight', 'blood_pressure', 'blood_glucose']
+        summary = {}
+        
+        for m in metrics:
+            logs = HealthLog.query.filter_by(user_id=user_id, metric_type=m)\
+                .order_by(HealthLog.timestamp.desc()).all()
+            if logs:
+                latest = logs[0]
+                prev = logs[1] if len(logs) > 1 else None
+                
+                delta = None
+                if prev:
+                    delta = round(latest.value_primary - prev.value_primary, 2)
+                    
+                history = [{
+                    'id': l.id,
+                    'value_primary': l.value_primary,
+                    'value_secondary': l.value_secondary,
+                    'status': l.status,
+                    'time': l.timestamp.strftime('%b %d, %H:%M')
+                } for l in reversed(logs[:10])]
+                
+                summary[m] = {
+                    'latest': {
+                        'id': latest.id,
+                        'val_pri': latest.value_primary,
+                        'val_sec': latest.value_secondary,
+                        'unit': latest.unit,
+                        'status': latest.status,
+                        'notes': latest.notes,
+                        'time': latest.timestamp.isoformat()
+                    },
+                    'delta': delta,
+                    'count': len(logs),
+                    'history': history
+                }
+            else:
+                summary[m] = {'latest': None, 'count': 0, 'history': []}
+                
+        assessment = generate_vitals_clinical_assessment(summary)
+        
+        return jsonify({
+            'summary': summary, 
+            'assessment': assessment,
+            'user_id': user_id
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+

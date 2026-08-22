@@ -63,3 +63,15 @@ class Notification(db.Model):
     sent_time = db.Column(db.DateTime)
     status = db.Column(db.String(20))
     read = db.Column(db.Boolean, default=False)
+
+class HealthLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, default=1)
+    metric_type = db.Column(db.String(50), nullable=False) # temperature, weight, blood_pressure, blood_glucose
+    value_primary = db.Column(db.Float, nullable=False)
+    value_secondary = db.Column(db.Float, nullable=True) # Systolic/Diastolic for BP
+    unit = db.Column(db.String(20), nullable=False)
+    notes = db.Column(db.String(250), nullable=True)
+    status = db.Column(db.String(50), nullable=True) # Normal, Elevated, High, Low
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+

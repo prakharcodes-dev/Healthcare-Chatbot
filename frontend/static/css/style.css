@@ -1154,3 +1154,576 @@ body {
     font-size: 24px;
     color: var(--primary);
 }
+
+/* ==========================================================================
+   Structured Chat Response Formatting (5 Sections)
+   ========================================================================== */
+.matches-response {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.response-section {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.response-section .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+}
+
+.causes-section .causes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.cause-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--primary-light);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+}
+
+.clickable-chip {
+    cursor: pointer;
+    transition: var(--transition-normal);
+    user-select: none;
+}
+
+.clickable-chip:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+
+.badge-match {
+    background-color: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.action-section p, .why-section p, .seek-care-section p {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+.emergency-section {
+    background-color: var(--danger-light);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+.emergency-section .section-title {
+    color: var(--danger);
+}
+
+.emergency-section p {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.matched-details-expander {
+    margin-top: 8px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+}
+
+.matched-details-expander summary {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.detailed-cards-wrapper {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   Medical Knowledge Base Search Styles
+   ========================================================================== */
+.knowledge-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.knowledge-search-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+.search-input-wrapper input {
+    flex-grow: 1;
+    padding: 12px 16px 12px 46px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--primary-bg);
+    color: var(--text-main);
+    font-size: 15px;
+    outline: none;
+}
+
+.search-input-wrapper input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cat-pill {
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 12.5px;
+    font-weight: 500;
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.cat-pill:hover, .cat-pill.active {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.knowledge-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+}
+
+.knowledge-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.knowledge-card-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.knowledge-card-header .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.knowledge-card-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.cat-tag {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.knowledge-pillars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pillar-box {
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+}
+
+.pillar-box strong {
+    font-size: 12px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.pillar-box p {
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.4;
+}
+
+.warning-pillar {
+    border-left: 4px solid var(--warning);
+}
+
+.warning-pillar strong {
+    color: var(--warning);
+}
+
+/* ==========================================================================
+   Health Trend Tracker Styles
+   ========================================================================== */
+.trends-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    max-height: calc(100vh - 100px);
+}
+
+/* Overall Clinical Assessment Banner */
+.overall-assessment-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-lg);
+    padding: 18px 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: var(--transition-normal);
+}
+
+.assessment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.assessment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.assessment-badge.status-normal {
+    background-color: var(--success-light);
+    color: var(--success);
+}
+
+.assessment-badge.status-elevated {
+    background-color: var(--warning-light);
+    color: var(--warning);
+}
+
+.assessment-badge.status-high {
+    background-color: var(--danger-light);
+    color: var(--danger);
+}
+
+.assessment-time {
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+
+.assessment-body h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.assessment-body p {
+    font-size: 13.5px;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+/* Instant Vital Feedback Toast Banner */
+.instant-feedback-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.instant-feedback-banner.feedback-good {
+    background-color: var(--success-light);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+
+.instant-feedback-banner.feedback-alert {
+    background-color: var(--warning-light);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+}
+
+.feedback-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-feedback-btn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: currentColor;
+    cursor: pointer;
+}
+
+
+.metrics-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.metric-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.temp-icon { background: linear-gradient(135deg, #ef4444 0%, #f97316 100%); }
+.weight-icon { background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); }
+.bp-icon { background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); }
+.glucose-icon { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+
+.metric-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.metric-val-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.metric-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.metric-unit {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.metric-time {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.status-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    text-transform: capitalize;
+}
+
+.status-normal { background-color: var(--success-light); color: var(--success); }
+.status-elevated { background-color: var(--warning-light); color: var(--warning); }
+.status-high, .status-high-\(stage-1\), .status-high-\(stage-2\) { background-color: var(--danger-light); color: var(--danger); }
+.status-low { background-color: #e0f2fe; color: #0284c7; }
+
+.trends-main-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+}
+
+.log-form-card, .chart-card, .log-history-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.log-form-card h3, .chart-card-header h3, .log-history-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-main);
+}
+
+.chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.chart-metric-selector {
+    display: flex;
+    gap: 4px;
+    background-color: var(--primary-bg);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.chart-tab {
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.chart-tab.active {
+    background-color: var(--card-bg);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.chart-container-inner {
+    width: 100%;
+    height: 220px;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background-color: var(--primary-bg);
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.logs-table th, .logs-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logs-table th {
+    background-color: var(--primary-bg);
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.reading-val {
+    font-weight: 700;
+    color: var(--primary);
+}
+

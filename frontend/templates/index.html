@@ -29,6 +29,14 @@
                     <i class="fa-solid fa-comment-medical"></i>
                     <span>Symptom Checker</span>
                 </div>
+                <div class="menu-item" data-section="knowledge">
+                    <i class="fa-solid fa-book-medical"></i>
+                    <span>Medical Knowledge</span>
+                </div>
+                <div class="menu-item" data-section="trends">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Health Trends</span>
+                </div>
                 <div class="menu-item" data-section="reminders">
                     <i class="fa-solid fa-clock"></i>
                     <span>Set Reminders</span>
@@ -38,7 +46,7 @@
                     <span>Chat History</span>
                 </div>
                 <div class="menu-item" data-section="analytics">
-                    <i class="fa-solid fa-chart-line"></i>
+                    <i class="fa-solid fa-chart-pie"></i>
                     <span>Analytics</span>
                 </div>
             </nav>
@@ -54,12 +62,12 @@
             </div>
         </aside>
 
-        <!-- Main Chat Area -->
+        <!-- Main Content Area -->
         <main class="main-content">
             <header class="app-header">
                 <div class="header-title">
-                    <h1>Symptom Analysis Hub</h1>
-                    <p>Powered by Enhanced Disease Matching Algorithms</p>
+                    <h1 id="mainTitle">Symptom Analysis Hub</h1>
+                    <p id="mainSubtitle">Powered by Enhanced Disease Matching Algorithms</p>
                 </div>
                 <div class="header-status">
                     <span id="connectionStatus" class="status-badge status-loading">
@@ -74,7 +82,8 @@
                 </div>
             </header>
 
-            <section class="chat-container">
+            <!-- 1. Symptom Chat Section -->
+            <section class="app-section" id="sectionChat">
                 <div id="chatMessages" class="chat-messages">
                     <!-- Default welcome message -->
                     <div class="message bot-message">
@@ -105,7 +114,200 @@
                     </div>
                 </div>
             </section>
+
+            <!-- 2. Medical Knowledge Search Section -->
+            <section class="app-section" id="sectionKnowledge" style="display: none;">
+                <div class="knowledge-container">
+                    <div class="knowledge-search-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="knowledgeSearchInput" placeholder="Search disease, condition, or symptom (e.g., Asthma, Diabetes, Hypertension)...">
+                            <button id="knowledgeSearchBtn" class="btn btn-primary"><i class="fa-solid fa-search"></i> Search</button>
+                        </div>
+                        <div class="category-pills" id="knowledgeCategoryPills">
+                            <span class="cat-pill active" data-category="">All Categories</span>
+                            <span class="cat-pill" data-category="respiratory">Respiratory</span>
+                            <span class="cat-pill" data-category="cardiovascular">Cardiovascular</span>
+                            <span class="cat-pill" data-category="bacterial">Bacterial</span>
+                            <span class="cat-pill" data-category="viral">Viral</span>
+                            <span class="cat-pill" data-category="endocrine">Endocrine</span>
+                            <span class="cat-pill" data-category="neurological">Neurological</span>
+                            <span class="cat-pill" data-category="gastrointestinal">Gastrointestinal</span>
+                            <span class="cat-pill" data-category="dermatological">Dermatological</span>
+                            <span class="cat-pill" data-category="autoimmune">Autoimmune</span>
+                        </div>
+                    </div>
+                    <div class="knowledge-results-grid" id="knowledgeResults">
+                        <!-- Disease knowledge cards with 6 pillars inserted here dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Health Trend Tracker Section -->
+            <section class="app-section" id="sectionTrends" style="display: none;">
+                <div class="trends-container">
+                    <!-- Overall Health Assessment Banner -->
+                    <div class="overall-assessment-card" id="healthAssessmentBanner">
+                        <div class="assessment-header">
+                            <div class="assessment-badge status-normal" id="overallStatusBadge">
+                                <i class="fa-solid fa-circle-check" id="overallStatusIcon"></i> <span id="overallStatusText">Overall Condition: Good & Stable</span>
+                            </div>
+                            <span class="assessment-time" id="overallAssessmentTime">Updated live</span>
+                        </div>
+                        <div class="assessment-body">
+                            <h3 id="overallAssessmentTitle">Your Vitals Look Great! Condition is Normal & Good 👍</h3>
+                            <p id="overallAssessmentMsg">All your recorded health vitals (Body Temperature, Weight, Blood Pressure, and Blood Glucose) are in healthy, safe, and optimal target ranges. There is no cause for concern!</p>
+                        </div>
+                    </div>
+
+                    <!-- Instant Vital Log Feedback Toast Banner (hidden by default) -->
+                    <div class="instant-feedback-banner" id="vitalLogFeedback" style="display: none;">
+                        <div class="feedback-content">
+                            <i class="fa-solid fa-notes-medical" id="feedbackIcon"></i>
+                            <span id="feedbackText">Recorded reading successfully!</span>
+                        </div>
+                        <button class="close-feedback-btn" onclick="document.getElementById('vitalLogFeedback').style.display='none'">&times;</button>
+                    </div>
+
+                    <!-- Metrics Summary Dashboard -->
+                    <div class="metrics-summary-grid">
+
+                        <div class="metric-card" id="cardTemp">
+                            <div class="metric-icon temp-icon"><i class="fa-solid fa-temperature-three-quarters"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Body Temperature</span>
+                                <div class="metric-val-row">
+                                    <span class="metric-val" id="valTemp">--</span>
+                                    <span class="metric-unit">°F</span>
+                                    <span class="status-tag" id="statusTemp">No Data</span>
+                                </div>
+                                <span class="metric-time" id="timeTemp">Log your first reading</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card" id="cardWeight">
+                            <div class="metric-icon weight-icon"><i class="fa-solid fa-weight-scale"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Body Weight</span>
+                                <div class="metric-val-row">
+                                    <span class="metric-val" id="valWeight">--</span>
+                                    <span class="metric-unit">kg</span>
+                                    <span class="status-tag" id="statusWeight">No Data</span>
+                                </div>
+                                <span class="metric-time" id="timeWeight">Log your first reading</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card" id="cardBp">
+                            <div class="metric-icon bp-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Blood Pressure</span>
+                                <div class="metric-val-row">
+                                    <span class="metric-val" id="valBp">--/--</span>
+                                    <span class="metric-unit">mmHg</span>
+                                    <span class="status-tag" id="statusBp">No Data</span>
+                                </div>
+                                <span class="metric-time" id="timeBp">Log your first reading</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card" id="cardGlucose">
+                            <div class="metric-icon glucose-icon"><i class="fa-solid fa-droplet"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-label">Blood Glucose</span>
+                                <div class="metric-val-row">
+                                    <span class="metric-val" id="valGlucose">--</span>
+                                    <span class="metric-unit">mg/dL</span>
+                                    <span class="status-tag" id="statusGlucose">No Data</span>
+                                </div>
+                                <span class="metric-time" id="timeGlucose">Log your first reading</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Record Reading Form & Chart Box Grid -->
+                    <div class="trends-main-grid">
+                        <div class="log-form-card">
+                            <h3><i class="fa-solid fa-plus-circle"></i> Record Vital Reading</h3>
+                            <form id="healthLogForm">
+                                <div class="form-group">
+                                    <label for="metricTypeSelect">Metric</label>
+                                    <select id="metricTypeSelect" class="form-control" required>
+                                        <option value="temperature">🌡️ Body Temperature</option>
+                                        <option value="weight">⚖️ Body Weight</option>
+                                        <option value="blood_pressure">🩸 Blood Pressure</option>
+                                        <option value="blood_glucose">🍬 Blood Glucose</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group-row">
+                                    <div class="form-group" id="primaryValGroup">
+                                        <label for="valPrimaryInput" id="primaryLabel">Temperature (°F)</label>
+                                        <input type="number" step="0.1" id="valPrimaryInput" class="form-control" placeholder="e.g. 98.6" required>
+                                    </div>
+                                    <div class="form-group" id="secondaryValGroup" style="display: none;">
+                                        <label for="valSecondaryInput">Diastolic (mmHg)</label>
+                                        <input type="number" step="1" id="valSecondaryInput" class="form-control" placeholder="e.g. 80">
+                                    </div>
+                                    <div class="form-group" style="max-width: 110px;">
+                                        <label for="unitSelect">Unit</label>
+                                        <select id="unitSelect" class="form-control">
+                                            <option value="°F">°F</option>
+                                            <option value="°C">°C</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="notesInput">Notes / Context (Optional)</label>
+                                    <input type="text" id="notesInput" class="form-control" placeholder="e.g., Fasting, morning reading, post-exercise">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-floppy-disk"></i> Save Vital Reading</button>
+                            </form>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-chart-line"></i> Trend History Visualization</h3>
+                                <div class="chart-metric-selector">
+                                    <button class="chart-tab active" data-metric="temperature">Temp</button>
+                                    <button class="chart-tab" data-metric="weight">Weight</button>
+                                    <button class="chart-tab" data-metric="blood_pressure">BP</button>
+                                    <button class="chart-tab" data-metric="blood_glucose">Glucose</button>
+                                </div>
+                            </div>
+                            <div class="chart-container-inner">
+                                <canvas id="trendChartCanvas" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recorded Logs Table -->
+                    <div class="log-history-card">
+                        <h3><i class="fa-solid fa-list-numeric"></i> Recent Vital Logs</h3>
+                        <div class="table-responsive">
+                            <table class="logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Metric</th>
+                                        <th>Reading</th>
+                                        <th>Status</th>
+                                        <th>Notes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="healthLogsTableBody">
+                                    <tr><td colspan="6" class="text-center">Loading health logs...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+
 
         <!-- Right Panels for Quick Actions, Reminders, and Recent Activity -->
         <aside class="right-panel">
@@ -229,7 +431,27 @@
         </div>
     </div>
 
+    <!-- Interactive Disease Detail Modal -->
+    <div class="modal" id="diseaseDetailModal">
+        <div class="modal-backdrop" onclick="closeModal('diseaseDetailModal')"></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-book-medical"></i> <span id="detailModalTitle">Disease Medical Details</span></h2>
+                <button class="close-btn" onclick="closeModal('diseaseDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="diseaseDetailContent" style="max-height: 70vh; overflow-y: auto;">
+                <div class="loading-spinner">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> Loading medical knowledge...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('diseaseDetailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom JS -->
     <script src="/static/js/main.js"></script>
+
 </body>
 </html>

@@ -112,7 +112,12 @@ class EnhancedDiseaseMatcher:
                     'advice': disease.get('advice', 'N/A'),
                     'prevention_tips': disease.get('prevention_tips', 'N/A'),
                     'specialist': disease.get('specialist', 'N/A'),
-                    'symptoms': disease.get('symptoms', [])
+                    'symptoms': disease.get('symptoms', []),
+                    'causes': disease.get('causes', 'N/A'),
+                    'risk_factors': disease.get('risk_factors', 'N/A'),
+                    'prevention': disease.get('prevention', disease.get('prevention_tips', 'N/A')),
+                    'treatment': disease.get('treatment', f"{disease.get('medicine', 'N/A')}. {disease.get('advice', '')}"),
+                    'when_to_seek_care': disease.get('when_to_seek_care', 'N/A')
                 })
         
         matches.sort(key=lambda x: (x['match_score'], x['confidence']), reverse=True)
@@ -145,7 +150,13 @@ class EnhancedDiseaseMatcher:
                     'advice': disease.get('advice', 'N/A'),
                     'prevention_tips': disease.get('prevention_tips', 'N/A'),
                     'specialist': disease.get('specialist', 'N/A'),
-                    'symptoms': disease.get('symptoms', [])
+                    'symptoms': disease.get('symptoms', []),
+                    'causes': disease.get('causes', 'N/A'),
+                    'risk_factors': disease.get('risk_factors', 'N/A'),
+                    'prevention': disease.get('prevention', disease.get('prevention_tips', 'N/A')),
+                    'treatment': disease.get('treatment', f"{disease.get('medicine', 'N/A')}. {disease.get('advice', '')}"),
+                    'when_to_seek_care': disease.get('when_to_seek_care', 'N/A')
                 })
+
         
         return sorted(similarities, key=lambda x: x['match_score'], reverse=True)[:5]

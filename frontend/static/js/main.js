@@ -33,7 +33,6 @@ async function init() {
 }
 
 // Event Listeners Setup
-// Event Listeners Setup
 function setupEventListeners() {
     // Menu items
     document.querySelectorAll('.menu-item').forEach(item => {
@@ -63,6 +62,44 @@ function setupEventListeners() {
     document.getElementById('testReminderBtn')?.addEventListener('click', testReminderAlert);
     document.getElementById('viewHistoryBtn').addEventListener('click', viewHistory);
     document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+
+    // Knowledge Search events
+    document.getElementById('knowledgeSearchBtn')?.addEventListener('click', () => {
+        const q = document.getElementById('knowledgeSearchInput').value.trim();
+        loadMedicalKnowledge(q, state.activeCategory || '');
+    });
+    document.getElementById('knowledgeSearchInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const q = e.target.value.trim();
+            loadMedicalKnowledge(q, state.activeCategory || '');
+        }
+    });
+    document.querySelectorAll('#knowledgeCategoryPills .cat-pill').forEach(pill => {
+        pill.addEventListener('click', (e) => {
+            document.querySelectorAll('#knowledgeCategoryPills .cat-pill').forEach(p => p.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            state.activeCategory = e.currentTarget.dataset.category || '';
+            const q = document.getElementById('knowledgeSearchInput').value.trim();
+            loadMedicalKnowledge(q, state.activeCategory);
+        });
+    });
+
+    // Health Trends Form events
+    document.getElementById('metricTypeSelect')?.addEventListener('change', handleMetricTypeChange);
+    document.getElementById('healthLogForm')?.addEventListener('submit', handleHealthLogSubmit);
+    
+    // Chart metric tab selector
+    document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            const metric = e.currentTarget.dataset.metric;
+            state.activeChartMetric = metric;
+            if (state.trendsSummary && state.trendsSummary[metric]) {
+                renderTrendCanvasChart(metric, state.trendsSummary[metric].history || []);
+            }
+        });
+    });
 }
 
 // Menu Click Router
@@ -73,12 +110,43 @@ function handleMenuClick(e) {
     e.currentTarget.classList.add('active');
     
     const section = e.currentTarget.dataset.section;
-    switch(section) {
-        case 'history': viewHistory(); break;
-        case 'reminders': showAddReminderModal(); break;
-        case 'analytics': fetchAnalytics(); break;
+    switchSection(section);
+}
+
+function switchSection(section) {
+    document.querySelectorAll('.app-section').forEach(sec => {
+        sec.style.display = 'none';
+    });
+    
+    const mainTitle = document.getElementById('mainTitle');
+    const mainSubtitle = document.getElementById('mainSubtitle');
+    
+    if (section === 'chat') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        if (mainTitle) mainTitle.textContent = 'Symptom Analysis Hub';
+        if (mainSubtitle) mainSubtitle.textContent = 'Powered by Enhanced Disease Matching Algorithms';
+    } else if (section === 'knowledge') {
+        document.getElementById('sectionKnowledge').style.display = 'block';
+        if (mainTitle) mainTitle.textContent = '🧠 Medical Knowledge Base Search';
+        if (mainSubtitle) mainSubtitle.textContent = 'Comprehensive Medical Database covering Symptoms, Causes, Risk Factors, Prevention, Treatment, and When to Seek Care';
+        loadMedicalKnowledge();
+    } else if (section === 'trends') {
+        document.getElementById('sectionTrends').style.display = 'block';
+        if (mainTitle) mainTitle.textContent = '📊 Health Trend Tracker';
+        if (mainSubtitle) mainSubtitle.textContent = 'Record and monitor Temperature, Weight, Blood Pressure, and Blood Glucose over time';
+        loadHealthTrends();
+    } else if (section === 'history') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        viewHistory();
+    } else if (section === 'reminders') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        showAddReminderModal();
+    } else if (section === 'analytics') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        fetchAnalytics();
     }
 }
+
 
 // Start Session API call
 async function startSession() {
@@ -153,7 +221,7 @@ async function sendMessage() {
         }
         
         if (data.matches && data.matches.length > 0) {
-            const htmlResponse = formatMatchesResponse(data.matches);
+            const htmlResponse = formatMatchesResponse(data.matches, data.structured_response);
             addMessage('bot', htmlResponse);
             
             // Log top match in recent searches
@@ -168,13 +236,75 @@ async function sendMessage() {
     }
 }
 
-// Format Matches in structured card components with clear title headers
-function formatMatchesResponse(matches) {
+// Format Matches in structured 5-section response format
+function formatMatchesResponse(matches, structuredResp) {
     let html = `<div class="matches-response">`;
-    html += `<p class="match-header-text"><i class="fa-solid fa-list-check"></i> Found <strong>${matches.length} possible conditions</strong> based on your symptoms:</p>`;
     
+    // 1. Possible causes
+    html += `<div class="response-section causes-section">
+        <h4 class="section-title"><i class="fa-solid fa-virus-covid"></i> <strong>Possible Causes:</strong></h4>
+        <div class="causes-list">`;
+    
+    matches.slice(0, 5).forEach((match) => {
+        const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => match.severity.toLowerCase().includes(s)) 
+            ? 'badge-severity-high' 
+            : match.severity.toLowerCase().includes('moderate') 
+            ? 'badge-severity-moderate' 
+            : 'badge-severity-mild';
+            
+        html += `
+            <div class="cause-chip clickable-chip" onclick="openDiseaseDetailModal('${encodeURIComponent(match.disease)}')" title="Click to view full medical details for ${match.disease}">
+                <span class="cause-name"><strong>${match.disease}</strong> <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px; margin-left:4px; opacity:0.8;"></i></span>
+                <span class="badge badge-match">${match.match_percentage}% match</span>
+                <span class="badge ${severityClass}">${match.severity}</span>
+            </div>
+        `;
+    });
+    html += `</div></div>`;
+
+    
+    // 2. Why
+    const whyText = structuredResp && structuredResp.why 
+        ? structuredResp.why 
+        : `Your reported symptoms overlap significantly with the diagnostic criteria for these conditions.`;
+    html += `<div class="response-section why-section">
+        <h4 class="section-title"><i class="fa-solid fa-circle-info"></i> <strong>Why:</strong></h4>
+        <p>${whyText}</p>
+    </div>`;
+    
+    // 3. What you can do
+    const whatYouCanDoText = structuredResp && structuredResp.what_you_can_do 
+        ? structuredResp.what_you_can_do 
+        : (matches[0] ? `Treatment: ${matches[0].treatment || matches[0].medicine || 'Rest & OTC care'}. Advice: ${matches[0].advice || 'Hydration'}` : 'Rest and stay hydrated.');
+    html += `<div class="response-section action-section">
+        <h4 class="section-title"><i class="fa-solid fa-hand-holding-medical"></i> <strong>What you can do:</strong></h4>
+        <p>${whatYouCanDoText}</p>
+    </div>`;
+    
+    // 4. Seek medical care if
+    const seekCareText = structuredResp && structuredResp.seek_medical_care_if 
+        ? structuredResp.seek_medical_care_if 
+        : (matches[0] ? `Consult a ${matches[0].specialist || 'Primary Care Physician'} if symptoms persist beyond 3-5 days.` : 'Consult a physician if symptoms persist.');
+    html += `<div class="response-section seek-care-section">
+        <h4 class="section-title"><i class="fa-solid fa-user-doctor"></i> <strong>Seek medical care if:</strong></h4>
+        <p>${seekCareText}</p>
+    </div>`;
+    
+    // 5. Emergency warning
+    const emergencyText = structuredResp && structuredResp.emergency_warning 
+        ? structuredResp.emergency_warning 
+        : `Call emergency services (911/112) immediately if you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma.`;
+    html += `<div class="response-section emergency-section">
+        <h4 class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Emergency Warning:</strong></h4>
+        <p>${emergencyText}</p>
+    </div>`;
+
+    // Detailed matches expander dropdown button
+    html += `<details class="matched-details-expander">
+        <summary><i class="fa-solid fa-list-check"></i> View Full 6-Pillar Diagnostic Cards (${matches.length} matches)</summary>
+        <div class="detailed-cards-wrapper">`;
+        
     matches.forEach((match) => {
-        // Map severity to appropriate color badge
         const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => match.severity.toLowerCase().includes(s)) 
             ? 'badge-severity-high' 
             : match.severity.toLowerCase().includes('moderate') 
@@ -186,36 +316,27 @@ function formatMatchesResponse(matches) {
         html += `
             <div class="disease-card">
                 <div class="disease-card-header">
-                    <span class="disease-name"><strong><i class="fa-solid fa-disease"></i> Disease Name:</strong> ${match.disease}</span>
+                    <span class="disease-name"><strong><i class="fa-solid fa-disease"></i> ${match.disease}</strong></span>
                     <div class="disease-badge-row">
                         <span class="badge ${severityClass}">${match.severity} severity</span>
                         <span class="badge badge-match">${match.match_percentage}% match</span>
                     </div>
                 </div>
-                
-                <div class="disease-detail">
-                    <strong><i class="fa-solid fa-head-side-cough"></i> Symptoms:</strong> ${symptomsStr}
-                </div>
-                <div class="disease-detail">
-                    <strong><i class="fa-solid fa-triangle-exclamation"></i> Caution / Severity:</strong> <span style="text-transform:capitalize;">${match.severity} Severity</span> — ${match.advice}
-                </div>
-                <div class="disease-detail">
-                    <strong><i class="fa-solid fa-capsules"></i> Treatment & Care:</strong> ${match.medicine}
-                </div>
-                <div class="disease-detail">
-                    <strong><i class="fa-solid fa-user-doctor"></i> Recommended Specialist:</strong> ${match.specialist}
-                </div>
-                <div class="disease-detail">
-                    <strong><i class="fa-solid fa-shield-halved"></i> Prevention:</strong> ${match.prevention_tips}
-                </div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-head-side-cough"></i> Symptoms:</strong> ${symptomsStr}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-dna"></i> Causes:</strong> ${match.causes || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-triangle-exclamation"></i> Risk Factors:</strong> ${match.risk_factors || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-capsules"></i> Treatment & Care:</strong> ${match.treatment || match.medicine || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-user-doctor"></i> Recommended Specialist:</strong> ${match.specialist}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-shield-halved"></i> Prevention:</strong> ${match.prevention || match.prevention_tips || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-hospital-user"></i> When to Seek Care:</strong> ${match.when_to_seek_care || 'N/A'}</div>
             </div>
         `;
     });
     
-    html += `<p style="font-size:12px; margin-top:8px; color: var(--text-muted);">Would you like advice on other symptoms or details about one of these conditions?</p>`;
-    html += `</div>`;
+    html += `</div></details></div>`;
     return html;
 }
+
 
 // Add Chat bubble
 function addMessage(type, content) {
@@ -932,3 +1053,529 @@ function toggleTheme() {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
 }
+
+// ==========================================================================
+// 🧠 Medical Knowledge Base Search Module
+// ==========================================================================
+
+async function loadMedicalKnowledge(query = '', category = '') {
+    const container = document.getElementById('knowledgeResults');
+    if (!container) return;
+    
+    container.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching Medical Knowledge Base...</div>`;
+    
+    try {
+        const res = await fetch('/api/knowledge/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: query, category: category, limit: 12 })
+        });
+        const data = await res.json();
+        
+        if (data.error) {
+            container.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);">${data.error}</p></div>`;
+            return;
+        }
+        
+        const results = data.results || [];
+        if (results.length === 0) {
+            container.innerHTML = `<div class="no-data-placeholder"><i class="fa-solid fa-folder-open"></i><p>No medical conditions found matching "${query}".</p></div>`;
+            return;
+        }
+        
+        let html = '';
+        results.forEach(d => {
+            const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => d.severity.toLowerCase().includes(s)) 
+                ? 'badge-severity-high' 
+                : d.severity.toLowerCase().includes('moderate') 
+                ? 'badge-severity-moderate' 
+                : 'badge-severity-mild';
+                
+            const symptomsStr = Array.isArray(d.symptoms) ? d.symptoms.join(', ') : (d.symptoms || 'N/A');
+            
+            html += `
+                <div class="knowledge-card">
+                    <div class="knowledge-card-header">
+                        <div class="title-row">
+                            <h3><i class="fa-solid fa-book-medical"></i> ${d.disease}</h3>
+                            <span class="badge ${severityClass}">${d.severity}</span>
+                        </div>
+                        <span class="cat-tag"><i class="fa-solid fa-tag"></i> ${d.category}</span>
+                    </div>
+                    <div class="knowledge-pillars">
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-head-side-cough"></i> Symptoms:</strong>
+                            <p>${symptomsStr}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-dna"></i> Causes:</strong>
+                            <p>${d.causes || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-triangle-exclamation"></i> Risk Factors:</strong>
+                            <p>${d.risk_factors || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-shield-halved"></i> Prevention:</strong>
+                            <p>${d.prevention || d.prevention_tips || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-capsules"></i> General Treatment Information:</strong>
+                            <p>${d.treatment || d.medicine || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box warning-pillar">
+                            <strong><i class="fa-solid fa-user-doctor"></i> When to Seek Medical Care:</strong>
+                            <p>${d.when_to_seek_care || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    } catch (error) {
+        container.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error loading knowledge base: ${error.message}</p></div>`;
+    }
+}
+
+
+// ==========================================================================
+// 📊 Health Trend Tracking Module
+// ==========================================================================
+
+state.activeChartMetric = 'temperature';
+state.trendsSummary = null;
+
+function handleMetricTypeChange(e) {
+    const val = e.target.value;
+    const priLabel = document.getElementById('primaryLabel');
+    const secGroup = document.getElementById('secondaryValGroup');
+    const unitSelect = document.getElementById('unitSelect');
+    const priInput = document.getElementById('valPrimaryInput');
+    
+    if (val === 'temperature') {
+        priLabel.textContent = 'Temperature (°F)';
+        priInput.placeholder = 'e.g. 98.6';
+        secGroup.style.display = 'none';
+        unitSelect.innerHTML = '<option value="°F">°F</option><option value="°C">°C</option>';
+    } else if (val === 'weight') {
+        priLabel.textContent = 'Weight (kg)';
+        priInput.placeholder = 'e.g. 72.5';
+        secGroup.style.display = 'none';
+        unitSelect.innerHTML = '<option value="kg">kg</option><option value="lbs">lbs</option>';
+    } else if (val === 'blood_pressure') {
+        priLabel.textContent = 'Systolic (mmHg)';
+        priInput.placeholder = 'e.g. 120';
+        secGroup.style.display = 'block';
+        unitSelect.innerHTML = '<option value="mmHg">mmHg</option>';
+    } else if (val === 'blood_glucose') {
+        priLabel.textContent = 'Blood Glucose (mg/dL)';
+        priInput.placeholder = 'e.g. 95';
+        secGroup.style.display = 'none';
+        unitSelect.innerHTML = '<option value="mg/dL">mg/dL</option>';
+    }
+}
+
+async function handleHealthLogSubmit(e) {
+    e.preventDefault();
+    const metricType = document.getElementById('metricTypeSelect').value;
+    const priVal = parseFloat(document.getElementById('valPrimaryInput').value);
+    const secInput = document.getElementById('valSecondaryInput').value;
+    const secVal = secInput !== '' ? parseFloat(secInput) : null;
+    const unit = document.getElementById('unitSelect').value;
+    const notes = document.getElementById('notesInput').value.trim();
+    
+    if (isNaN(priVal) || priVal <= 0) {
+        alert('Please enter a valid reading value.');
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/health-trends/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: state.userId,
+                metric_type: metricType,
+                value_primary: priVal,
+                value_secondary: secVal,
+                unit: unit,
+                notes: notes
+            })
+        });
+        const data = await res.json();
+        
+        if (data.error) {
+            alert(`Error saving reading: ${data.error}`);
+            return;
+        }
+        
+        // Display instant feedback toast with reassuring clinical evaluation
+        if (data.assessment && data.assessment.single_feedback) {
+            const feedbackBanner = document.getElementById('vitalLogFeedback');
+            const feedbackText = document.getElementById('feedbackText');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            
+            feedbackText.textContent = data.assessment.single_feedback;
+            if (data.log && data.log.status === 'Normal') {
+                feedbackIcon.className = 'fa-solid fa-circle-check';
+                feedbackBanner.className = 'instant-feedback-banner feedback-good';
+            } else {
+                feedbackIcon.className = 'fa-solid fa-circle-info';
+                feedbackBanner.className = 'instant-feedback-banner feedback-alert';
+            }
+            feedbackBanner.style.display = 'flex';
+        }
+
+        // Reset form inputs
+        document.getElementById('valPrimaryInput').value = '';
+        document.getElementById('valSecondaryInput').value = '';
+        document.getElementById('notesInput').value = '';
+        
+        // Reload health trends summary
+        await loadHealthTrends();
+    } catch (error) {
+        alert(`Failed to save vital reading: ${error.message}`);
+    }
+}
+
+async function loadHealthTrends() {
+    try {
+        const resSum = await fetch(`/api/health-trends/summary/${state.userId}`);
+        const dataSum = await resSum.json();
+        
+        if (dataSum.summary) {
+            state.trendsSummary = dataSum.summary;
+            updateMetricSummaryCards(dataSum.summary);
+            
+            const activeMetric = state.activeChartMetric || 'temperature';
+            if (dataSum.summary[activeMetric]) {
+                renderTrendCanvasChart(activeMetric, dataSum.summary[activeMetric].history || []);
+            }
+        }
+        
+        if (dataSum.assessment) {
+            updateOverallAssessmentUI(dataSum.assessment);
+        }
+
+        // Load detailed table logs
+        const resLogs = await fetch(`/api/health-trends/user/${state.userId}`);
+        const dataLogs = await resLogs.json();
+        
+        if (dataLogs.logs) {
+            renderHealthLogsTable(dataLogs.logs);
+        }
+    } catch (error) {
+        console.error('Error loading health trends:', error);
+    }
+}
+
+function updateOverallAssessmentUI(assessment) {
+    const badge = document.getElementById('overallStatusBadge');
+    const icon = document.getElementById('overallStatusIcon');
+    const text = document.getElementById('overallStatusText');
+    const title = document.getElementById('overallAssessmentTitle');
+    const msg = document.getElementById('overallAssessmentMsg');
+    const time = document.getElementById('overallAssessmentTime');
+    
+    if (badge) badge.className = `assessment-badge ${assessment.css_class}`;
+    if (icon) icon.className = `fa-solid ${assessment.icon}`;
+    if (text) text.textContent = `Overall Condition: ${assessment.status}`;
+    if (title) title.textContent = assessment.title;
+    if (msg) msg.textContent = assessment.message;
+    if (time) time.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+
+function updateMetricSummaryCards(summary) {
+    // 1. Temperature
+    const temp = summary.temperature;
+    const valTemp = document.getElementById('valTemp');
+    const statusTemp = document.getElementById('statusTemp');
+    const timeTemp = document.getElementById('timeTemp');
+    if (temp && temp.latest) {
+        valTemp.textContent = temp.latest.val_pri;
+        statusTemp.textContent = temp.latest.status;
+        statusTemp.className = `status-tag status-${temp.latest.status.toLowerCase().replace(/\s+/g, '-')}`;
+        timeTemp.textContent = new Date(temp.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // 2. Weight
+    const wt = summary.weight;
+    const valWeight = document.getElementById('valWeight');
+    const statusWeight = document.getElementById('statusWeight');
+    const timeWeight = document.getElementById('timeWeight');
+    if (wt && wt.latest) {
+        valWeight.textContent = wt.latest.val_pri;
+        statusWeight.textContent = wt.delta ? (wt.delta > 0 ? `+${wt.delta} kg` : `${wt.delta} kg`) : 'Normal';
+        statusWeight.className = `status-tag status-normal`;
+        timeWeight.textContent = new Date(wt.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // 3. Blood Pressure
+    const bp = summary.blood_pressure;
+    const valBp = document.getElementById('valBp');
+    const statusBp = document.getElementById('statusBp');
+    const timeBp = document.getElementById('timeBp');
+    if (bp && bp.latest) {
+        valBp.textContent = `${bp.latest.val_pri}/${bp.latest.val_sec || '--'}`;
+        statusBp.textContent = bp.latest.status;
+        statusBp.className = `status-tag status-${bp.latest.status.toLowerCase().replace(/\s+/g, '-')}`;
+        timeBp.textContent = new Date(bp.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // 4. Glucose
+    const gl = summary.blood_glucose;
+    const valGlucose = document.getElementById('valGlucose');
+    const statusGlucose = document.getElementById('statusGlucose');
+    const timeGlucose = document.getElementById('timeGlucose');
+    if (gl && gl.latest) {
+        valGlucose.textContent = gl.latest.val_pri;
+        statusGlucose.textContent = gl.latest.status;
+        statusGlucose.className = `status-tag status-${gl.latest.status.toLowerCase().replace(/\s+/g, '-')}`;
+        timeGlucose.textContent = new Date(gl.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+}
+
+function renderHealthLogsTable(logs) {
+    const tbody = document.getElementById('healthLogsTableBody');
+    if (!tbody) return;
+    
+    if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center">No vital logs recorded yet. Use the form above to record your first reading.</td></tr>`;
+        return;
+    }
+    
+    let html = '';
+    logs.forEach(l => {
+        const metricNameMap = {
+            'temperature': '🌡️ Temperature',
+            'weight': '⚖️ Weight',
+            'blood_pressure': '🩸 Blood Pressure',
+            'blood_glucose': '🍬 Blood Glucose'
+        };
+        const mName = metricNameMap[l.metric_type] || l.metric_type;
+        const readingStr = l.value_secondary ? `${l.value_primary} / ${l.value_secondary} ${l.unit}` : `${l.value_primary} ${l.unit}`;
+        const dateStr = new Date(l.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const statusClass = `status-tag status-${(l.status || 'normal').toLowerCase().replace(/\s+/g, '-')}`;
+        
+        html += `
+            <tr>
+                <td>${dateStr}</td>
+                <td><strong>${mName}</strong></td>
+                <td><span class="reading-val">${readingStr}</span></td>
+                <td><span class="${statusClass}">${l.status}</span></td>
+                <td>${l.notes || '-'}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteHealthLog(${l.id})"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+window.deleteHealthLog = async function(logId) {
+    if (!confirm('Are you sure you want to delete this vital reading?')) return;
+    try {
+        const res = await fetch(`/api/health-trends/${logId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.message) {
+            await loadHealthTrends();
+        }
+    } catch (e) {
+        alert('Failed to delete log.');
+    }
+};
+
+// Canvas Line Chart Renderer
+function renderTrendCanvasChart(metricType, history) {
+    const canvas = document.getElementById('trendChartCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width || 600;
+    canvas.height = rect.height || 200;
+    
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    
+    if (!history || history.length === 0) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`No historical data for ${metricType}. Log entries to generate trend graph.`, w / 2, h / 2);
+        return;
+    }
+    
+    const padding = { top: 30, right: 30, bottom: 40, left: 50 };
+    const chartW = w - padding.left - padding.right;
+    const chartH = h - padding.top - padding.bottom;
+    
+    const values = history.map(d => d.value_primary);
+    let minVal = Math.min(...values);
+    let maxVal = Math.max(...values);
+    
+    if (minVal === maxVal) {
+        minVal = minVal * 0.9;
+        maxVal = maxVal * 1.1;
+    }
+    
+    const valRange = maxVal - minVal || 1;
+    
+    // Draw background grid lines
+    ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#334155' : '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        
+        const gridVal = (maxVal - (valRange / 4) * i).toFixed(1);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(gridVal, padding.left - 8, y + 4);
+    }
+    ctx.stroke();
+    
+    // Plot points
+    const points = history.map((item, idx) => {
+        const x = padding.left + (chartW / (history.length - 1 || 1)) * idx;
+        const y = padding.top + chartH - ((item.value_primary - minVal) / valRange) * chartH;
+        return { x, y, item };
+    });
+    
+    // Draw gradient area
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, h - padding.bottom);
+    gradient.addColorStop(0, 'rgba(2, 132, 199, 0.35)');
+    gradient.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
+    
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, h - padding.bottom);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(points[points.length - 1].x, h - padding.bottom);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    
+    // Draw connecting trend line
+    ctx.beginPath();
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 3;
+    points.forEach((p, idx) => {
+        if (idx === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+    
+    // Draw data points & X-axis labels
+    points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#0284c7';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.item.value_primary, p.x, p.y - 10);
+        
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.fillText(p.item.time, p.x, h - padding.bottom + 20);
+    });
+}
+
+// ==========================================================================
+// 📖 Interactive Disease Details Modal Controller
+// ==========================================================================
+
+window.openDiseaseDetailModal = async function(encodedDiseaseName) {
+    const diseaseName = decodeURIComponent(encodedDiseaseName);
+    const modal = document.getElementById('diseaseDetailModal');
+    const titleSpan = document.getElementById('detailModalTitle');
+    const contentDiv = document.getElementById('diseaseDetailContent');
+    
+    if (!modal || !contentDiv) return;
+    
+    if (titleSpan) titleSpan.textContent = diseaseName;
+    contentDiv.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading full medical profile for ${diseaseName}...</div>`;
+    modal.classList.add('active');
+    
+    try {
+        const res = await fetch(`/api/knowledge/${encodeURIComponent(diseaseName)}`);
+        const data = await res.json();
+        
+        if (data.error || !data.disease) {
+            contentDiv.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);">Medical knowledge details not found for "${diseaseName}".</p></div>`;
+            return;
+        }
+        
+        const d = data.disease;
+        const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => d.severity.toLowerCase().includes(s)) 
+            ? 'badge-severity-high' 
+            : d.severity.toLowerCase().includes('moderate') 
+            ? 'badge-severity-moderate' 
+            : 'badge-severity-mild';
+            
+        const symptomsStr = Array.isArray(d.symptoms) ? d.symptoms.join(', ') : (d.symptoms || 'N/A');
+
+        contentDiv.innerHTML = `
+            <div class="knowledge-card modal-knowledge-card">
+                <div class="knowledge-card-header">
+                    <div class="title-row" style="margin-bottom:6px;">
+                        <h3 style="font-size:20px; font-weight:700; color:var(--primary);"><i class="fa-solid fa-disease"></i> ${d.disease}</h3>
+                        <span class="badge ${severityClass}" style="font-size:12px; padding:4px 10px;">${d.severity} Severity</span>
+                    </div>
+                    <div class="meta-info-row" style="display:flex; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--text-muted); background:var(--primary-bg); padding:10px 14px; border-radius:var(--radius-md); margin-top:6px;">
+                        <span><i class="fa-solid fa-tag" style="color:var(--primary);"></i> <strong>Category:</strong> ${d.category}</span>
+                        <span><i class="fa-solid fa-user-doctor" style="color:var(--primary);"></i> <strong>Specialist:</strong> ${d.specialist}</span>
+                        <span><i class="fa-solid fa-users" style="color:var(--primary);"></i> <strong>Target Group:</strong> ${d.age_group || 'All ages'}</span>
+                    </div>
+                </div>
+                <div class="knowledge-pillars" style="margin-top:14px; display:flex; flex-direction:column; gap:12px;">
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-head-side-cough"></i> 🩺 1. Symptoms:</strong>
+                        <p>${symptomsStr}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-dna"></i> 🧬 2. Causes:</strong>
+                        <p>${d.causes || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-triangle-exclamation"></i> ⚠️ 3. Risk Factors:</strong>
+                        <p>${d.risk_factors || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-shield-halved"></i> 🛡️ 4. Prevention & Precautions:</strong>
+                        <p>${d.prevention || d.prevention_tips || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-capsules"></i> 💊 5. General Treatment Information & Medications:</strong>
+                        <p>${d.treatment || d.medicine || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box warning-pillar">
+                        <strong><i class="fa-solid fa-hospital-user"></i> 👨‍⚕️ 6. When to Seek Medical Care:</strong>
+                        <p>${d.when_to_seek_care || 'N/A'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        contentDiv.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error: ${error.message}</p></div>`;
+    }
+};
+
+// Global ESC key listener for modal closing
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    }
+});
+
+
