@@ -5,3 +5,4 @@ APScheduler==3.10.4
 numpy==1.26.4
 fuzzywuzzy==0.18.0
 python-Levenshtein==0.25.0
+gunicorn==21.2.0
