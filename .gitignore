@@ -1,5 +1,25 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.pyc
-instance/
-.env
+*.pyo
+*.pyd
+*.db
+
+# Virtual environments
 venv/
+env/
+ENV/
+
+# Local environment & secret variables
+.env
+.env.local
+
+# Database instance files
+instance/
+
+# System and IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

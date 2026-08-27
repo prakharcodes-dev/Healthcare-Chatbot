@@ -564,10 +564,9 @@ def add_health_log():
         val_sec = float(data['value_secondary']) if data.get('value_secondary') is not None and str(data.get('value_secondary')).strip() != '' else None
         unit = data.get('unit', '')
         notes = data.get('notes', '')
-
-        notes = data.get('notes', '')
         
         if not metric_type or val_pri <= 0:
+
             return jsonify({'error': 'Invalid metric type or reading value'}), 400
             
         status = evaluate_health_metric_status(metric_type, val_pri, val_sec)
