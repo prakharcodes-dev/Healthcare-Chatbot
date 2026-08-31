@@ -4,7 +4,14 @@ from collections import Counter
 from flask import Blueprint, request, jsonify, current_app, render_template
 from fuzzywuzzy import process
 from backend.models import ChatSession, ChatMessage, DiseaseSearch, UserHealthProfile, Notification, HealthLog
-from backend.utils import clean_symptoms, generate_session_id, analyze_sentiment
+from backend.utils import (
+    clean_symptoms, 
+    generate_session_id, 
+    analyze_sentiment, 
+    detect_relevant_measurements, 
+    check_urgent_safety_triggers,
+    extract_inline_measurements
+)
 from backend.extensions import db
 
 api_bp = Blueprint('api', __name__)
@@ -20,7 +27,7 @@ def health_check():
     return jsonify({
         'status': 'running',
         'disease_count': len(diseases),
-        'features': ['enhanced_matching', 'chat_history', 'notifications', 'autocomplete']
+        'features': ['enhanced_matching', 'chat_history', 'notifications', 'autocomplete', 'conditional_measurements']
     })
 
 @api_bp.route('/api/session/start', methods=['POST'])
@@ -53,11 +60,13 @@ def end_session(session_id):
 def evaluate_health_metric_status(metric_type, val_pri, val_sec=None):
     metric_type = (metric_type or '').lower().strip()
     if metric_type == 'temperature':
-        if val_pri < 97.0:
+        # Accept either °F or °C; normalize float comparison
+        temp_f = val_pri * 9/5 + 32 if val_pri < 50 else val_pri
+        if temp_f < 97.0:
             return 'Low'
-        elif 97.0 <= val_pri <= 99.5:
+        elif 97.0 <= temp_f <= 99.5:
             return 'Normal'
-        elif 99.5 < val_pri <= 102.0:
+        elif 99.5 < temp_f <= 102.0:
             return 'Elevated'
         else:
             return 'High'
@@ -85,14 +94,52 @@ def evaluate_health_metric_status(metric_type, val_pri, val_sec=None):
         return 'Normal'
     return 'Normal'
 
-def build_structured_chat_response(user_symptoms, final_matches):
+def build_structured_chat_response(user_symptoms, final_matches, user_measurements=None, urgent_flags=None):
+    measurements_summary = []
+    if user_measurements:
+        if 'temperature' in user_measurements:
+            t_c = user_measurements['temperature']
+            t_f = round(t_c * 9/5 + 32, 1)
+            st_temp = evaluate_health_metric_status('temperature', t_f)
+            measurements_summary.append({
+                'metric': 'Body Temperature',
+                'value': f"{t_c} °C ({t_f} °F)",
+                'status': st_temp,
+                'type': 'temperature',
+                'icon': 'fa-temperature-high',
+                'badge_class': 'badge-severity-high' if st_temp in ['High', 'Elevated'] else 'badge-severity-mild'
+            })
+        if 'bp_sys' in user_measurements:
+            sys_v = user_measurements['bp_sys']
+            dia_v = user_measurements.get('bp_dia', 80)
+            st_bp = evaluate_health_metric_status('blood_pressure', sys_v, dia_v)
+            measurements_summary.append({
+                'metric': 'Blood Pressure',
+                'value': f"{int(sys_v)}/{int(dia_v)} mmHg",
+                'status': st_bp,
+                'type': 'blood_pressure',
+                'icon': 'fa-heart-pulse',
+                'badge_class': 'badge-severity-high' if 'High' in st_bp else ('badge-severity-moderate' if 'Elevated' in st_bp else 'badge-severity-mild')
+            })
+        if 'weight' in user_measurements:
+            wt_v = user_measurements['weight']
+            measurements_summary.append({
+                'metric': 'Body Weight',
+                'value': f"{wt_v} kg",
+                'status': 'Normal',
+                'type': 'weight',
+                'icon': 'fa-weight-scale',
+                'badge_class': 'badge-match'
+            })
+
     if not final_matches:
         return {
             'possible_causes': [],
-            'why': f"No disease matches found in dataset for reported symptoms: {', '.join(user_symptoms)}.",
+            'why': f"No condition matches found in dataset for reported symptoms: {', '.join(user_symptoms)}.",
             'what_you_can_do': "Rest, stay hydrated, monitor your health closely, and consult a doctor if you feel unwell.",
             'seek_medical_care_if': "Symptoms persist, worsen over 24-48 hours, or new unexplained symptoms develop.",
-            'emergency_warning': "If you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma, call emergency services (911/112) immediately."
+            'emergency_warning': "If you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma, call emergency services (911/112) immediately.",
+            'measurements_summary': measurements_summary
         }
     
     top_3 = final_matches[:3]
@@ -100,8 +147,23 @@ def build_structured_chat_response(user_symptoms, final_matches):
     
     possible_causes = [m['disease'] for m in final_matches[:5]]
     symptoms_str = ", ".join(user_symptoms)
+    
     why_text = f"Your reported symptoms ({symptoms_str}) overlap significantly with the diagnostic criteria for these conditions, especially {top_match['disease']} ({top_match['match_percentage']}% match)."
     
+    # Append submitted health measurements if present
+    if user_measurements:
+        m_parts = []
+        if 'temperature' in user_measurements:
+            m_parts.append(f"Temperature: {user_measurements['temperature']} °C")
+        if 'bp_sys' in user_measurements:
+            bp_s = f"{user_measurements['bp_sys']}/{user_measurements.get('bp_dia', 80)}"
+            m_parts.append(f"Blood Pressure: {bp_s} mmHg")
+        if 'weight' in user_measurements:
+            m_parts.append(f"Weight: {user_measurements['weight']} kg")
+            
+        if m_parts:
+            why_text += f" Recorded Measurements: {', '.join(m_parts)}. Combining your symptoms and measurements suggests these possible health concerns."
+
     care_items = []
     if top_match.get('treatment'):
         care_items.append(f"Treatment protocol: {top_match['treatment']}")
@@ -118,7 +180,9 @@ def build_structured_chat_response(user_symptoms, final_matches):
     seek_care = top_match.get('when_to_seek_care') or f"Consult a {spec} if symptoms persist beyond 3-5 days or progressively worsen."
     
     is_high = any('high' in m.get('severity', '').lower() or 'severe' in m.get('severity', '').lower() for m in top_3)
-    if is_high:
+    if urgent_flags:
+        emergency = f"⚠️ IMPORTANT SAFETY ALERT: Because you reported {', '.join(urgent_flags)}, this should not be ignored. If you are currently unconscious, confused, having severe breathing difficulty, chest pain, or worsening symptoms, seek urgent medical care immediately (Call 911/112). This chatbot provides general information and is not a medical diagnosis."
+    elif is_high:
         emergency = f"EMERGENCY WARNING: High-severity condition detected ({top_match['disease']}). Seek immediate emergency medical care (Call 911/112) if you experience severe shortness of breath, sudden chest pain, stiff neck with high fever, confusion, or severe bleeding."
     else:
         emergency = "EMERGENCY WARNING: Call emergency services (911/112) or go to the nearest emergency room immediately if you develop sudden chest pain, severe shortness of breath, loss of consciousness, or severe bleeding."
@@ -128,16 +192,18 @@ def build_structured_chat_response(user_symptoms, final_matches):
         'why': why_text,
         'what_you_can_do': what_you_can_do,
         'seek_medical_care_if': seek_care,
-        'emergency_warning': emergency
+        'emergency_warning': emergency,
+        'measurements_summary': measurements_summary
     }
+
 
 @api_bp.route('/predict', methods=['POST'])
 def predict():
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         symptoms_input = data.get('symptoms', '')
         session_id = data.get('session_id', generate_session_id())
-        user_id = data.get('user_id')
+        user_id = data.get('user_id', 1)
         
         chat_history = current_app.config['CHAT_HISTORY']
         matcher = current_app.config['MATCHER']
@@ -153,6 +219,101 @@ def predict():
             chat_history.add_message(session_id, str(symptoms_input), 'Please tell me your symptoms', 'question')
             return jsonify({'matches': [], 'message': 'Please tell me your symptoms', 'session_id': session_id})
         
+        needed_measurements = detect_relevant_measurements(user_symptoms)
+        inline_m = extract_inline_measurements(symptoms_input) if isinstance(symptoms_input, str) else {}
+        submitted_measurements = data.get('measurements') or {}
+        if inline_m:
+            submitted_measurements = {**inline_m, **submitted_measurements}
+            
+        skip_measurements = bool(data.get('skip_measurements'))
+        urgent_flags = check_urgent_safety_triggers(user_symptoms)
+        
+        # Step 1: Check if measurements are relevant and user hasn't submitted or skipped them yet
+        if needed_measurements and not submitted_measurements and not skip_measurements:
+            return jsonify({
+                'requested_measurements': needed_measurements,
+                'user_symptoms': user_symptoms,
+                'session_id': session_id,
+                'urgent_flags': urgent_flags,
+                'message': 'To better understand your symptoms, please enter relevant health measurements if available.'
+            })
+
+            
+        # Step 2: If measurements were submitted by the user, validate & save to HealthLog
+        valid_measurements = {}
+        if submitted_measurements and isinstance(submitted_measurements, dict):
+            s_str = ", ".join(user_symptoms)
+            
+            # 1. Temperature
+            if 'temperature' in submitted_measurements and submitted_measurements['temperature'] is not None:
+                try:
+                    val_t = float(submitted_measurements['temperature'])
+                    # Auto-convert if entered in °F (> 70)
+                    temp_c = round((val_t - 32) * 5/9, 1) if val_t > 70 else round(val_t, 1)
+                    if 30.0 <= temp_c <= 45.0:
+                        valid_measurements['temperature'] = temp_c
+                        st_t = evaluate_health_metric_status('temperature', temp_c * 9/5 + 32)
+                        log_t = HealthLog(
+                            user_id=user_id or 1,
+                            metric_type='temperature',
+                            value_primary=temp_c,
+                            unit='°C',
+                            notes=f"Symptom check: {s_str}",
+                            status=st_t,
+                            timestamp=datetime.utcnow()
+                        )
+                        db.session.add(log_t)
+                except (ValueError, TypeError):
+                    pass
+
+            # 2. Blood Pressure
+            if 'bp_sys' in submitted_measurements and submitted_measurements['bp_sys'] is not None:
+                try:
+                    val_sys = float(submitted_measurements['bp_sys'])
+                    val_dia = float(submitted_measurements.get('bp_dia', 80)) if submitted_measurements.get('bp_dia') else 80.0
+                    if 50.0 <= val_sys <= 250.0 and 30.0 <= val_dia <= 150.0:
+                        valid_measurements['bp_sys'] = val_sys
+                        valid_measurements['bp_dia'] = val_dia
+                        st_bp = evaluate_health_metric_status('blood_pressure', val_sys, val_dia)
+                        log_bp = HealthLog(
+                            user_id=user_id or 1,
+                            metric_type='blood_pressure',
+                            value_primary=val_sys,
+                            value_secondary=val_dia,
+                            unit='mmHg',
+                            notes=f"Symptom check: {s_str}",
+                            status=st_bp,
+                            timestamp=datetime.utcnow()
+                        )
+                        db.session.add(log_bp)
+                except (ValueError, TypeError):
+                    pass
+
+            # 3. Weight
+            if 'weight' in submitted_measurements and submitted_measurements['weight'] is not None:
+                try:
+                    val_wt = float(submitted_measurements['weight'])
+                    if 1.0 <= val_wt <= 300.0:
+                        valid_measurements['weight'] = round(val_wt, 1)
+                        log_wt = HealthLog(
+                            user_id=user_id or 1,
+                            metric_type='weight',
+                            value_primary=round(val_wt, 1),
+                            unit='kg',
+                            notes=f"Symptom check: {s_str}",
+                            status='Normal',
+                            timestamp=datetime.utcnow()
+                        )
+                        db.session.add(log_wt)
+                except (ValueError, TypeError):
+                    pass
+
+            try:
+                db.session.commit()
+            except Exception as db_err:
+                db.session.rollback()
+
+        # Step 3: Diagnostic Matching Pipeline
         symptom_weights = {}
         for i, symptom in enumerate(user_symptoms):
             symptom_weights[symptom] = max(0.5, 1.0 - (i * 0.1))
@@ -179,7 +340,12 @@ def predict():
             top_match
         )
         
-        structured_resp = build_structured_chat_response(user_symptoms, final_matches)
+        structured_resp = build_structured_chat_response(
+            user_symptoms, 
+            final_matches, 
+            user_measurements=valid_measurements if valid_measurements else None,
+            urgent_flags=urgent_flags
+        )
         sentiment = analyze_sentiment(str(symptoms_input))
         response_time = (datetime.utcnow() - start_time).total_seconds()
         
@@ -202,12 +368,13 @@ def predict():
         }
         
         if not final_matches:
-            response['message'] = 'No matching diseases found. Try different symptoms.'
+            response['message'] = 'No matching conditions found. Try different symptoms.'
         
         return jsonify(response)
     
     except Exception as e:
         return jsonify({'error': str(e), 'matches': []}), 500
+
 
 
 @api_bp.route('/api/history/<session_id>', methods=['GET'])

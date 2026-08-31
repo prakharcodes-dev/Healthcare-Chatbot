@@ -219,6 +219,18 @@ async function sendMessage() {
             addMessage('bot', `Error processing request: ${data.error}`);
             return;
         }
+
+        // Check if backend requested conditional health measurements
+        if (data.requested_measurements && data.requested_measurements.length > 0) {
+            window.lastSymptomsPayload = {
+                symptoms: message,
+                session_id: state.sessionId,
+                user_id: state.userId
+            };
+            const formHtml = formatConditionalMeasurementsCard(data.requested_measurements, data.urgent_flags);
+            addMessage('bot', formHtml);
+            return;
+        }
         
         if (data.matches && data.matches.length > 0) {
             const htmlResponse = formatMatchesResponse(data.matches, data.structured_response);
@@ -236,14 +248,168 @@ async function sendMessage() {
     }
 }
 
+// Format Conditional Health Measurements Form Card
+function formatConditionalMeasurementsCard(requestedMeasurements, urgentFlags) {
+    let html = `<div class="conditional-measurements-card">`;
+    
+    if (urgentFlags && urgentFlags.length > 0) {
+        html += `
+            <div class="urgent-alert-banner">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <strong>⚠️ URGENT MEDICAL NOTICE</strong>
+                    <p>Because you reported <em>${urgentFlags.join(', ')}</em>, this should not be ignored. If you are currently unconscious, confused, having severe breathing difficulty, chest pain, or worsening symptoms, seek emergency medical care (Call 911 / 112) immediately.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    html += `
+        <div class="measurement-card-header">
+            <h4><i class="fa-solid fa-notes-medical"></i> Additional Health Measurements Suggested</h4>
+            <p>To better understand your symptoms, please enter relevant health measurements if available (optional):</p>
+        </div>
+        <form id="conditionalMeasurementsForm" onsubmit="submitConditionalMeasurements(event)">
+    `;
+
+    if (requestedMeasurements.includes('temperature')) {
+        html += `
+            <div class="measurement-form-row">
+                <label for="condTemp">🌡️ Body Temperature (°C):</label>
+                <input type="number" step="0.1" min="30" max="45" id="condTemp" class="form-control-sm" placeholder="e.g. 38.5 °C">
+            </div>
+        `;
+    }
+
+    if (requestedMeasurements.includes('blood_pressure')) {
+        html += `
+            <div class="measurement-form-row">
+                <label>🩺 Blood Pressure (mmHg):</label>
+                <div class="bp-inputs-row">
+                    <input type="number" step="1" min="50" max="250" id="condBpSys" class="form-control-sm" placeholder="Systolic (110)">
+                    <span class="slash">/</span>
+                    <input type="number" step="1" min="30" max="150" id="condBpDia" class="form-control-sm" placeholder="Diastolic (70)">
+                </div>
+            </div>
+        `;
+    }
+
+    if (requestedMeasurements.includes('weight')) {
+        html += `
+            <div class="measurement-form-row">
+                <label for="condWeight">⚖️ Body Weight (kg):</label>
+                <input type="number" step="0.1" min="1" max="300" id="condWeight" class="form-control-sm" placeholder="e.g. 64 kg">
+            </div>
+        `;
+    }
+
+    html += `
+            <div class="measurement-actions-row">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Submit & Analyze</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="submitConditionalMeasurements(event, true)"><i class="fa-solid fa-forward"></i> Skip for Now</button>
+            </div>
+        </form>
+    </div>`;
+
+    return html;
+}
+
+window.submitConditionalMeasurements = async function(e, skip = false) {
+    if (e) e.preventDefault();
+    
+    if (!window.lastSymptomsPayload) return;
+    
+    const payload = { ...window.lastSymptomsPayload };
+    
+    if (skip) {
+        payload.skip_measurements = true;
+    } else {
+        const measurements = {};
+        const tempEl = document.getElementById('condTemp');
+        const bpSysEl = document.getElementById('condBpSys');
+        const bpDiaEl = document.getElementById('condBpDia');
+        const weightEl = document.getElementById('condWeight');
+        
+        if (tempEl && tempEl.value !== '') measurements.temperature = parseFloat(tempEl.value);
+        if (bpSysEl && bpSysEl.value !== '') measurements.bp_sys = parseFloat(bpSysEl.value);
+        if (bpDiaEl && bpDiaEl.value !== '') measurements.bp_dia = parseFloat(bpDiaEl.value);
+        if (weightEl && weightEl.value !== '') measurements.weight = parseFloat(weightEl.value);
+        
+        payload.measurements = measurements;
+    }
+    
+    const cardEl = document.querySelector('.conditional-measurements-card');
+    if (cardEl) {
+        cardEl.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing symptoms and health measurements...</div>`;
+    }
+    
+    try {
+        const res = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        
+        if (cardEl && cardEl.parentElement) {
+            if (data.matches && data.matches.length > 0) {
+                const htmlResponse = formatMatchesResponse(data.matches, data.structured_response);
+                cardEl.parentElement.innerHTML = htmlResponse;
+                
+                if (data.matches[0]) {
+                    updateSearchHistory(payload.symptoms, data.matches[0].disease);
+                }
+                
+                // Refresh Health Trends dashboard automatically!
+                if (!skip && payload.measurements && Object.keys(payload.measurements).length > 0) {
+                    if (typeof loadHealthTrends === 'function') {
+                        loadHealthTrends();
+                    }
+                }
+            } else {
+                cardEl.parentElement.innerHTML = `<p><i class="fa-solid fa-circle-question"></i> No matching conditions found. Try describing symptoms differently.</p>`;
+            }
+        }
+    } catch (err) {
+        if (cardEl) {
+            cardEl.innerHTML = `<p style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error: ${err.message}</p>`;
+        }
+    }
+};
+
+
 // Format Matches in structured 5-section response format
 function formatMatchesResponse(matches, structuredResp) {
     let html = `<div class="matches-response">`;
+    
+    // Recorded Vitals Banner (if measurements were entered/extracted)
+    if (structuredResp && structuredResp.measurements_summary && structuredResp.measurements_summary.length > 0) {
+        html += `<div class="response-section measurements-recorded-section">
+            <h4 class="section-title"><i class="fa-solid fa-notes-medical"></i> <strong>Recorded Health Vitals & Status:</strong></h4>
+            <div class="vitals-recorded-grid">`;
+            
+        structuredResp.measurements_summary.forEach(m => {
+            html += `
+                <div class="recorded-vital-chip">
+                    <span class="vital-icon"><i class="fa-solid ${m.icon}"></i></span>
+                    <div class="vital-details">
+                        <span class="vital-name">${m.metric}</span>
+                        <span class="vital-value"><strong>${m.value}</strong></span>
+                    </div>
+                    <span class="badge ${m.badge_class}">${m.status}</span>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
     
     // 1. Possible causes
     html += `<div class="response-section causes-section">
         <h4 class="section-title"><i class="fa-solid fa-virus-covid"></i> <strong>Possible Causes:</strong></h4>
         <div class="causes-list">`;
+
     
     matches.slice(0, 5).forEach((match) => {
         const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => match.severity.toLowerCase().includes(s)) 
@@ -1000,7 +1166,7 @@ async function fetchAnalytics() {
         if (data.popular_symptoms && data.popular_symptoms.length > 0) {
             message += `<h4 style="font-size:13px; margin-bottom:8px;"><i class="fa-solid fa-tags"></i> Top Reported Symptoms:</h4><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
             data.popular_symptoms.slice(0, 6).forEach(s => {
-                message += `<span class="badge" style="background-color:#f1f5f9; color:var(--text-main); border:1px solid var(--border-color);">${s.symptom} (${s.count})</span>`;
+                message += `<span class="badge badge-symptom-tag">${s.symptom} (${s.count})</span>`;
             });
             message += `</div>`;
         }
