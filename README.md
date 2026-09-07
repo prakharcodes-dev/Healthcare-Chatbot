@@ -1,5 +1,7 @@
 # 🏥 MedVitals AI - Smart Healthcare Chatbot & Assistant
 
+> 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com]
+
 MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features a database of **650+ medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
 
 ---
