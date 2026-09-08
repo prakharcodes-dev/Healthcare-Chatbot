@@ -65,9 +65,14 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <header class="app-header">
-                <div class="header-title">
-                    <h1 id="mainTitle">Symptom Analysis Hub</h1>
-                    <p id="mainSubtitle">Powered by Enhanced Disease Matching Algorithms</p>
+                <div class="header-left-group" style="display: flex; align-items: center; gap: 14px;">
+                    <button id="toggleLeftSidebarBtn" class="sidebar-toggle-btn" title="Collapse / Expand Navigation Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-title">
+                        <h1 id="mainTitle">Symptom Analysis Hub</h1>
+                        <p id="mainSubtitle">Powered by Enhanced Disease Matching Algorithms</p>
+                    </div>
                 </div>
                 <div class="header-status">
                     <span id="connectionStatus" class="status-badge status-loading">
@@ -78,6 +83,9 @@
                     </span>
                     <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
                         <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <button id="toggleRightSidebarBtn" class="sidebar-toggle-btn" title="Collapse / Expand Quick Actions Panel">
+                        <i class="fa-solid fa-sliders"></i>
                     </button>
                 </div>
             </header>

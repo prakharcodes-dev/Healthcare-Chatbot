@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
     initTheme();
+    initSidebarState();
     setupEventListeners();
     await startSession();
     await checkConnection();
@@ -28,12 +29,16 @@ async function init() {
     // Check permission status
     updateNotificationUI();
     
-    // Start local checking of medication reminders (every minute)
+    // Start automatic checking of medication reminders (every 10 seconds)
     startReminderChecker();
 }
 
 // Event Listeners Setup
 function setupEventListeners() {
+    // Sidebar toggle buttons
+    document.getElementById('toggleLeftSidebarBtn')?.addEventListener('click', toggleLeftSidebar);
+    document.getElementById('toggleRightSidebarBtn')?.addEventListener('click', toggleRightSidebar);
+
     // Menu items
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', handleMenuClick);
@@ -248,6 +253,20 @@ async function sendMessage() {
     }
 }
 
+window.handleTempUnitToggle = function(unit) {
+    const input = document.getElementById('condTemp');
+    if (!input) return;
+    if (unit === '°F') {
+        input.placeholder = "e.g. 101.3 °F";
+        input.min = "86";
+        input.max = "113";
+    } else {
+        input.placeholder = "e.g. 38.5 °C";
+        input.min = "30";
+        input.max = "45";
+    }
+};
+
 // Format Conditional Health Measurements Form Card
 function formatConditionalMeasurementsCard(requestedMeasurements, urgentFlags) {
     let html = `<div class="conditional-measurements-card">`;
@@ -275,8 +294,14 @@ function formatConditionalMeasurementsCard(requestedMeasurements, urgentFlags) {
     if (requestedMeasurements.includes('temperature')) {
         html += `
             <div class="measurement-form-row">
-                <label for="condTemp">🌡️ Body Temperature (°C):</label>
-                <input type="number" step="0.1" min="30" max="45" id="condTemp" class="form-control-sm" placeholder="e.g. 38.5 °C">
+                <label for="condTemp">🌡️ Body Temperature:</label>
+                <div class="temp-input-group" style="display:flex; gap:8px; align-items:center;">
+                    <input type="number" step="0.1" min="30" max="45" id="condTemp" class="form-control-sm" placeholder="e.g. 38.5 °C" style="flex:1;">
+                    <select id="condTempUnit" class="unit-select-sm" onchange="window.handleTempUnitToggle(this.value)" style="width:110px; padding:10px; border-radius:var(--radius-md); border:1px solid var(--border-color); background-color:var(--primary-bg); color:var(--text-main); font-weight:600; cursor:pointer;">
+                        <option value="°C" selected>°C</option>
+                        <option value="°F">°F</option>
+                    </select>
+                </div>
             </div>
         `;
     }
@@ -326,11 +351,24 @@ window.submitConditionalMeasurements = async function(e, skip = false) {
     } else {
         const measurements = {};
         const tempEl = document.getElementById('condTemp');
+        const tempUnitEl = document.getElementById('condTempUnit');
         const bpSysEl = document.getElementById('condBpSys');
         const bpDiaEl = document.getElementById('condBpDia');
         const weightEl = document.getElementById('condWeight');
         
-        if (tempEl && tempEl.value !== '') measurements.temperature = parseFloat(tempEl.value);
+        if (tempEl && tempEl.value !== '') {
+            let val = parseFloat(tempEl.value);
+            const unit = tempUnitEl ? tempUnitEl.value : '°C';
+            if (unit === '°F' || val > 70) {
+                // Store converted °C for core vector evaluation, keep original unit flag
+                measurements.temperature = Math.round(((val - 32) * 5 / 9) * 10) / 10;
+                measurements.temp_unit = '°F';
+                measurements.temp_original = val;
+            } else {
+                measurements.temperature = val;
+                measurements.temp_unit = '°C';
+            }
+        }
         if (bpSysEl && bpSysEl.value !== '') measurements.bp_sys = parseFloat(bpSysEl.value);
         if (bpDiaEl && bpDiaEl.value !== '') measurements.bp_dia = parseFloat(bpDiaEl.value);
         if (weightEl && weightEl.value !== '') measurements.weight = parseFloat(weightEl.value);
@@ -1030,33 +1068,84 @@ function testReminderAlert() {
     triggerReminderAlert("Amoxicillin (Test Dose)", "500mg - 1 tablet");
 }
 
-// Start scanning local reminders every 10 seconds
+// ==========================================================================
+// ↔️ Collapsible Sidebar Controllers
+// ==========================================================================
+function toggleLeftSidebar() {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+    container.classList.toggle('left-collapsed');
+    const isCollapsed = container.classList.contains('left-collapsed');
+    localStorage.setItem('medvitals_left_collapsed', isCollapsed ? 'true' : 'false');
+}
+
+function toggleRightSidebar() {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+    container.classList.toggle('right-collapsed');
+    const isCollapsed = container.classList.contains('right-collapsed');
+    localStorage.setItem('medvitals_right_collapsed', isCollapsed ? 'true' : 'false');
+}
+
+function initSidebarState() {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+    if (localStorage.getItem('medvitals_left_collapsed') === 'true') {
+        container.classList.add('left-collapsed');
+    }
+    if (localStorage.getItem('medvitals_right_collapsed') === 'true') {
+        container.classList.add('right-collapsed');
+    }
+}
+
+// Start scanning medication reminders automatically every 10 seconds
 function startReminderChecker() {
+    checkActiveLocalReminders();
     setInterval(checkActiveLocalReminders, 10000);
 }
 
-// Alert browser notification and sound chime for scheduled time matches
-function checkActiveLocalReminders() {
+// Automatically triggers audio sound, desktop notification, and in-chat alert at scheduled time mentioned
+async function checkActiveLocalReminders() {
     const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 5); // "HH:MM"
+    const curHour = now.getHours();
+    const curMin = now.getMinutes();
+    const curTimeStr = `${String(curHour).padStart(2, '0')}:${String(curMin).padStart(2, '0')}`;
     
-    state.activeReminders.forEach(reminder => {
-        if (!reminder.schedule_times) return;
-        reminder.schedule_times.forEach(scheduledTime => {
-            if (scheduledTime === currentTime) {
-                const storageKey = `last_notified_${reminder.id}_${scheduledTime}`;
-                const lastNotified = localStorage.getItem(storageKey);
-                const tenMinutesAgo = now.getTime() - (10 * 60 * 1000);
-                
-                // Ensure we don't alert multiple times within the same minute
-                if (!lastNotified || parseInt(lastNotified) < tenMinutesAgo) {
-                    triggerReminderAlert(reminder.medication_name, reminder.dosage);
-                    localStorage.setItem(storageKey, now.getTime().toString());
+    // 1. Check local reminders saved in browser
+    if (state.activeReminders && state.activeReminders.length > 0) {
+        state.activeReminders.forEach(reminder => {
+            if (!reminder.schedule_times) return;
+            reminder.schedule_times.forEach(scheduledTime => {
+                const parts = scheduledTime.trim().split(':');
+                if (parts.length === 2) {
+                    const normTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+                    if (normTime === curTimeStr) {
+                        const storageKey = `last_notified_${reminder.id}_${normTime}_${now.toDateString()}`;
+                        const lastNotified = localStorage.getItem(storageKey);
+                        
+                        if (!lastNotified) {
+                            triggerReminderAlert(reminder.medication_name, reminder.dosage);
+                            localStorage.setItem(storageKey, 'true');
+                        }
+                    }
                 }
-            }
+            });
         });
-    });
+    }
+
+    // 2. Poll backend for due database notifications
+    try {
+        const res = await fetch(`/api/reminders/due?user_id=${state.userId || 1}`);
+        const data = await res.json();
+        if (data.due_reminders && data.due_reminders.length > 0) {
+            data.due_reminders.forEach(r => {
+                triggerReminderAlert(r.title || 'Medication Reminder', r.message || 'Time to take your scheduled dose.');
+            });
+            loadReminders();
+        }
+    } catch (err) {}
 }
+
 
 // ==========================================================================
 // Recent Searches & History (Side panel)

@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import Counter
 from flask import Blueprint, request, jsonify, current_app, render_template
 from fuzzywuzzy import process
@@ -877,5 +877,137 @@ def get_health_trends_summary(user_id):
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ==========================================================================
+# ⏰ Medication Reminders & Due Notification API Routes
+# ==========================================================================
+
+@api_bp.route('/api/reminders/due', methods=['GET'])
+def get_due_reminders():
+    """
+    Returns pending notifications whose scheduled time has arrived or passed.
+    """
+    try:
+        user_id = request.args.get('user_id', 1, type=int)
+        now = datetime.utcnow()
+        
+        # Check notifications due up to now (or within last 24h)
+        due_list = Notification.query.filter(
+            Notification.user_id == user_id,
+            Notification.status == 'pending',
+            Notification.scheduled_time <= now
+        ).order_by(Notification.scheduled_time.asc()).all()
+        
+        result = []
+        for n in due_list:
+            n.status = 'sent'
+            n.sent_time = now
+            result.append({
+                'id': n.id,
+                'title': n.title,
+                'message': n.message,
+                'type': n.type,
+                'scheduled_time': n.scheduled_time.isoformat()
+            })
+            
+        if due_list:
+            db.session.commit()
+            
+        return jsonify({'due_reminders': result, 'count': len(result)})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e), 'due_reminders': []}), 500
+
+
+@api_bp.route('/api/reminders/active', methods=['GET'])
+def get_active_reminders():
+    """
+    Returns all pending future medication reminders for the user.
+    """
+    try:
+        user_id = request.args.get('user_id', 1, type=int)
+        pending = Notification.query.filter_by(user_id=user_id, status='pending')\
+            .order_by(Notification.scheduled_time.asc()).all()
+            
+        result = [{
+            'id': n.id,
+            'title': n.title,
+            'message': n.message,
+            'type': n.type,
+            'scheduled_time': n.scheduled_time.isoformat(),
+            'time_formatted': n.scheduled_time.strftime('%H:%M')
+        } for n in pending]
+        
+        return jsonify({'reminders': result, 'count': len(result)})
+    except Exception as e:
+        return jsonify({'error': str(e), 'reminders': []}), 500
+
+
+@api_bp.route('/api/reminders/create', methods=['POST'])
+def create_reminder():
+    """
+    Creates a new scheduled medication reminder.
+    """
+    try:
+        data = request.get_json() or {}
+        user_id = data.get('user_id', 1)
+        med_name = data.get('med_name', 'Medication')
+        dosage = data.get('dosage', '1 tablet')
+        time_str = data.get('time', '09:00') # HH:MM
+        duration_days = int(data.get('duration_days', 30))
+        
+        now = datetime.utcnow()
+        hour, minute = map(int, time_str.split(':'))
+        
+        reminders_created = []
+        for day in range(min(duration_days, 30)):
+            scheduled_date = now.replace(hour=hour, minute=minute, second=0, microsecond=0) + timedelta(days=day)
+            if scheduled_date <= now:
+                scheduled_date += timedelta(days=1)
+                
+            notif = Notification(
+                user_id=user_id,
+                type='medication',
+                title=f"Medication Reminder: {med_name}",
+                message=f"It is time to take your dose of {med_name} ({dosage}).",
+                scheduled_time=scheduled_date,
+                status='pending'
+            )
+            db.session.add(notif)
+            reminders_created.append(notif)
+            
+        db.session.commit()
+        return jsonify({'message': f'Scheduled {len(reminders_created)} medication reminders for {med_name}'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@api_bp.route('/api/reminders/test', methods=['POST'])
+def test_reminder_alert():
+    """
+    Creates an immediate test alert due right now.
+    """
+    try:
+        data = request.get_json() or {}
+        user_id = data.get('user_id', 1)
+        now = datetime.utcnow()
+        
+        notif = Notification(
+            user_id=user_id,
+            type='medication',
+            title="Medication Reminder Alert",
+            message="It is time to take your dose of Amoxicillin (Test Dose) (500mg - 1 tablet).",
+            scheduled_time=now,
+            status='pending'
+        )
+        db.session.add(notif)
+        db.session.commit()
+        return jsonify({'message': 'Test alert generated successfully', 'id': notif.id})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 
 

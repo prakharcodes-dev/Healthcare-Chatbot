@@ -21,7 +21,7 @@ MedVitals AI is an advanced, responsive healthcare chatbot designed to help user
 
 ### 📊 2. Health Trend Tracking & Reassuring Clinical Assessment
 - **Vital Metric Logging**: Record key health metrics over time:
-  - 🌡️ **Body Temperature** (°F / °C)
+  - 🌡️ **Body Temperature** (°F / °C with automatic unit conversion)
   - ⚖️ **Body Weight** (kg / lbs)
   - 🩸 **Blood Pressure** (Systolic & Diastolic in mmHg)
   - 🍬 **Blood Glucose** (mg/dL)
@@ -33,16 +33,22 @@ MedVitals AI is an advanced, responsive healthcare chatbot designed to help user
 
 ### 🌡️ 3. Conditional Health Measurements & Safety Layer
 - **Symptom-Driven Measurement Detection**: Automatically determines whether health measurements are relevant based on reported symptoms:
-  - *Fever / Chills / Feeling hot* $\rightarrow$ Requests **Body Temperature** (°C)
+  - *Fever / Chills / Feeling hot* $\rightarrow$ Requests **Body Temperature** (°C / °F)
   - *Fainting / Dizziness / Lightheadedness / Vertigo* $\rightarrow$ Requests **Blood Pressure** (Systolic / Diastolic mmHg)
-  - *Weight concerns / Obesity / Weight loss* $\rightarrow$ Requests **Body Weight** (kg)
+  - *Weight concerns / Obesity / Weight loss* $\rightarrow$ Requests **Body Weight** (kg / lbs)
   - *Unrelated symptoms (e.g. stuffy nose, rash)* $\rightarrow$ Does NOT ask for unnecessary measurements.
+- **Dynamic Temperature Unit Switcher (°C / °F)**: Allows users to seamlessly toggle between Fahrenheit (°F) and Celsius (°C) when entering body temperature. Automatically handles unit conversion and displays both units clearly in vital logs.
 - **Interactive Inline Measurement Card**: Allows users to enter relevant vitals or click "Skip for Now".
 - **Automatic Health Trends Integration**: Submitted measurements are automatically validated, stored in the database (`HealthLog`), and displayed in the **Health Trends** view and Canvas graphs.
 - **Combined Health Analysis**: Diagnostic matching combines symptoms, entered measurements, and health history into clear **Possible Health Concerns** without claiming confirmed diagnoses.
 - **Urgent Safety Red-Flag Alert**: Immediate safety warning banner for high-risk symptoms (fainting, chest pain, severe breathing difficulty, loss of consciousness) recommending urgent emergency care.
 
-### 📝 4. Structured Chat Responses
+### ↔️ 4. Dual Collapsible Sidebars & Dynamic Workspace
+- **Header Toggle Controls (`☰` & `⚙️`)**: Header buttons allow users to toggle both the left navigation sidebar and the right Quick Actions / MedVitals AI panel.
+- **Customizable Workspace Layout**: Users can close one or both sidebars to expand the central chat workspace to full screen according to their preference.
+- **Smooth Animations & State Persistence**: Uses fluid CSS transitions with layout stability and retains user sidebar open/closed state across sessions using local storage.
+
+### 📝 5. Structured Chat Responses
 Instead of plain text outputs, every symptom check response is formatted into 5 distinct, readable sections:
 1. 🔍 **Possible Causes:** Candidate conditions with match percentages and severity badges
 2. 💡 **Why:** Explanation of why symptoms overlap with the diagnostic criteria, including recorded vitals
@@ -50,13 +56,14 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 4. 👨‍⚕️ **Seek Medical Care If:** Clear guidance on when to consult a specialist or primary physician
 5. 🚨 **Emergency Warning:** High-priority alert banner detailing red-flag emergency symptoms and emergency hotline guidance (911 / 112)
 
-### 🔍 5. Typo-Tolerant Symptom Search & Autocomplete
+### 🔍 6. Typo-Tolerant Symptom Search & Autocomplete
 - Supports natural language symptom inputs (*"I have a severe headache, nausea, and high fever"*) or comma-separated lists.
 - Automatically corrects typos (e.g. `pian` $\rightarrow$ `pain`, `blede` $\rightarrow$ `bleed`, `nausia` $\rightarrow$ `nausea`) using token-level Levenshtein distance and weighted vector cosine similarity.
 - Autocomplete suggestion box offering real-time symptom and disease suggestions as you type.
 
-### ⏰ 6. Active Medication Reminders & Themes
-- **Active Reminders**: Schedule dosage alerts with times, strengths, and durations. Includes real-time 10-second background scanning, Web Audio API chime sounds, desktop notifications, and a 1-click **Test Alert** button.
+### ⏰ 7. Self-Triggering Medication Reminders & Themes
+- **Self-Triggering Automatic Reminders**: Schedule medication dosage alerts with custom times and dosages. A continuous 10-second background polling engine checks due times and automatically fires reminders at the exact scheduled time — complete with Web Audio API chime sounds, desktop popups, and in-chat reminder cards.
+- **Manual Test Alert**: Includes a 1-click "Test Alert" button for quick verification of audio and notification settings.
 - **Dark & Light Themes**: High-contrast, accessible design system supporting dark mode and light mode.
 
 

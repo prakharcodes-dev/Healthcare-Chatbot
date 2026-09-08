@@ -86,7 +86,75 @@ body {
     grid-template-columns: 280px 1fr 340px;
     height: 100vh;
     overflow: hidden;
+    transition: grid-template-columns 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.app-container.left-collapsed {
+    grid-template-columns: 0px 1fr 340px;
+}
+
+.app-container.right-collapsed {
+    grid-template-columns: 280px 1fr 0px;
+}
+
+.app-container.left-collapsed.right-collapsed {
+    grid-template-columns: 0px 1fr 0px;
+}
+
+.sidebar {
+    min-width: 0;
+    overflow: hidden;
+    transition: padding 0.3s ease, opacity 0.2s ease;
+}
+
+.right-panel {
+    min-width: 0;
+    overflow: hidden;
+    transition: padding 0.3s ease, opacity 0.2s ease;
+}
+
+.main-content {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.left-collapsed .sidebar {
+    padding: 0 !important;
+    opacity: 0;
+    visibility: hidden;
+    border: none !important;
+}
+
+.right-collapsed .right-panel {
+    padding: 0 !important;
+    opacity: 0;
+    visibility: hidden;
+    border: none !important;
+}
+
+.sidebar-toggle-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background-color: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: var(--transition-fast);
+    outline: none;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
 
 /* ==========================================================================
    Sidebar Styles
