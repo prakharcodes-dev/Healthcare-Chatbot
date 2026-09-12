@@ -27,27 +27,45 @@
             <nav class="sidebar-menu">
                 <div class="menu-item active" data-section="chat">
                     <i class="fa-solid fa-comment-medical"></i>
-                    <span>Symptom Checker</span>
+                    <div class="menu-text">
+                        <span class="menu-title">Symptom Checker</span>
+                        <span class="menu-subtitle">Check symptoms</span>
+                    </div>
                 </div>
                 <div class="menu-item" data-section="knowledge">
                     <i class="fa-solid fa-book-medical"></i>
-                    <span>Medical Knowledge</span>
+                    <div class="menu-text">
+                        <span class="menu-title">Medical Knowledge</span>
+                        <span class="menu-subtitle">Search 700+ conditions</span>
+                    </div>
                 </div>
                 <div class="menu-item" data-section="trends">
                     <i class="fa-solid fa-chart-line"></i>
-                    <span>Health Trends</span>
+                    <div class="menu-text">
+                        <span class="menu-title">Health Trends</span>
+                        <span class="menu-subtitle">Track vital metrics</span>
+                    </div>
                 </div>
                 <div class="menu-item" data-section="reminders">
                     <i class="fa-solid fa-clock"></i>
-                    <span>Set Reminders</span>
+                    <div class="menu-text">
+                        <span class="menu-title">Set Reminders</span>
+                        <span class="menu-subtitle">Medication alerts</span>
+                    </div>
                 </div>
                 <div class="menu-item" data-section="history">
                     <i class="fa-solid fa-history"></i>
-                    <span>Chat History</span>
+                    <div class="menu-text">
+                        <span class="menu-title">Chat History</span>
+                        <span class="menu-subtitle">Past conversations</span>
+                    </div>
                 </div>
                 <div class="menu-item" data-section="analytics">
                     <i class="fa-solid fa-chart-pie"></i>
-                    <span>Analytics</span>
+                    <div class="menu-text">
+                        <span class="menu-title">Analytics</span>
+                        <span class="menu-subtitle">Usage stats</span>
+                    </div>
                 </div>
             </nav>
             
@@ -57,7 +75,7 @@
                 </div>
                 <div class="user-info">
                     <h4>Prakhar Singh</h4>
-                    <p>Patient Profile #1</p>
+                    <p>Personal Health Profile</p>
                 </div>
             </div>
         </aside>
@@ -70,16 +88,13 @@
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <div class="header-title">
-                        <h1 id="mainTitle">Symptom Analysis Hub</h1>
-                        <p id="mainSubtitle">Powered by Enhanced Disease Matching Algorithms</p>
+                        <h1 id="mainTitle">MedVitals AI — Personal Health Assistant</h1>
+                        <p id="mainSubtitle">Instant symptom insights, 700+ disease lookup & vital health tracking</p>
                     </div>
                 </div>
                 <div class="header-status">
                     <span id="connectionStatus" class="status-badge status-loading">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> Checking connection...
-                    </span>
-                    <span class="session-badge">
-                        <i class="fa-solid fa-key"></i> Session: <span id="sessionId">Initializing...</span>
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...
                     </span>
                     <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
                         <i class="fa-solid fa-moon"></i>
@@ -93,18 +108,74 @@
             <!-- 1. Symptom Chat Section -->
             <section class="app-section" id="sectionChat">
                 <div id="chatMessages" class="chat-messages">
-                    <!-- Default welcome message -->
-                    <div class="message bot-message">
-                        <div class="message-avatar">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
-                        <div class="message-wrapper">
-                            <div class="message-content">
-                                <p><strong>Hello! I am MedVitals AI, your health assistant.</strong></p>
-                                <p>Describe your symptoms in natural language (e.g., <em>"I have a throbbing headache, fever, and nausea"</em>) or comma-separated values (e.g., <em>"cough, sore throat, runny nose"</em>).</p>
-                                <p class="disclaimer-note"><i class="fa-solid fa-triangle-exclamation"></i> Disclaimer: This is an informational tool, not a substitute for professional medical diagnosis or treatment.</p>
+                    <!-- Modern Interactive Welcome Hero Card -->
+                    <div class="welcome-hero-card">
+                        <div class="welcome-hero-header">
+                            <div class="welcome-hero-icon">
+                                <i class="fa-solid fa-heart-pulse"></i>
                             </div>
-                            <span class="message-time">Just now</span>
+                            <div class="welcome-hero-title">
+                                <h2>Welcome to MedVitals AI!</h2>
+                                <p>Your intelligent personal health assistant. How would you like to get started today?</p>
+                            </div>
+                        </div>
+
+                        <!-- 3 Core Feature Highlights -->
+                        <div class="welcome-features-grid">
+                            <div class="feature-card" onclick="switchSection('chat')">
+                                <div class="feature-icon chat-feat-icon"><i class="fa-solid fa-comment-medical"></i></div>
+                                <div class="feature-details">
+                                    <h4>1. Symptom Checker</h4>
+                                    <p>Describe your symptoms in simple words to get instant potential causes & care steps.</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-card" onclick="switchSection('knowledge')">
+                                <div class="feature-icon know-feat-icon"><i class="fa-solid fa-book-medical"></i></div>
+                                <div class="feature-details">
+                                    <h4>2. 700+ Disease Library</h4>
+                                    <p>Search conditions & view 6 medical pillars: Symptoms, Causes, Risks, Prevention, Treatment & Care.</p>
+                                </div>
+                            </div>
+
+                            <div class="feature-card" onclick="switchSection('trends')">
+                                <div class="feature-icon trend-feat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                                <div class="feature-details">
+                                    <h4>3. Health Trend Tracker</h4>
+                                    <p>Log Temperature, BP, Weight & Glucose to view visual trend graphs & condition assessments.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Clickable Example Prompt Chips -->
+                        <div class="symptom-chips-wrapper">
+                            <div class="chips-title">
+                                <i class="fa-solid fa-lightbulb"></i> <span>Click an example symptom below to test instant analysis:</span>
+                            </div>
+                            <div class="symptom-chips-grid">
+                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('fever, severe headache, body aches')">
+                                    <span class="chip-emoji">🤒</span> Fever & Severe Headache
+                                </button>
+                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('dry cough, sore throat, fatigue')">
+                                    <span class="chip-emoji">🫁</span> Cough & Sore Throat
+                                </button>
+                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('dizziness, fainting, weakness')">
+                                    <span class="chip-emoji">🤕</span> Dizziness & Fainting
+                                </button>
+                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('stomach pain, nausea, loss of appetite')">
+                                    <span class="chip-emoji">🤢</span> Stomach Pain & Nausea
+                                </button>
+                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('joint pain, stiffness, muscle aches')">
+                                    <span class="chip-emoji">🦵</span> Joint Pain & Muscle Aches
+                                </button>
+                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('runny nose, sneezing, chest congestion')">
+                                    <span class="chip-emoji">🤧</span> Cold & Chest Congestion
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="hero-disclaimer">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <span><strong>Medical Disclaimer:</strong> MedVitals AI is an informational decision-support tool, not a substitute for professional medical advice, diagnosis, or emergency treatment.</span>
                         </div>
                     </div>
                 </div>
@@ -126,6 +197,13 @@
             <!-- 2. Medical Knowledge Search Section -->
             <section class="app-section" id="sectionKnowledge" style="display: none;">
                 <div class="knowledge-container">
+                    <div class="section-intro-card">
+                        <div class="intro-icon"><i class="fa-solid fa-book-medical"></i></div>
+                        <div class="intro-text">
+                            <h3>Verified Medical Knowledge Base</h3>
+                            <p>Search over 700+ medical conditions or select a category below to inspect comprehensive 6-pillar profiles (Symptoms, Causes, Risk Factors, Prevention, Treatments, and When to Seek Care).</p>
+                        </div>
+                    </div>
                     <div class="knowledge-search-bar">
                         <div class="search-input-wrapper">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -154,6 +232,14 @@
             <!-- 3. Health Trend Tracker Section -->
             <section class="app-section" id="sectionTrends" style="display: none;">
                 <div class="trends-container">
+                    <div class="section-intro-card">
+                        <div class="intro-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="intro-text">
+                            <h3>Health Trend Tracker & Vital Logging</h3>
+                            <p>Log your daily Body Temperature, Weight, Blood Pressure, or Glucose to monitor long-term health trends, view visual line charts, and receive clinical assessments.</p>
+                        </div>
+                    </div>
+
                     <!-- Overall Health Assessment Banner -->
                     <div class="overall-assessment-card" id="healthAssessmentBanner">
                         <div class="assessment-header">
@@ -319,8 +405,15 @@
 
         <!-- Right Panels for Quick Actions, Reminders, and Recent Activity -->
         <aside class="right-panel">
-            <!-- Quick Actions Section -->
-            <section class="panel-section">
+            <!-- Quick Start Help Guide -->
+            <section class="panel-section help-guide-card">
+                <h3><i class="fa-solid fa-circle-question"></i> How to Use</h3>
+                <ul class="quick-guide-list">
+                    <li><i class="fa-solid fa-comment-medical"></i> <strong>Symptom Checker:</strong> Type symptoms below or click sample chips for instant analysis.</li>
+                    <li><i class="fa-solid fa-book-medical"></i> <strong>Medical Knowledge:</strong> Search 650+ conditions & 6 medical pillars.</li>
+                    <li><i class="fa-solid fa-heart-pulse"></i> <strong>Health Trends:</strong> Record temperature, BP, weight & glucose metrics over time.</li>
+                </ul>
+            </section>
                 <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Actions</h3>
                 <div class="action-grid" style="grid-template-columns: 1fr 1fr;">
                     <button class="action-btn" id="addReminderBtn">

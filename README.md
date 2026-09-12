@@ -2,22 +2,22 @@
 
 > 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com]
 
-MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features a database of **650+ medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive database of **700+ medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
 
 ---
 
 ## ✨ Key Features
 
 ### 🧠 1. Better Medical Knowledge Search & Interactive Disease Modals
-- **6-Pillar Medical Knowledge Engine**: Every condition in the 650+ disease database covers 6 comprehensive medical pillars:
+- **6-Pillar Medical Knowledge Engine**: Every condition in the 700+ disease database covers 6 comprehensive medical pillars:
   1. 🩺 **Symptoms:** Complete list of associated medical symptoms
   2. 🧬 **Causes:** Underlying biological, pathogen, genetic, or environmental etiologies
   3. ⚠️ **Risk Factors:** Predisposing factors (age, family history, lifestyle, immune status)
   4. 🛡️ **Prevention & Precautions:** Precautionary guidelines & preventive measures
   5. 💊 **General Treatment Information:** Medications & recommended care protocols
   6. 👨‍⚕️ **When to Seek Medical Care:** Clinical thresholds for consulting a physician or specialist
-- **Dedicated Medical Knowledge Base Tab**: Interactive search box and category filtering (Respiratory, Cardiovascular, Bacterial, Viral, Endocrine, Neurological, Gastrointestinal, Dermatological, Autoimmune).
-- **1-Click Interactive Disease Details Modal**: Clicking on any condition chip (e.g. *Dengue Hemorrhagic Fever*, *Aplastic Anemia*, *Dengue Fever*, etc.) opens a modal displaying its complete 6-pillar medical profile. Supports closing via `×` button, "Close" button, backdrop click, or the `ESC` key.
+- **Dedicated Medical Knowledge Base Tab**: Interactive search box and category filtering (Respiratory, Cardiovascular, Bacterial, Viral, Endocrine, Neurological, Gastrointestinal, Dermatological, Autoimmune, Nephrology, Rheumatology, Hematology, Ophthalmological, Oncological, Orthopedic).
+- **1-Click Interactive Disease Details Modal**: Clicking on any condition chip (e.g. *Dengue Hemorrhagic Fever*, *Addison's Disease*, *Glaucoma*, *Ankylosing Spondylitis*, etc.) opens a modal displaying its complete 6-pillar medical profile. Supports closing via `×` button, "Close" button, backdrop click, or the `ESC` key.
 
 ### 📊 2. Health Trend Tracking & Reassuring Clinical Assessment
 - **Vital Metric Logging**: Record key health metrics over time:
@@ -85,7 +85,7 @@ HEALTHCARE CHATBOT/
 │   ├── notifications.py      # Job schedulers & notification triggers
 │   └── utils.py              # Symptom sanitizers, typo correction map & sentiment analyzers
 ├── data/                     # Data storage
-│   └── diseases.json         # Comprehensive database of 650+ conditions
+│   └── diseases.json         # Comprehensive database of 700+ conditions
 ├── frontend/                 # Client-side interface
 │   ├── static/
 │   │   ├── css/
@@ -120,7 +120,7 @@ Start the Flask development server:
 python run.py
 ```
 Upon startup:
-- The backend loads **654 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
+- The backend loads **705 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
 - Your default web browser automatically opens to `http://127.0.0.1:5000`.

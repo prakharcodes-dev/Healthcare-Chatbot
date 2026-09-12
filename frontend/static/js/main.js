@@ -128,12 +128,12 @@ function switchSection(section) {
     
     if (section === 'chat') {
         document.getElementById('sectionChat').style.display = 'flex';
-        if (mainTitle) mainTitle.textContent = 'Symptom Analysis Hub';
-        if (mainSubtitle) mainSubtitle.textContent = 'Powered by Enhanced Disease Matching Algorithms';
+        if (mainTitle) mainTitle.textContent = 'MedVitals AI — Personal Health Assistant';
+        if (mainSubtitle) mainSubtitle.textContent = 'Instant symptom insights, 650+ disease lookup & vital health tracking';
     } else if (section === 'knowledge') {
         document.getElementById('sectionKnowledge').style.display = 'block';
         if (mainTitle) mainTitle.textContent = '🧠 Medical Knowledge Base Search';
-        if (mainSubtitle) mainSubtitle.textContent = 'Comprehensive Medical Database covering Symptoms, Causes, Risk Factors, Prevention, Treatment, and When to Seek Care';
+        if (mainSubtitle) mainSubtitle.textContent = 'Comprehensive Medical Database covering Symptoms, Causes, Risk Factors, Prevention, Treatment, and Care';
         loadMedicalKnowledge();
     } else if (section === 'trends') {
         document.getElementById('sectionTrends').style.display = 'block';
@@ -152,6 +152,18 @@ function switchSection(section) {
     }
 }
 
+// Quick Start Example Symptom Chip Helper
+function sendExampleSymptom(text) {
+    // Switch to chat tab if not active
+    switchSection('chat');
+    document.querySelectorAll('.sidebar-menu .menu-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.sidebar-menu .menu-item[data-section="chat"]')?.classList.add('active');
+
+    const input = document.getElementById('userInput');
+    if (!input) return;
+    input.value = text;
+    sendMessage();
+}
 
 // Start Session API call
 async function startSession() {
@@ -167,24 +179,26 @@ async function startSession() {
         const data = await res.json();
         if (data.session_id) {
             state.sessionId = data.session_id;
-            // Display truncated version
-            document.getElementById('sessionId').textContent = state.sessionId.slice(0, 14) + '...';
+            const sessIdEl = document.getElementById('sessionId');
+            if (sessIdEl) sessIdEl.textContent = state.sessionId.slice(0, 14) + '...';
         }
     } catch (error) {
         console.error('Session initiation error:', error);
-        document.getElementById('sessionId').textContent = 'Error';
+        const sessIdEl = document.getElementById('sessionId');
+        if (sessIdEl) sessIdEl.textContent = 'Error';
     }
 }
 
 // Health Connection Checker
 async function checkConnection() {
     const statusBadge = document.getElementById('connectionStatus');
+    if (!statusBadge) return;
     try {
         const res = await fetch('/health');
         const data = await res.json();
         
         statusBadge.className = 'status-badge status-connected';
-        statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Connected - ${data.disease_count} diseases`;
+        statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Connected (${data.disease_count} Conditions Loaded)`;
     } catch (error) {
         console.error('Server offline:', error);
         statusBadge.className = 'status-badge status-disconnected';
