@@ -13878,5 +13878,138 @@
     "prevention": "Trigger avoidance, daily maintenance inhaled corticosteroid compliance.",
     "treatment": "Daily controller inhaled corticosteroid (ICS) combined with long-acting beta-agonist (LABA), short-acting rescue beta-agonist (SABA), and biologic agents for severe eosinophilic asthma.",
     "when_to_seek_care": "Seek emergency medical care immediately if rescue inhaler fails to relieve severe shortness of breath or if speaking in full sentences becomes difficult."
+  },
+  {
+    "disease": "Anaphylaxis",
+    "symptoms": [
+      "severe shortness of breath",
+      "throat tightness",
+      "hives",
+      "swelling of lips and tongue",
+      "sudden drop in blood pressure",
+      "dizziness",
+      "nausea"
+    ],
+    "severity": "High",
+    "category": "Allergy & Immunology",
+    "medicine": "Epinephrine auto-injector (EpiPen), Diphenhydramine (Benadryl), Methylprednisolone, Oxygen",
+    "advice": "Administer Epinephrine into outer thigh immediately; call 911/112 emergency services and lie flat with legs elevated.",
+    "prevention_tips": "Avoid known food, drug, or insect sting allergens; carry dual EpiPens at all times and wear medical alert identification.",
+    "specialist": "Allergist / Immunologist / Emergency Physician",
+    "age_group": "All ages",
+    "causes": "Severe IgE-mediated type I hypersensitivity reaction triggering systemic mast cell and basophil degranulation and massive histamine release.",
+    "risk_factors": "History of severe food/medication allergies, asthma, previous anaphylactic reactions.",
+    "prevention": "Strict allergen avoidance and carrying auto-injectable epinephrine.",
+    "treatment": "Immediate intramuscular Epinephrine (0.3mg), IV fluid resuscitation, H1/H2 antihistamines, corticosteroids, and ER observation.",
+    "when_to_seek_care": "Call 911/112 immediately for any sudden throat tightness, breathing difficulty, swelling, or faintness following allergen exposure!"
+  },
+  {
+    "disease": "Allergic Contact Dermatitis",
+    "symptoms": [
+      "intense skin itching",
+      "red swollen skin rash",
+      "small oozing blisters",
+      "dry scaly skin at contact site"
+    ],
+    "severity": "Mild",
+    "category": "Allergy & Immunology",
+    "medicine": "Topical Hydrocortisone, Triamcinolone cream, Oral Prednisone, Cetirizine, Calamine lotion",
+    "advice": "Wash skin thoroughly with soap and water immediately after suspect allergen exposure; apply cool wet compresses.",
+    "prevention_tips": "Identify specific skin allergens via patch testing; avoid poison ivy, nickel jewelry, latex, and fragranced cosmetics.",
+    "specialist": "Allergist / Dermatologist",
+    "age_group": "All ages",
+    "causes": "Type IV delayed T-cell mediated hypersensitivity reaction occurring 24-72 hours after skin contact with an allergen.",
+    "risk_factors": "Frequent contact with nickel, poison ivy/oak (urushiol), cosmetics, hair dyes, or industrial chemicals.",
+    "prevention": "Wear protective gloves and avoid contact with verified skin sensitizers.",
+    "treatment": "Topical corticosteroids, short course of oral Prednisone for widespread rashes, and barrier creams.",
+    "when_to_seek_care": "Consult a dermatologist if rash covers significant body area, involves the face or eyes, or shows signs of bacterial infection."
+  },
+  {
+    "disease": "Kawasaki Disease",
+    "symptoms": [
+      "high persistent fever (>5 days)",
+      "strawberry-red tongue",
+      "bloodshot red eyes without discharge",
+      "red cracked lips",
+      "peeling skin on fingers",
+      "swollen neck lymph node"
+    ],
+    "severity": "High",
+    "category": "Pediatrics",
+    "medicine": "Intravenous Immunoglobulin (IVIG), High-dose Aspirin, Infliximab",
+    "advice": "Hospital admission is mandatory for echocardiographic evaluation of coronary arteries.",
+    "prevention_tips": "Early IVIG administration within 10 days of fever onset to prevent coronary artery aneurysms.",
+    "specialist": "Pediatric Cardiologist / Pediatrician / Infectious Disease",
+    "age_group": "Infants and young children under 5 years",
+    "causes": "Acute systemic necrotizing vasculitis predominantly targeting medium-sized arteries, especially coronary arteries, in young children.",
+    "risk_factors": "Age under 5 years, Asian or Pacific Islander heritage, male sex.",
+    "prevention": "No primary prevention; early IVIG therapy prevents permanent heart valve and coronary damage.",
+    "treatment": "High-dose IVIG (2g/kg single infusion) plus oral high-dose Aspirin, followed by serial echocardiography.",
+    "when_to_seek_care": "Seek emergency pediatric evaluation for a child with high fever (>5 days) combined with red eyes, red cracked lips, or strawberry tongue."
+  },
+  {
+    "disease": "Croup (Laryngotracheobronchitis)",
+    "symptoms": [
+      "characteristic 'barking' seal-like cough",
+      "hoarseness",
+      "high-pitched whistling sound when inhaling (stridor)",
+      "mild fever",
+      "nasal congestion"
+    ],
+    "severity": "Moderate",
+    "category": "Pediatrics",
+    "medicine": "Single-dose oral Dexamethasone, Nebulized Racemic Epinephrine, Cool mist humidification",
+    "advice": "Keep child calm, sit upright, and use a cool mist humidifier or steamy bathroom air to soothe swollen upper airways.",
+    "prevention_tips": "Frequent hand washing and keeping pediatric respiratory vaccinations up to date.",
+    "specialist": "Pediatrician / Emergency Physician",
+    "age_group": "Infants and toddlers aged 6 months to 3 years",
+    "causes": "Acute viral infection (commonly Parainfluenza virus type 1) causing subglottic inflammation and upper airway narrowing.",
+    "risk_factors": "Age 6-36 months, fall/winter season, history of recurrent croup.",
+    "prevention": "Routine hand hygiene and childhood respiratory vaccinations.",
+    "treatment": "Single dose of oral Dexamethasone (0.6 mg/kg), nebulized Epinephrine for stridor at rest, and oxygen therapy.",
+    "when_to_seek_care": "Seek emergency medical care immediately if a child has stridor at rest, chest wall retractions, or pale/blue skin."
+  },
+  {
+    "disease": "Allergic Rhinitis (Hay Fever)",
+    "symptoms": [
+      "sneezing",
+      "runny or stuffy nose",
+      "itchy watery eyes",
+      "itching in nose and throat",
+      "coughing"
+    ],
+    "severity": "Mild",
+    "category": "Allergy & Immunology",
+    "medicine": "Cetirizine, Loratadine, Fluticasone nasal spray, Azelastine, Montelukast",
+    "advice": "Use intranasal corticosteroid spray daily during pollen season; keep windows closed and use HEPA air purifiers.",
+    "prevention_tips": "Avoid environmental pollen, dust mites, pet dander, and mold spores.",
+    "specialist": "Allergist / Immunologist",
+    "age_group": "All ages",
+    "causes": "IgE-mediated upper airway allergic inflammation triggered by airborne allergens.",
+    "risk_factors": "Family history of atopy, asthma, eczema.",
+    "prevention": "Allergen avoidance and prophylactic antihistamines.",
+    "treatment": "Second-generation H1 antihistamines, intranasal steroid sprays, and allergen immunotherapy.",
+    "when_to_seek_care": "Consult an allergist if nasal congestion and itchy eyes persist despite over-the-counter antihistamines."
+  },
+  {
+    "disease": "Acute Urticaria (Hives)",
+    "symptoms": [
+      "raised itchy red welts",
+      "blanching skin lesions",
+      "skin swelling",
+      "intense itching"
+    ],
+    "severity": "Mild",
+    "category": "Allergy & Immunology",
+    "medicine": "Cetirizine, Fexofenadine, Diphenhydramine, Prednisone for severe hives",
+    "advice": "Apply cool compresses to itchy skin; avoid tight clothing, hot showers, alcohol, and NSAIDs.",
+    "prevention_tips": "Avoid known food, drug, or insect sting triggers.",
+    "specialist": "Allergist / Dermatologist",
+    "age_group": "All ages",
+    "causes": "Cutaneous mast cell degranulation releasing histamine and inflammatory mediators causing dermal edema.",
+    "risk_factors": "Recent viral infection, drug exposure, insect stings, food allergies.",
+    "prevention": "Trigger identification and avoidance.",
+    "treatment": "High-dose non-sedating H1 antihistamines and short-course oral steroids for severe flares.",
+    "when_to_seek_care": "Seek emergency medical care if hives are accompanied by swelling of lips or breathing difficulty."
   }
 ]

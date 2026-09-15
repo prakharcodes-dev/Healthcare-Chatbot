@@ -164,13 +164,20 @@ def build_structured_chat_response(user_symptoms, final_matches, user_measuremen
         if m_parts:
             why_text += f" Recorded Measurements: {', '.join(m_parts)}. Combining your symptoms and measurements suggests these possible health concerns."
 
+    care_details = {
+        'treatment': top_match.get('treatment') or top_match.get('medicine') or 'Symptomatic rest and fluid intake.',
+        'advice': top_match.get('advice') or 'Rest, stay well-hydrated, and monitor your symptoms closely.',
+        'prevention': top_match.get('prevention') or top_match.get('prevention_tips') or 'Follow clean hygiene practices and avoid known symptom triggers.',
+        'specialist': top_match.get('specialist', 'Primary Care Physician')
+    }
+
     care_items = []
     if top_match.get('treatment'):
-        care_items.append(f"Treatment protocol: {top_match['treatment']}")
+        care_items.append(f"Treatment: {top_match['treatment']}")
     elif top_match.get('medicine'):
         care_items.append(f"Medications: {top_match['medicine']}")
     if top_match.get('advice'):
-        care_items.append(f"Care advice: {top_match['advice']}")
+        care_items.append(f"Advice: {top_match['advice']}")
     if top_match.get('prevention'):
         care_items.append(f"Prevention: {top_match['prevention']}")
         
@@ -181,16 +188,17 @@ def build_structured_chat_response(user_symptoms, final_matches, user_measuremen
     
     is_high = any('high' in m.get('severity', '').lower() or 'severe' in m.get('severity', '').lower() for m in top_3)
     if urgent_flags:
-        emergency = f"⚠️ IMPORTANT SAFETY ALERT: Because you reported {', '.join(urgent_flags)}, this should not be ignored. If you are currently unconscious, confused, having severe breathing difficulty, chest pain, or worsening symptoms, seek urgent medical care immediately (Call 911/112). This chatbot provides general information and is not a medical diagnosis."
+        emergency = f"⚠️ URGENT SAFETY ALERT: Because you reported {', '.join(urgent_flags)}, this requires prompt attention. If you are currently unconscious, confused, experiencing severe breathing difficulty, chest pain, or rapidly worsening symptoms, seek emergency medical care immediately (Call 911 / 112). This informational assistant is not a substitute for an emergency physician diagnosis."
     elif is_high:
-        emergency = f"EMERGENCY WARNING: High-severity condition detected ({top_match['disease']}). Seek immediate emergency medical care (Call 911/112) if you experience severe shortness of breath, sudden chest pain, stiff neck with high fever, confusion, or severe bleeding."
+        emergency = f"EMERGENCY WARNING: High-severity condition detected ({top_match['disease']}). Seek immediate emergency medical care (Call 911 / 112) if you experience severe shortness of breath, sudden chest pain, stiff neck with high fever, confusion, or severe bleeding."
     else:
-        emergency = "EMERGENCY WARNING: Call emergency services (911/112) or go to the nearest emergency room immediately if you develop sudden chest pain, severe shortness of breath, loss of consciousness, or severe bleeding."
+        emergency = "EMERGENCY WARNING: Call emergency services (911 / 112) or visit the nearest emergency room immediately if you develop sudden chest pain, severe shortness of breath, loss of consciousness, or severe bleeding."
         
     return {
         'possible_causes': possible_causes,
         'why': why_text,
         'what_you_can_do': what_you_can_do,
+        'what_you_can_do_details': care_details,
         'seek_medical_care_if': seek_care,
         'emergency_warning': emergency,
         'measurements_summary': measurements_summary
@@ -200,7 +208,10 @@ def build_structured_chat_response(user_symptoms, final_matches, user_measuremen
 @api_bp.route('/predict', methods=['POST'])
 def predict():
     try:
-        data = request.get_json() or {}
+        data = request.get_json(silent=True)
+        if data is None:
+            return jsonify({'error': 'Invalid JSON request payload. Please provide a valid JSON object containing "symptoms".'}), 400
+
         symptoms_input = data.get('symptoms', '')
         session_id = data.get('session_id', generate_session_id())
         user_id = data.get('user_id', 1)
@@ -216,8 +227,8 @@ def predict():
         user_symptoms = clean_symptoms(symptoms_input) if isinstance(symptoms_input, str) else symptoms_input
         
         if not user_symptoms:
-            chat_history.add_message(session_id, str(symptoms_input), 'Please tell me your symptoms', 'question')
-            return jsonify({'matches': [], 'message': 'Please tell me your symptoms', 'session_id': session_id})
+            chat_history.add_message(session_id, str(symptoms_input), 'Please enter your symptoms to begin analysis.', 'question')
+            return jsonify({'matches': [], 'message': 'Please enter your symptoms to begin analysis.', 'session_id': session_id})
         
         needed_measurements = detect_relevant_measurements(user_symptoms)
         inline_m = extract_inline_measurements(symptoms_input) if isinstance(symptoms_input, str) else {}

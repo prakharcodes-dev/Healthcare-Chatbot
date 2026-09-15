@@ -1,15 +1,21 @@
 # 🏥 MedVitals AI - Smart Healthcare Chatbot & Assistant
 
-> 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com]
+[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/Framework-Flask_3.0%2B-green.svg)](https://flask.palletsprojects.com/)
+[![Database](https://img.shields.io/badge/Database-SQLite_3-orange.svg)](https://www.sqlite.org/)
+[![Deployment](https://img.shields.io/badge/Deployment-Render-purple.svg)](https://render.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive database of **700+ medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+> 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com](https://healthcare-chatbot-1-ynxb.onrender.com)
+
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **711 medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
 
 ---
 
 ## ✨ Key Features
 
 ### 🧠 1. Better Medical Knowledge Search & Interactive Disease Modals
-- **6-Pillar Medical Knowledge Engine**: Every condition in the 700+ disease database covers 6 comprehensive medical pillars:
+- **6-Pillar Medical Knowledge Engine**: Every condition in the **711 disease database** covers 6 comprehensive medical pillars:
   1. 🩺 **Symptoms:** Complete list of associated medical symptoms
   2. 🧬 **Causes:** Underlying biological, pathogen, genetic, or environmental etiologies
   3. ⚠️ **Risk Factors:** Predisposing factors (age, family history, lifestyle, immune status)
@@ -66,6 +72,22 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 - **Manual Test Alert**: Includes a 1-click "Test Alert" button for quick verification of audio and notification settings.
 - **Dark & Light Themes**: High-contrast, accessible design system supporting dark mode and light mode.
 
+---
+
+## 🔌 API Endpoints Summary
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/` | Serves the main SPA frontend (`index.html`) |
+| `GET` | `/health` | Application status & loaded disease count health check |
+| `POST` | `/predict` | Primary symptom analysis, typo correction & 5-section response |
+| `GET` | `/api/diseases` | List & filter all 711 conditions in the medical knowledge base |
+| `GET` | `/api/diseases/<name>` | Fetch complete 6-pillar medical details for a specific disease |
+| `POST` | `/api/vitals` | Log a new health vital measurement (temperature, weight, BP, glucose) |
+| `GET` | `/api/vitals` | Retrieve recorded health vital log history & analytics |
+| `DELETE` | `/api/vitals/<id>` | Delete a specific health vital log entry |
+| `POST` | `/api/notifications/medication-reminder` | Schedule a new medication reminder |
+| `POST` | `/api/suggest` | Autocomplete search suggestions for symptoms and conditions |
 
 ---
 
@@ -85,7 +107,7 @@ HEALTHCARE CHATBOT/
 │   ├── notifications.py      # Job schedulers & notification triggers
 │   └── utils.py              # Symptom sanitizers, typo correction map & sentiment analyzers
 ├── data/                     # Data storage
-│   └── diseases.json         # Comprehensive database of 700+ conditions
+│   └── diseases.json         # Comprehensive database of 711 medical conditions
 ├── frontend/                 # Client-side interface
 │   ├── static/
 │   │   ├── css/
@@ -120,7 +142,7 @@ Start the Flask development server:
 python run.py
 ```
 Upon startup:
-- The backend loads **705 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
+- The backend loads **711 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
 - Your default web browser automatically opens to `http://127.0.0.1:5000`.
@@ -137,3 +159,4 @@ In case of a medical emergency, call your local emergency services (e.g., 911 or
 
 ### 🔒 Privacy Note
 All conversation logs, medication reminders, and health vital log files are kept entirely local in your SQLite database (`instance/healthcare_chatbot.db`) and browser local storage. No health profile data is transmitted externally.
+

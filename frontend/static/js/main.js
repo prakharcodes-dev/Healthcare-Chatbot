@@ -263,7 +263,17 @@ async function sendMessage() {
         }
     } catch (error) {
         typingIndicator.remove();
-        addMessage('bot', `<p style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error: ${error.message}</p>`);
+        console.error('Chat error:', error);
+        addMessage('bot', `
+            <div class="chat-error-card" style="background-color: var(--danger-light); border: 1px solid var(--danger); border-radius: var(--radius-md); padding: 14px; margin: 6px 0; color: var(--text-main);">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px; color:var(--danger);">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:18px;"></i>
+                    <strong style="font-size:14px;">Connection / Network Error</strong>
+                </div>
+                <p style="font-size:13px; margin-bottom:10px;">Unable to communicate with the MedVitals AI server (${error.message || 'Server disconnected'}). Please verify your connection and try again.</p>
+                <button class="btn btn-sm btn-primary" onclick="document.getElementById('userInput').value='${message.replace(/'/g, "\\'")}'; sendMessage();"><i class="fa-solid fa-rotate-right"></i> Retry Message</button>
+            </div>
+        `);
     }
 }
 
@@ -491,12 +501,24 @@ function formatMatchesResponse(matches, structuredResp) {
     </div>`;
     
     // 3. What you can do
-    const whatYouCanDoText = structuredResp && structuredResp.what_you_can_do 
-        ? structuredResp.what_you_can_do 
-        : (matches[0] ? `Treatment: ${matches[0].treatment || matches[0].medicine || 'Rest & OTC care'}. Advice: ${matches[0].advice || 'Hydration'}` : 'Rest and stay hydrated.');
+    let whatYouCanDoHtml = '';
+    if (structuredResp && structuredResp.what_you_can_do_details) {
+        const d = structuredResp.what_you_can_do_details;
+        whatYouCanDoHtml = `<ul class="care-bullets-list" style="list-style:none; padding-left:0; margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+            <li style="font-size:13px; line-height:1.5;"><strong style="color:var(--text-main);">💊 Treatment & Medication:</strong> ${d.treatment}</li>
+            <li style="font-size:13px; line-height:1.5;"><strong style="color:var(--text-main);">🛠️ Care Advice:</strong> ${d.advice}</li>
+            <li style="font-size:13px; line-height:1.5;"><strong style="color:var(--text-main);">🛡️ Prevention:</strong> ${d.prevention}</li>
+        </ul>`;
+    } else {
+        const whatYouCanDoText = structuredResp && structuredResp.what_you_can_do 
+            ? structuredResp.what_you_can_do 
+            : (matches[0] ? `Treatment: ${matches[0].treatment || matches[0].medicine || 'Rest & OTC care'}. Advice: ${matches[0].advice || 'Hydration'}` : 'Rest and stay hydrated.');
+        whatYouCanDoHtml = `<p>${whatYouCanDoText}</p>`;
+    }
+    
     html += `<div class="response-section action-section">
         <h4 class="section-title"><i class="fa-solid fa-hand-holding-medical"></i> <strong>What you can do:</strong></h4>
-        <p>${whatYouCanDoText}</p>
+        ${whatYouCanDoHtml}
     </div>`;
     
     // 4. Seek medical care if
@@ -511,7 +533,7 @@ function formatMatchesResponse(matches, structuredResp) {
     // 5. Emergency warning
     const emergencyText = structuredResp && structuredResp.emergency_warning 
         ? structuredResp.emergency_warning 
-        : `Call emergency services (911/112) immediately if you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma.`;
+        : `Call emergency services (911 / 112) immediately if you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma.`;
     html += `<div class="response-section emergency-section">
         <h4 class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Emergency Warning:</strong></h4>
         <p>${emergencyText}</p>
