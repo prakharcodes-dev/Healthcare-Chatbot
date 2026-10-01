@@ -14011,5 +14011,286 @@
     "prevention": "Trigger identification and avoidance.",
     "treatment": "High-dose non-sedating H1 antihistamines and short-course oral steroids for severe flares.",
     "when_to_seek_care": "Seek emergency medical care if hives are accompanied by swelling of lips or breathing difficulty."
+  },
+  {
+    "disease": "COPD",
+    "symptoms": [
+      "persistent cough",
+      "sputum",
+      "shortness of breath",
+      "wheezing"
+    ],
+    "severity": "moderate",
+    "category": "Respiratory",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Avoid smoking and lung irritants; discuss vaccinations with a clinician.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Prompt care for worsening breathlessness or confusion."
+  },
+  {
+    "disease": "Pneumonia",
+    "symptoms": [
+      "cough",
+      "fever",
+      "chills",
+      "shortness of breath",
+      "chest pain"
+    ],
+    "severity": "moderate",
+    "category": "Respiratory",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Vaccination and hand hygiene can reduce risk.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Urgent care for difficulty breathing or confusion."
+  },
+  {
+    "disease": "Influenza (Flu)",
+    "symptoms": [
+      "fever",
+      "chills",
+      "muscle aches",
+      "headache",
+      "cough",
+      "fatigue"
+    ],
+    "severity": "moderate",
+    "category": "Viral",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Annual vaccination and hand hygiene help reduce spread.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Care for breathing difficulty, dehydration, or worsening symptoms."
+  },
+  {
+    "disease": "COVID-19",
+    "symptoms": [
+      "fever",
+      "cough",
+      "sore throat",
+      "fatigue",
+      "loss of taste or smell"
+    ],
+    "severity": "moderate",
+    "category": "Viral",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Follow local vaccination guidance and stay home when ill.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Emergency care for severe breathing difficulty or confusion."
+  },
+  {
+    "disease": "Dengue",
+    "symptoms": [
+      "high fever",
+      "severe headache",
+      "pain behind eyes",
+      "muscle pain",
+      "rash"
+    ],
+    "severity": "moderate",
+    "category": "Viral",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Prevent mosquito bites and remove standing water.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Urgent care for severe abdominal pain, bleeding, or persistent vomiting."
+  },
+  {
+    "disease": "Urinary Tract Infection (UTI)",
+    "symptoms": [
+      "painful urination",
+      "frequent urination",
+      "urgency",
+      "cloudy urine",
+      "lower abdominal pain"
+    ],
+    "severity": "moderate",
+    "category": "Urinary",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Hydration may help; diagnosis and treatment should be clinician guided.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Care for fever, flank pain, vomiting, pregnancy, or worsening symptoms."
+  },
+  {
+    "disease": "Kidney Stones",
+    "symptoms": [
+      "severe side or back pain",
+      "blood in urine",
+      "nausea",
+      "vomiting"
+    ],
+    "severity": "moderate",
+    "category": "Kidney",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Fluid and dietary advice depends on stone type; consult a clinician.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Care for uncontrolled pain, fever, or inability to urinate."
+  },
+  {
+    "disease": "Type 2 Diabetes",
+    "symptoms": [
+      "increased thirst",
+      "frequent urination",
+      "fatigue",
+      "blurred vision",
+      "slow-healing wounds"
+    ],
+    "severity": "moderate",
+    "category": "Endocrine",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Screening, activity, and clinician-guided risk management can help.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Urgent care for vomiting, confusion, or severe dehydration."
+  },
+  {
+    "disease": "Iron Deficiency Anemia",
+    "symptoms": [
+      "fatigue",
+      "weakness",
+      "pale skin",
+      "dizziness",
+      "shortness of breath"
+    ],
+    "severity": "moderate",
+    "category": "Blood",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "A clinician should identify the cause before starting supplements.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Urgent care for chest pain, fainting, or severe breathlessness."
+  },
+  {
+    "disease": "GERD",
+    "symptoms": [
+      "heartburn",
+      "acid regurgitation",
+      "sour taste",
+      "symptoms after meals or lying down"
+    ],
+    "severity": "moderate",
+    "category": "Gastrointestinal",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Smaller meals and avoiding personal triggers may help.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Care for chest pain, difficulty swallowing, or vomiting blood."
+  },
+  {
+    "disease": "Osteoarthritis",
+    "symptoms": [
+      "joint pain with activity",
+      "stiffness after rest",
+      "reduced motion"
+    ],
+    "severity": "moderate",
+    "category": "Musculoskeletal",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Movement and strength exercises may help; tailor care with a clinician.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Seek care after injury, sudden swelling, or inability to bear weight."
+  },
+  {
+    "disease": "Eczema",
+    "symptoms": [
+      "itchy dry skin",
+      "inflamed patches",
+      "skin cracking",
+      "recurrent rash"
+    ],
+    "severity": "moderate",
+    "category": "Dermatological",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Moisturize regularly and identify irritants; use treatments as directed.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Care for rapidly spreading redness, fever, or possible skin infection."
+  },
+  {
+    "disease": "Seasonal Allergic Rhinitis",
+    "symptoms": [
+      "sneezing",
+      "itchy nose",
+      "runny nose",
+      "congestion",
+      "itchy watery eyes"
+    ],
+    "severity": "moderate",
+    "category": "Allergy",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Reduce exposure to known allergens and discuss treatment with a clinician.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Emergency help for throat swelling or difficulty breathing."
+  },
+  {
+    "disease": "Stroke",
+    "symptoms": [
+      "sudden face drooping",
+      "arm weakness",
+      "speech difficulty",
+      "sudden vision or balance problems"
+    ],
+    "severity": "moderate",
+    "category": "Neurological",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Manage vascular risk factors with clinician guidance.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Call emergency services immediately for any sudden stroke symptoms."
+  },
+  {
+    "disease": "Appendicitis",
+    "symptoms": [
+      "abdominal pain often moving to lower right side",
+      "nausea",
+      "vomiting",
+      "fever"
+    ],
+    "severity": "moderate",
+    "category": "Gastrointestinal",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "May require urgent treatment; do not rely on home remedies.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Emergency assessment for worsening pain or a rigid abdomen."
+  },
+  {
+    "disease": "Otitis Media",
+    "symptoms": [
+      "ear pain",
+      "reduced hearing",
+      "fever",
+      "irritability",
+      "fluid from ear"
+    ],
+    "severity": "moderate",
+    "category": "Ear",
+    "medicine": "Treatment depends on individual assessment; consult a qualified healthcare professional.",
+    "advice": "Educational information only, not a diagnosis. A healthcare professional can assess symptoms and recommend appropriate care.",
+    "prevention_tips": "Many cases improve; treatment decisions should be clinician guided.",
+    "specialist": "Primary Care Physician",
+    "age_group": "varies by condition",
+    "when_to_seek_care": "Care for swelling behind ear, severe symptoms, or fever in a young infant."
   }
 ]

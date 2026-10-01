@@ -2329,3 +2329,76 @@ body {
 
 
 
+
+
+/* Medical library: clearer search hierarchy and calmer, easier-to-scan cards */
+#sectionKnowledge .section-intro-card {
+    background: linear-gradient(115deg, var(--card-bg), color-mix(in srgb, var(--primary) 8%, var(--card-bg)));
+    border-radius: 18px;
+}
+#sectionKnowledge .knowledge-search-bar {
+    padding: 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm);
+}
+#sectionKnowledge .search-input-wrapper {
+    gap: 12px;
+}
+#sectionKnowledge .search-input-wrapper input {
+    min-width: 0;
+}
+#sectionKnowledge .category-pills {
+    margin-top: 14px;
+    max-height: 98px;
+    overflow-y: auto;
+    padding: 2px;
+}
+.knowledge-results-meta {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 0 2px 12px;
+}
+#sectionKnowledge .knowledge-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 390px), 1fr));
+    align-content: start;
+    gap: 16px;
+}
+#sectionKnowledge .knowledge-card {
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+#sectionKnowledge .knowledge-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 45%, var(--border-color));
+    box-shadow: var(--shadow-md);
+}
+#sectionKnowledge .knowledge-card-header .title-row {
+    align-items: flex-start;
+    gap: 10px;
+}
+#sectionKnowledge .knowledge-card-header h3 {
+    line-height: 1.35;
+}
+#sectionKnowledge .knowledge-pillars {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+#sectionKnowledge .pillar-box {
+    min-width: 0;
+    padding: 11px 12px;
+}
+#sectionKnowledge .warning-pillar {
+    grid-column: 1 / -1;
+}
+@media (max-width: 700px) {
+    #sectionKnowledge .knowledge-pillars { grid-template-columns: 1fr; }
+    #sectionKnowledge .warning-pillar { grid-column: auto; }
+    #sectionKnowledge .knowledge-search-bar { padding: 14px; }
+    #sectionKnowledge .search-input-wrapper { flex-wrap: wrap; }
+    #sectionKnowledge .search-input-wrapper input { flex: 1 1 100%; }
+}

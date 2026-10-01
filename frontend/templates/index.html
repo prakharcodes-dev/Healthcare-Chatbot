@@ -36,7 +36,7 @@
                     <i class="fa-solid fa-book-medical"></i>
                     <div class="menu-text">
                         <span class="menu-title">Medical Knowledge</span>
-                        <span class="menu-subtitle">Search 700+ conditions</span>
+                        <span class="menu-subtitle">Search <span data-disease-count>700+</span> conditions</span>
                     </div>
                 </div>
                 <div class="menu-item" data-section="trends">
@@ -89,7 +89,7 @@
                     </button>
                     <div class="header-title">
                         <h1 id="mainTitle">MedVitals AI — Personal Health Assistant</h1>
-                        <p id="mainSubtitle">Instant symptom insights, 700+ disease lookup & vital health tracking</p>
+                        <p id="mainSubtitle">Instant symptom insights, <span data-disease-count>700+</span> condition lookup & vital health tracking</p>
                     </div>
                 </div>
                 <div class="header-status">
@@ -133,8 +133,8 @@
                             <div class="feature-card" onclick="switchSection('knowledge')">
                                 <div class="feature-icon know-feat-icon"><i class="fa-solid fa-book-medical"></i></div>
                                 <div class="feature-details">
-                                    <h4>2. 700+ Disease Library</h4>
-                                    <p>Search conditions & view 6 medical pillars: Symptoms, Causes, Risks, Prevention, Treatment & Care.</p>
+                                    <h4>2. <span data-disease-count>Growing</span> Condition Library</h4>
+                                    <p>Search by condition, symptom, or category; open a profile for practical health information.</p>
                                 </div>
                             </div>
 
@@ -201,13 +201,13 @@
                         <div class="intro-icon"><i class="fa-solid fa-book-medical"></i></div>
                         <div class="intro-text">
                             <h3>Verified Medical Knowledge Base</h3>
-                            <p>Search over 700+ medical conditions or select a category below to inspect comprehensive 6-pillar profiles (Symptoms, Causes, Risk Factors, Prevention, Treatments, and When to Seek Care).</p>
+                            <p>Explore <span data-disease-count>700+</span> conditions by name, symptom, or category. Each profile highlights symptoms, prevention, care information, and when to seek help.</p>
                         </div>
                     </div>
                     <div class="knowledge-search-bar">
                         <div class="search-input-wrapper">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="knowledgeSearchInput" placeholder="Search disease, condition, or symptom (e.g., Asthma, Diabetes, Hypertension)...">
+                            <input type="text" id="knowledgeSearchInput" placeholder="Search by condition or symptom (try asthma, fever, or headache)...">
                             <button id="knowledgeSearchBtn" class="btn btn-primary"><i class="fa-solid fa-search"></i> Search</button>
                         </div>
                         <div class="category-pills" id="knowledgeCategoryPills">
@@ -225,6 +225,7 @@
                             <span class="cat-pill" data-category="autoimmune">Autoimmune</span>
                         </div>
                     </div>
+                    <div class="knowledge-results-meta" id="knowledgeResultsMeta" aria-live="polite">Browse the full library or choose a category to get started.</div>
                     <div class="knowledge-results-grid" id="knowledgeResults">
                         <!-- Disease knowledge cards with 6 pillars inserted here dynamically -->
                     </div>
@@ -412,7 +413,7 @@
                 <h3><i class="fa-solid fa-circle-question"></i> How to Use</h3>
                 <ul class="quick-guide-list">
                     <li><i class="fa-solid fa-comment-medical"></i> <strong>Symptom Checker:</strong> Type symptoms below or click sample chips for instant analysis.</li>
-                    <li><i class="fa-solid fa-book-medical"></i> <strong>Medical Knowledge:</strong> Search 650+ conditions & 6 medical pillars.</li>
+                    <li><i class="fa-solid fa-book-medical"></i> <strong>Medical Knowledge:</strong> Search <span data-disease-count>700+</span> conditions and explore practical health information.</li>
                     <li><i class="fa-solid fa-heart-pulse"></i> <strong>Health Trends:</strong> Record temperature, BP, weight & glucose metrics over time.</li>
                 </ul>
             </section>

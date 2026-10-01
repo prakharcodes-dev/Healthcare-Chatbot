@@ -20,6 +20,7 @@ async function init() {
     setupEventListeners();
     await startSession();
     await checkConnection();
+    updateDiseaseCount();
     await loadReminders();
     await loadSearchHistory();
     
@@ -129,7 +130,7 @@ function switchSection(section) {
     if (section === 'chat') {
         document.getElementById('sectionChat').style.display = 'flex';
         if (mainTitle) mainTitle.textContent = 'MedVitals AI — Personal Health Assistant';
-        if (mainSubtitle) mainSubtitle.textContent = 'Instant symptom insights, 650+ disease lookup & vital health tracking';
+        if (mainSubtitle) mainSubtitle.textContent = 'Symptom guidance, a growing condition library, and personal vital tracking';
     } else if (section === 'knowledge') {
         document.getElementById('sectionKnowledge').style.display = 'block';
         if (mainTitle) mainTitle.textContent = '🧠 Medical Knowledge Base Search';
@@ -1352,6 +1353,7 @@ function toggleTheme() {
 async function loadMedicalKnowledge(query = '', category = '') {
     const container = document.getElementById('knowledgeResults');
     if (!container) return;
+    const meta = document.getElementById('knowledgeResultsMeta');
     
     container.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching Medical Knowledge Base...</div>`;
     
@@ -1369,6 +1371,7 @@ async function loadMedicalKnowledge(query = '', category = '') {
         }
         
         const results = data.results || [];
+        if (meta) meta.textContent = query || category ? `Showing ${results.length} of ${data.total || results.length} matching conditions${category ? ` in ${category}` : ''}.` : `Showing ${results.length} of ${data.total || results.length} conditions. Search or choose a category to narrow the list.`;
         if (results.length === 0) {
             container.innerHTML = `<div class="no-data-placeholder"><i class="fa-solid fa-folder-open"></i><p>No medical conditions found matching "${query}".</p></div>`;
             return;
@@ -1376,9 +1379,10 @@ async function loadMedicalKnowledge(query = '', category = '') {
         
         let html = '';
         results.forEach(d => {
-            const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => d.severity.toLowerCase().includes(s)) 
+            const severity = (d.severity || 'unspecified').toLowerCase();
+            const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => severity.includes(s)) 
                 ? 'badge-severity-high' 
-                : d.severity.toLowerCase().includes('moderate') 
+                : severity.includes('moderate') 
                 ? 'badge-severity-moderate' 
                 : 'badge-severity-mild';
                 
@@ -1389,7 +1393,7 @@ async function loadMedicalKnowledge(query = '', category = '') {
                     <div class="knowledge-card-header">
                         <div class="title-row">
                             <h3><i class="fa-solid fa-book-medical"></i> ${d.disease}</h3>
-                            <span class="badge ${severityClass}">${d.severity}</span>
+                            <span class="badge ${severityClass}">${d.severity || 'Unspecified'}</span>
                         </div>
                         <span class="cat-tag"><i class="fa-solid fa-tag"></i> ${d.category}</span>
                     </div>
@@ -1870,3 +1874,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 
+
+async function updateDiseaseCount() {
+    try {
+        const response = await fetch('/health');
+        const data = await response.json();
+        if (data.disease_count) document.querySelectorAll('[data-disease-count]').forEach(el => el.textContent = `${data.disease_count}+`);
+    } catch (_) { /* Keep the page usable when the count endpoint is unavailable. */ }
+}
