@@ -1,0 +1,686 @@
+[
+  {
+    "id": 1,
+    "type": "exact",
+    "input_symptoms": [
+      "frequent urination day and night",
+      "pain during intercourse",
+      "persistent pressure on the bladder",
+      "pelvic pain"
+    ],
+    "expected_disease": "Interstitial Cystitis",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 2,
+    "type": "exact",
+    "input_symptoms": [
+      "mild headache",
+      "sneezing",
+      "sore throat",
+      "runny nose",
+      "nasal congestion"
+    ],
+    "expected_disease": "Common Cold",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 3,
+    "type": "exact",
+    "input_symptoms": [
+      "reflex actions but no consciousness",
+      "missing forebrain and cerebrum",
+      "brainstem may be present",
+      "absence of major portions of brain, skull, and scalp"
+    ],
+    "expected_disease": "Anencephaly",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 4,
+    "type": "exact",
+    "input_symptoms": [
+      "severe headache",
+      "sudden fever",
+      "diarrhea",
+      "multi-organ failure",
+      "fatigue"
+    ],
+    "expected_disease": "Marburg Virus Disease",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 5,
+    "type": "exact",
+    "input_symptoms": [
+      "headache",
+      "fever",
+      "fatigue"
+    ],
+    "expected_disease": "Kunjin Virus Encephalitis",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 6,
+    "type": "exact",
+    "input_symptoms": [
+      "frequent bowel movements",
+      "difficulty sleeping",
+      "heat sensitivity",
+      "hand tremor"
+    ],
+    "expected_disease": "Hyperthyroidism",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 7,
+    "type": "exact",
+    "input_symptoms": [
+      "rapid breathing",
+      "sore throat",
+      "chills",
+      "hoarseness"
+    ],
+    "expected_disease": "Diphtheria",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 8,
+    "type": "exact",
+    "input_symptoms": [
+      "frequent respiratory infections",
+      "wheezing",
+      "persistent cough (most days for 3 months, 2+ years)",
+      "excessive mucus production",
+      "shortness of breath"
+    ],
+    "expected_disease": "Chronic Bronchitis",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 9,
+    "type": "exact",
+    "input_symptoms": [
+      "shortness of breath to avoid pain",
+      "shoulder pain",
+      "dry cough",
+      "fever",
+      "sharp chest pain when breathing in, coughing, or sneezing"
+    ],
+    "expected_disease": "Pleurisy",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 10,
+    "type": "exact",
+    "input_symptoms": [
+      "sudden cardiac arrest",
+      "irregular heartbeat",
+      "palpitations",
+      "gasping during sleep",
+      "fainting spells (syncope)"
+    ],
+    "expected_disease": "Brugada Syndrome",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 11,
+    "type": "exact",
+    "input_symptoms": [
+      "vaginal bleeding after intercourse",
+      "pelvic pain",
+      "pain during intercourse"
+    ],
+    "expected_disease": "Cervical Cancer",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 12,
+    "type": "exact",
+    "input_symptoms": [
+      "high body temperature above 104F (40C)",
+      "altered mental state",
+      "nausea",
+      "confusion"
+    ],
+    "expected_disease": "Heat Stroke",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 13,
+    "type": "exact",
+    "input_symptoms": [
+      "thickening skin on nose (rhinophyma)",
+      "eye irritation (watery, bloodshot, gritty)",
+      "dry rough skin"
+    ],
+    "expected_disease": "Rosacea",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 14,
+    "type": "exact",
+    "input_symptoms": [
+      "headache",
+      "muscle pain",
+      "fever",
+      "fatigue"
+    ],
+    "expected_disease": "Apeu Virus",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 15,
+    "type": "exact",
+    "input_symptoms": [
+      "shock",
+      "gastrointestinal: abdominal pain",
+      "vomiting blood",
+      "inhalation: flu-like then severe respiratory distress",
+      "bloody diarrhea"
+    ],
+    "expected_disease": "Anthrax",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 16,
+    "type": "exact",
+    "input_symptoms": [
+      "severe joint pain (especially hands/feet)",
+      "fatigue",
+      "headache",
+      "sudden high fever"
+    ],
+    "expected_disease": "Chikungunya",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 17,
+    "type": "exact",
+    "input_symptoms": [
+      "abdominal pain",
+      "jaundice",
+      "chest pain"
+    ],
+    "expected_disease": "Hydatid Disease (Echinococcosis)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 18,
+    "type": "exact",
+    "input_symptoms": [
+      "difficulty paying attention",
+      "waking up during the night",
+      "not feeling rested after sleep"
+    ],
+    "expected_disease": "Insomnia",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 19,
+    "type": "exact",
+    "input_symptoms": [
+      "pain during intercourse",
+      "difficulty emptying bladder",
+      "enlarged abdomen",
+      "heavy or prolonged menstrual bleeding"
+    ],
+    "expected_disease": "Uterine Fibroids",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 20,
+    "type": "exact",
+    "input_symptoms": [
+      "rash",
+      "persistent joint pain",
+      "morning joint stiffness",
+      "limping",
+      "swelling in knees/ankles/wrists"
+    ],
+    "expected_disease": "Juvenile Idiopathic Arthritis",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 21,
+    "type": "exact",
+    "input_symptoms": [
+      "muscle pain",
+      "fatigue",
+      "fever"
+    ],
+    "expected_disease": "Anhanga Virus",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 22,
+    "type": "exact",
+    "input_symptoms": [
+      "purple skin spots (purpura)",
+      "weakness",
+      "joint pain",
+      "kidney dysfunction"
+    ],
+    "expected_disease": "Cryoglobulinemia",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 23,
+    "type": "exact",
+    "input_symptoms": [
+      "drooling in infants",
+      "malaise",
+      "painful mouth sores"
+    ],
+    "expected_disease": "Hand, Foot, and Mouth Disease (HFMD)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 24,
+    "type": "exact",
+    "input_symptoms": [
+      "fatigue",
+      "shortness of breath",
+      "chest pain/tightness with exertion (angina)",
+      "heart murmur",
+      "fainting (syncope) during activity"
+    ],
+    "expected_disease": "Aortic Valve Stenosis",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 25,
+    "type": "exact",
+    "input_symptoms": [
+      "itchy dry skin",
+      "skin cracking",
+      "inflamed patches",
+      "recurrent rash"
+    ],
+    "expected_disease": "Eczema",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 26,
+    "type": "exact",
+    "input_symptoms": [
+      "headache",
+      "vomiting",
+      "coma"
+    ],
+    "expected_disease": "Rocio Encephalitis",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 27,
+    "type": "exact",
+    "input_symptoms": [
+      "often asymptomatic",
+      "abdominal pain",
+      "itching around anus"
+    ],
+    "expected_disease": "Hymenolepiasis (Dwarf Tapeworm)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 28,
+    "type": "exact",
+    "input_symptoms": [
+      "fever",
+      "fatigue",
+      "encephalitis"
+    ],
+    "expected_disease": "Shokwe Virus",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 29,
+    "type": "exact",
+    "input_symptoms": [
+      "speech difficulty",
+      "seizures",
+      "unsteady gait",
+      "hallucinations",
+      "memory loss"
+    ],
+    "expected_disease": "Hashimoto's Encephalopathy",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 30,
+    "type": "exact",
+    "input_symptoms": [
+      "muscle pain",
+      "rash",
+      "eye pain"
+    ],
+    "expected_disease": "Mayaro Virus",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 31,
+    "type": "exact",
+    "input_symptoms": [
+      "pneumonia",
+      "pink eye (conjunctivitis)",
+      "diarrhea",
+      "sore throat"
+    ],
+    "expected_disease": "Adenovirus Infection",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 32,
+    "type": "exact",
+    "input_symptoms": [
+      "irritability",
+      "vaginitis (in girls)",
+      "visible worms in stool or perianal area",
+      "restless sleep",
+      "abdominal pain (rare)"
+    ],
+    "expected_disease": "Enterobiasis (Pinworm)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 33,
+    "type": "exact",
+    "input_symptoms": [
+      "frequent urination",
+      "slow-healing wounds",
+      "increased thirst"
+    ],
+    "expected_disease": "Type 2 Diabetes",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 34,
+    "type": "exact",
+    "input_symptoms": [
+      "sudden fever",
+      "joint pain",
+      "chills",
+      "headache"
+    ],
+    "expected_disease": "Oropouche Virus",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 35,
+    "type": "exact",
+    "input_symptoms": [
+      "chronic cough",
+      "shortness of breath (especially with exertion)",
+      "pursed-lip breathing"
+    ],
+    "expected_disease": "Emphysema (COPD Type)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 36,
+    "type": "exact",
+    "input_symptoms": [
+      "cough",
+      "sore throat",
+      "runny nose"
+    ],
+    "expected_disease": "Human Metapneumovirus",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 37,
+    "type": "exact",
+    "input_symptoms": [
+      "foul odor",
+      "yellow/brown discoloration",
+      "brittle crumbling nails"
+    ],
+    "expected_disease": "Onychomycosis (Nail Fungus)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 38,
+    "type": "exact",
+    "input_symptoms": [
+      "loss of appetite",
+      "fever",
+      "headache",
+      "fatigue",
+      "blisters in different stages (vesicles, pustules, crusts)"
+    ],
+    "expected_disease": "Chickenpox (Varicella)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 39,
+    "type": "exact",
+    "input_symptoms": [
+      "seizures",
+      "mental changes (anxiety, hallucinations)",
+      "nausea and vomiting"
+    ],
+    "expected_disease": "Porphyria",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 40,
+    "type": "exact",
+    "input_symptoms": [
+      "persistent joint pain (months to years)",
+      "fatigue",
+      "morning stiffness"
+    ],
+    "expected_disease": "Chikungunya (Chronic Arthritis)",
+    "note": "Exact symptoms from dataset"
+  },
+  {
+    "id": 41,
+    "type": "partial",
+    "input_symptoms": [
+      "fever",
+      "rash"
+    ],
+    "expected_disease": "Sindbis Virus Disease (Ockelbo, Pogosta, Karelian Fever)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 42,
+    "type": "partial",
+    "input_symptoms": [
+      "eschar at bite site",
+      "high fever"
+    ],
+    "expected_disease": "Scrub Typhus (Tsutsugamushi Disease)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 43,
+    "type": "partial",
+    "input_symptoms": [
+      "often asymptomatic",
+      "abdominal pain"
+    ],
+    "expected_disease": "Trichuriasis (Whipworm)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 44,
+    "type": "partial",
+    "input_symptoms": [
+      "fever",
+      "fatigue"
+    ],
+    "expected_disease": "Bourbon Virus Disease",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 45,
+    "type": "partial",
+    "input_symptoms": [
+      "persistent cough",
+      "sputum"
+    ],
+    "expected_disease": "COPD",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 46,
+    "type": "partial",
+    "input_symptoms": [
+      "chronic progressive shortness of breath",
+      "persistent cough with sputum"
+    ],
+    "expected_disease": "Chronic Obstructive Pulmonary Disease (COPD)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 47,
+    "type": "partial",
+    "input_symptoms": [
+      "often asymptomatic",
+      "fever"
+    ],
+    "expected_disease": "Clonorchiasis (Chinese Liver Fluke)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 48,
+    "type": "partial",
+    "input_symptoms": [
+      "persistent cough (dry then productive)",
+      "mucus production (clear, yellow, or green)"
+    ],
+    "expected_disease": "Bronchitis (Acute)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 49,
+    "type": "partial",
+    "input_symptoms": [
+      "fever",
+      "rash"
+    ],
+    "expected_disease": "Sagiyama Virus Infection",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 50,
+    "type": "partial",
+    "input_symptoms": [
+      "stage 1 (catarrhal): runny nose, nasal congestion, mild cough",
+      "stage 2 (paroxysmal): severe coughing fits, whooping sound with inhalation, vomiting after coughing, exhaustion"
+    ],
+    "expected_disease": "Pertussis (Whooping Cough)",
+    "note": "Only first 2 symptoms — tests partial matching"
+  },
+  {
+    "id": 51,
+    "type": "typo",
+    "input_symptoms": [
+      "red rash on chet or legs",
+      "cough",
+      "fatigue"
+    ],
+    "expected_disease": "Coccidioidomycosis (Valley Fever)",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 52,
+    "type": "typo",
+    "input_symptoms": [
+      "faver",
+      "joint pain",
+      "rash"
+    ],
+    "expected_disease": "Kyungpook Virus Infection",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 53,
+    "type": "typo",
+    "input_symptoms": [
+      "limied range of motion",
+      "lingering discomfort",
+      "tophi (urate deposits under skin)"
+    ],
+    "expected_disease": "Gout",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 54,
+    "type": "typo",
+    "input_symptoms": [
+      "tighntess in throat",
+      "hoarseness",
+      "visible swelling at base of neck"
+    ],
+    "expected_disease": "Goiter",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 55,
+    "type": "typo",
+    "input_symptoms": [
+      "severe fatgue",
+      "numbness in hands",
+      "shortness of breath"
+    ],
+    "expected_disease": "Amyloidosis",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 56,
+    "type": "typo",
+    "input_symptoms": [
+      "faitgue",
+      "rash",
+      "encephalitis"
+    ],
+    "expected_disease": "Shokwe Virus",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 57,
+    "type": "typo",
+    "input_symptoms": [
+      "fatigae",
+      "weakness",
+      "often asymptomatic"
+    ],
+    "expected_disease": "Diphyllobothriasis (Broad Fish Tapeworm)",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 58,
+    "type": "typo",
+    "input_symptoms": [
+      "dry rough skin",
+      "facial redness (flushing)",
+      "raised red patches (plaques)"
+    ],
+    "expected_disease": "Rosacea",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 59,
+    "type": "typo",
+    "input_symptoms": [
+      "mescle pain",
+      "rash",
+      "fever"
+    ],
+    "expected_disease": "Getah Virus",
+    "note": "Contains deliberate typo in 1st symptom"
+  },
+  {
+    "id": 60,
+    "type": "typo",
+    "input_symptoms": [
+      "high fever (may reach 10o°F+)",
+      "Koplik spots (tiny white spots inside mouth)",
+      "severe fatigue"
+    ],
+    "expected_disease": "Measles (Rubeola)",
+    "note": "Contains deliberate typo in 1st symptom"
+  }
+]

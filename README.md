@@ -8,7 +8,7 @@
 
 > 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com](https://healthcare-chatbot-1-ynxb.onrender.com)
 
-MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **711 medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **727 medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
 
 ---
 
@@ -69,7 +69,6 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 
 ### ⏰ 7. Self-Triggering Medication Reminders & Themes
 - **Self-Triggering Automatic Reminders**: Schedule medication dosage alerts with custom times and dosages. A continuous 10-second background polling engine checks due times and automatically fires reminders at the exact scheduled time — complete with Web Audio API chime sounds, desktop popups, and in-chat reminder cards.
-- **Manual Test Alert**: Includes a 1-click "Test Alert" button for quick verification of audio and notification settings.
 - **Dark & Light Themes**: High-contrast, accessible design system supporting dark mode and light mode.
 
 ---
@@ -91,6 +90,28 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 
 ---
 
+## 📊 Symptom Matcher — Evaluation Results
+
+The matcher was evaluated against **60 test cases** drawn from the live dataset (`data/diseases.json`), covering three difficulty levels:
+
+| Metric | Score | Hits / 60 |
+|--------|-------|-----------|
+| **Top-1 Accuracy** | **65.0%** | 39 / 60 |
+| **Top-3 Accuracy** | **81.7%** | 49 / 60 |
+| **Top-5 Accuracy** | **83.3%** | 50 / 60 |
+
+### Breakdown by Test Type
+
+| Type | n | Top-1 | Top-3 | Top-5 |
+|------|---|-------|-------|-------|
+| Exact symptoms (3–5 of disease's own symptoms) | 40 | 77.5% | 92.5% | 92.5% |
+| Partial symptoms (only first 2 of N symptoms) | 10 | 30.0% | 50.0% | 50.0% |
+| Typo symptoms (1 symptom with a character-level typo) | 10 | 50.0% | 70.0% | 80.0% |
+
+> Full per-case results, worst failures, and methodology: [`evaluation/results.md`](evaluation/results.md)
+
+---
+
 ## 📁 Project Architecture
 
 The application is built cleanly using modular Flask and MVC best practices:
@@ -107,7 +128,11 @@ HEALTHCARE CHATBOT/
 │   ├── notifications.py      # Job schedulers & notification triggers
 │   └── utils.py              # Symptom sanitizers, typo correction map & sentiment analyzers
 ├── data/                     # Data storage
-│   └── diseases.json         # Comprehensive database of 711 medical conditions
+│   └── diseases.json         # Comprehensive database of 727 medical conditions
+├── evaluation/               # Matcher evaluation framework (new-features branch)
+│   ├── evaluate.py           # Evaluation runner — top-1/3/5 accuracy & failure analysis
+│   ├── test_cases.json       # 60 test cases (exact / partial / typo)
+│   └── results.md            # Latest evaluation results with full per-case breakdown
 ├── frontend/                 # Client-side interface
 │   ├── static/
 │   │   ├── css/
@@ -142,7 +167,7 @@ Start the Flask development server:
 python run.py
 ```
 Upon startup:
-- The backend loads **711 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
+- The backend loads **727 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
 - Your default web browser automatically opens to `http://127.0.0.1:5000`.
