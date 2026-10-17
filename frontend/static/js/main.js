@@ -1,914 +1,1884 @@
-(() => {
-  'use strict';
+/* ==========================================================================
+   MedVitals AI - Client Logic & Interactivity
+   ========================================================================== */
 
-  const USER_ID = 1;
-  let sessionId = null;
-  let currentSection = 'chat';
-  let acController = null;
-  let chartCache = {};
-  let chartDirty = {};
-  let activeMetric = 'temperature';
-  let chartCtx = null;
-  let chartData = {};
-  let pendingMeasurements = null;
-  let pendingSymptoms = null;
-  let reminderPollTimer = null;
-  let freqChoice = 'daily';
+const state = {
+    sessionId: null,
+    userId: 1,
+    reminderTimes: [],
+    activeReminders: [],
+    searchHistory: [],
+    suggestDebounceTimer: null
+};
 
-  const $ = (id) => document.getElementById(id);
-  const qs = (sel, root = document) => root.querySelector(sel);
-  const qsa = (sel, root = document) => [...root.querySelectorAll(sel)];
+// Initialize Application
+document.addEventListener('DOMContentLoaded', init);
 
-  const METRIC_META = {
-    temperature:    { label: 'Temperature',    unit: '°F',  ph1: 'e.g. 98.6', ph2: null,        unit2: null,   units: ['°F','°C'], valId: 'valTemp',    stId: 'stTemp',    tsId: 'tsTemp'    },
-    weight:         { label: 'Weight',         unit: 'kg',  ph1: 'e.g. 72',   ph2: null,        unit2: null,   units: ['kg','lb'],  valId: 'valWeight',  stId: 'stWeight',  tsId: 'tsWeight'  },
-    blood_pressure: { label: 'Blood Pressure', unit: 'mmHg',ph1: 'Systolic',  ph2: 'Diastolic', unit2: 'mmHg', units: ['mmHg'],     valId: 'valBp',      stId: 'stBp',      tsId: 'tsBp'      },
-    blood_glucose:  { label: 'Blood Glucose',  unit: 'mg/dL',ph1:'e.g. 95',  ph2: null,        unit2: null,   units: ['mg/dL'],    valId: 'valGlucose', stId: 'stGlucose', tsId: 'tsGlucose' }
-  };
+async function init() {
+    initTheme();
+    initSidebarState();
+    setupEventListeners();
+    await startSession();
+    await checkConnection();
+    updateDiseaseCount();
+    await loadReminders();
+    await loadSearchHistory();
+    
+    // Periodically update connection status
+    setInterval(checkConnection, 45000);
+    
+    // Check permission status
+    updateNotificationUI();
+    
+    // Start automatic checking of medication reminders (every 10 seconds)
+    startReminderChecker();
+}
 
-  function fmt(ts) {
-    const d = new Date(ts);
-    return d.toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  }
-  function fmtShort(ts) {
-    const d = new Date(ts);
-    return d.toLocaleString('en-IN', { month: 'short', day: 'numeric' });
-  }
-  function timeNow() {
-    return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-  }
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  async function api(url, opts = {}) {
-    const res = await fetch(url, {
-      headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
-      ...opts
+// Event Listeners Setup
+function setupEventListeners() {
+    // Sidebar toggle buttons
+    document.getElementById('toggleLeftSidebarBtn')?.addEventListener('click', toggleLeftSidebar);
+    document.getElementById('toggleRightSidebarBtn')?.addEventListener('click', toggleRightSidebar);
+
+    // Menu items
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', handleMenuClick);
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  }
-
-  function toast(msg, type = 'info', title = '') {
-    const icons = { ok: 'fa-circle-check', warn: 'fa-triangle-exclamation', err: 'fa-circle-xmark', info: 'fa-circle-info' };
-    const wrap = $('toastArea');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `<i class="toast-icon fa-solid ${icons[type] || icons.info}"></i>
-      <div class="toast-body">${title ? `<div class="toast-title">${esc(title)}</div>` : ''}<div class="toast-msg">${esc(msg)}</div></div>`;
-    wrap.appendChild(t);
-    setTimeout(() => { t.classList.add('dismiss'); setTimeout(() => t.remove(), 240); }, 4000);
-  }
-
-  function showSection(name) {
-    currentSection = name;
-    const titles = { chat: 'Symptom Checker', knowledge: 'Medical Knowledge', trends: 'Health Trends', reminders: 'Medication Reminders' };
-    if ($('pageTitle')) $('pageTitle').textContent = titles[name] || name;
-
-    qsa('.view').forEach(v => v.classList.remove('active'));
-    const el = $(`section${name.charAt(0).toUpperCase() + name.slice(1)}`);
-    if (el) el.classList.add('active');
-
-    qsa('.sb-item[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === name));
-    qsa('.bn-item[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === name));
-
-    if (name === 'knowledge') initKnowledge();
-    if (name === 'trends') initTrends();
-    if (name === 'reminders') loadReminders();
-  }
-
-  function toggleSidebar(open) {
-    const sb = $('sidebar');
-    const bd = $('sidebarBackdrop');
-    if (open === undefined) open = !sb.classList.contains('open');
-    sb.classList.toggle('open', open);
-    bd.classList.toggle('show', open);
-  }
-
-  function openModal(id) {
-    const m = $(id);
-    m.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    const first = m.querySelector('button,input,select,textarea,a[href]');
-    if (first) first.focus();
-    const onKey = (e) => { if (e.key === 'Escape') { closeModal(id); document.removeEventListener('keydown', onKey); } };
-    document.addEventListener('keydown', onKey);
-  }
-  function closeModal(id) {
-    $(id).classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  /* ─── CHAT ──────────────────────────────────────── */
-  async function startSession() {
-    try {
-      const data = await api('/api/session/start', { method: 'POST', body: JSON.stringify({ user_id: USER_ID }) });
-      sessionId = data.session_id;
-      const badge = $('sessionBadge');
-      if (badge) badge.textContent = `Session ${sessionId.slice(0, 8)}`;
-    } catch (_) {
-      sessionId = 'local-' + Date.now();
-    }
-  }
-
-  function appendMsg(role, content, isHtml = false) {
-    const welcome = $('chatWelcome');
-    if (welcome) welcome.remove();
-
-    const feed = $('chatFeed');
-    const row = document.createElement('div');
-    row.className = `msg-row ${role}`;
-
-    const icon = role === 'user' ? 'fa-user' : 'fa-stethoscope';
-    const avCls = role === 'user' ? 'user-av' : 'ai-av';
-    row.innerHTML = `
-      <div class="msg-avatar ${avCls}" aria-hidden="true"><i class="fa-solid ${icon}"></i></div>
-      <div>
-        <div class="msg-bubble">${isHtml ? content : esc(content)}</div>
-        <div class="msg-time">${timeNow()}</div>
-      </div>`;
-    feed.appendChild(row);
-    row.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    return row;
-  }
-
-  function showTyping() {
-    const feed = $('chatFeed');
-    const row = document.createElement('div');
-    row.className = 'msg-row ai';
-    row.id = 'typingRow';
-    row.innerHTML = `
-      <div class="msg-avatar ai-av" aria-hidden="true"><i class="fa-solid fa-stethoscope"></i></div>
-      <div><div class="msg-bubble"><div class="typing-bubble">
-        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-      </div></div></div>`;
-    feed.appendChild(row);
-    row.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }
-  function removeTyping() {
-    const t = $('typingRow');
-    if (t) t.remove();
-  }
-
-  function buildStructuredHtml(sr) {
-    const causes = sr.possible_causes || [];
-    const meas = sr.measurements_summary || [];
-    let html = '';
-
-    if (causes.length) {
-      html += `<div class="sr-section"><div class="sr-label">Possible conditions</div>
-        <div class="sr-causes">${causes.map(c => `<span class="cause-pill">${esc(c)}</span>`).join('')}</div></div>`;
-    }
-    if (meas.length) {
-      html += `<div class="sr-section"><div class="sr-label">Your readings</div>`;
-      meas.forEach(m => {
-        const stLow = (m.status || '').toLowerCase();
-        const stCls = stLow.includes('high') || stLow.includes('elevated') ? 'high' : stLow.includes('low') ? 'low' : 'normal';
-        html += `<div class="sr-measurement"><span>${esc(m.metric)}: <strong>${esc(m.value)}</strong></span>
-          <span class="ms-status ${stCls}">${esc(m.status)}</span></div>`;
-      });
-      html += `</div>`;
-    }
-    if (sr.why) html += `<div class="sr-section"><div class="sr-label">Analysis</div><p>${esc(sr.why)}</p></div>`;
-    if (sr.what_you_can_do) html += `<div class="sr-section"><div class="sr-label">Recommendations</div><p>${esc(sr.what_you_can_do)}</p></div>`;
-    if (sr.seek_medical_care_if) html += `<div class="sr-section"><div class="sr-label">Seek care if</div><p>${esc(sr.seek_medical_care_if)}</p></div>`;
-    if (sr.emergency_warning) {
-      const isUrgent = sr.emergency_warning.includes('URGENT');
-      html += `<div class="sr-section"><div class="sr-label" style="color:var(--err-tx)">Emergency guidance</div>
-        <p style="color:var(--err-tx);font-weight:${isUrgent ? '700' : '400'}">${esc(sr.emergency_warning)}</p></div>`;
-    }
-    return html;
-  }
-
-  function buildMeasCard(needed, symptoms) {
-    const fields = {
-      temperature: `<div class="meas-field"><label>Temperature (°C or °F)</label><input type="number" step="any" placeholder="e.g. 98.6" id="mf_temp"></div>`,
-      blood_pressure: `
-        <div class="meas-field"><label>Systolic BP (mmHg)</label><input type="number" placeholder="e.g. 120" id="mf_bps"></div>
-        <div class="meas-field"><label>Diastolic BP (mmHg)</label><input type="number" placeholder="e.g. 80" id="mf_bpd"></div>`,
-      weight: `<div class="meas-field"><label>Weight (kg)</label><input type="number" step="any" placeholder="e.g. 70" id="mf_wt"></div>`
-    };
-    let html = `<div class="meas-card"><div class="meas-title"><i class="fa-solid fa-ruler-horizontal"></i> Health Measurements Requested</div>
-      <p style="font-size:.82rem;color:var(--tx2);margin-bottom:10px">Providing these helps improve the analysis. You can skip if unavailable.</p>
-      <div class="meas-grid">`;
-    (needed || []).forEach(m => { if (fields[m]) html += fields[m]; });
-    html += `</div><div class="meas-actions">
-      <button class="btn btn-primary btn-sm" id="submitMeasBtn"><i class="fa-solid fa-check"></i> Submit</button>
-      <button class="btn btn-ghost btn-sm" id="skipMeasBtn">Skip</button>
-    </div></div>`;
-    return html;
-  }
-
-  async function sendSymptoms(text, measurements, skip) {
-    const payload = { symptoms: text, session_id: sessionId, user_id: USER_ID };
-    if (measurements) payload.measurements = measurements;
-    if (skip) payload.skip_measurements = true;
-
-    showTyping();
-    $('sendBtn').disabled = true;
-    try {
-      const data = await api('/predict', { method: 'POST', body: JSON.stringify(payload) });
-      removeTyping();
-
-      if (data.requested_measurements) {
-        pendingMeasurements = data.requested_measurements;
-        pendingSymptoms = text;
-        const row = appendMsg('ai', buildMeasCard(data.requested_measurements, text), true);
-        const submitBtn = row.querySelector('#submitMeasBtn');
-        const skipBtn   = row.querySelector('#skipMeasBtn');
-        if (submitBtn) submitBtn.addEventListener('click', () => collectAndSubmitMeasurements(text));
-        if (skipBtn)   skipBtn.addEventListener('click', () => { pendingMeasurements = null; sendSymptoms(text, null, true); });
-        return;
-      }
-
-      const sr = data.structured_response || {};
-      const html = buildStructuredHtml(sr);
-      appendMsg('ai', html || 'Analysis complete. Please consult a healthcare professional for guidance.', true);
-    } catch (e) {
-      removeTyping();
-      appendMsg('ai', `I encountered an error: ${e.message}. Please try again.`);
-    } finally {
-      $('sendBtn').disabled = false;
-    }
-  }
-
-  function collectAndSubmitMeasurements(originalText) {
-    const meas = {};
-    const tempEl = $('mf_temp'), bpsEl = $('mf_bps'), bpdEl = $('mf_bpd'), wtEl = $('mf_wt');
-    if (tempEl && tempEl.value) meas.temperature = parseFloat(tempEl.value);
-    if (bpsEl && bpsEl.value) { meas.bp_sys = parseFloat(bpsEl.value); if (bpdEl && bpdEl.value) meas.bp_dia = parseFloat(bpdEl.value); }
-    if (wtEl && wtEl.value) meas.weight = parseFloat(wtEl.value);
-    sendSymptoms(originalText, Object.keys(meas).length ? meas : null, !Object.keys(meas).length);
-  }
-
-  function initChat() {
-    const input = $('chatInput');
-    const sendBtn = $('sendBtn');
-
-    input.addEventListener('input', () => {
-      input.style.height = 'auto';
-      input.style.height = Math.min(input.scrollHeight, 140) + 'px';
-      triggerAutocomplete(input.value);
+    
+    // Chat action buttons
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
     });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
-      if (e.key === 'Escape') closeAc();
-      if (e.key === 'ArrowDown') { e.preventDefault(); focusAcItem(0); }
-    });
-
-    sendBtn.addEventListener('click', doSend);
-
-    qsa('.sug-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        input.value = btn.dataset.text;
-        input.dispatchEvent(new Event('input'));
-        doSend();
-      });
-    });
-  }
-
-  function doSend() {
-    const input = $('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    input.style.height = 'auto';
-    closeAc();
-    appendMsg('user', text);
-    sendSymptoms(text, null, false);
-  }
-
-  /* Autocomplete */
-  let acTimer = null;
-  function triggerAutocomplete(val) {
-    clearTimeout(acTimer);
-    if (val.trim().length < 2) { closeAc(); return; }
-    acTimer = setTimeout(() => fetchAc(val.trim()), 280);
-  }
-  async function fetchAc(text) {
-    if (acController) acController.abort();
-    acController = new AbortController();
-    try {
-      const data = await fetch('/api/suggest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-        signal: acController.signal
-      }).then(r => r.json());
-
-      const sugs = data.suggestions || {};
-      const items = [
-        ...(sugs.symptoms || []).map(s => ({ label: s, type: 'symptom' })),
-        ...(sugs.diseases || []).map(d => ({ label: d, type: 'condition' }))
-      ];
-      renderAc(items);
-    } catch (_) {}
-  }
-  function renderAc(items) {
-    const dd = $('acDropdown');
-    if (!items.length) { closeAc(); return; }
-    dd.innerHTML = items.slice(0, 8).map((it, i) =>
-      `<div class="ac-item" tabindex="-1" data-idx="${i}" role="option">
-        <i class="fa-solid ${it.type === 'symptom' ? 'fa-circle-dot' : 'fa-book-medical'}" style="color:var(--brand)"></i>
-        ${esc(it.label)}<span class="ac-type">${esc(it.type)}</span>
-      </div>`
-    ).join('');
-    dd.classList.add('open');
-    dd.querySelectorAll('.ac-item').forEach(el => {
-      el.addEventListener('click', () => {
-        $('chatInput').value = el.firstElementChild.nextSibling.textContent.trim();
-        closeAc();
-        $('chatInput').focus();
-      });
-    });
-  }
-  function closeAc() { $('acDropdown').classList.remove('open'); }
-  function focusAcItem(idx) {
-    const items = qsa('.ac-item', $('acDropdown'));
-    if (items[idx]) items[idx].focus();
-  }
-
-  /* History modal */
-  async function openHistory() {
-    openModal('historyModal');
-    const body = $('historyModalBody');
-    body.innerHTML = '<div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</div>';
-    try {
-      const data = await api(`/api/history/user/${USER_ID}?limit=20`);
-      const sessions = data.history || [];
-      if (!sessions.length) { body.innerHTML = '<p style="color:var(--tx3);text-align:center;padding:32px">No chat history yet.</p>'; return; }
-      body.innerHTML = sessions.map(s =>
-        (s.messages || []).map(m => `<div class="hist-item">
-          <div class="hist-ts">${esc(m.time ? new Date(m.time).toLocaleString() : '')}</div>
-          <div class="hist-user">${esc(m.user || '')}</div>
-          <div class="hist-bot">${esc(typeof m.bot === 'string' ? m.bot.slice(0, 120) : '')}</div>
-        </div>`).join('')
-      ).join('');
-    } catch (_) {
-      body.innerHTML = '<p style="color:var(--err-tx);text-align:center;padding:32px">Could not load history.</p>';
-    }
-  }
-
-  /* ─── KNOWLEDGE ─────────────────────────────────── */
-  let kbLoaded = false;
-  let kbDiseases = [];
-  let kbActiveCategory = '';
-  let kbSearchTimer = null;
-
-  async function initKnowledge() {
-    if (kbLoaded) return;
-    kbLoaded = true;
-    showKbSkeletons(6);
-    try {
-      const data = await api('/api/knowledge/search', { method: 'POST', body: JSON.stringify({ limit: 60 }) });
-      kbDiseases = data.results || [];
-      const count = $('kbDiseaseCount');
-      if (count) count.textContent = data.total || kbDiseases.length;
-      const welcome = $('diseaseCountWelcome');
-      if (welcome) welcome.textContent = data.total || kbDiseases.length;
-      buildCategories();
-      renderKb(kbDiseases);
-    } catch (_) {
-      $('kbGrid').innerHTML = '<p style="color:var(--err-tx);padding:16px">Could not load medical knowledge base.</p>';
-    }
-    $('kbSearch').addEventListener('input', () => {
-      clearTimeout(kbSearchTimer);
-      kbSearchTimer = setTimeout(searchKb, 280);
-    });
-  }
-
-  function showKbSkeletons(n) {
-    $('kbGrid').innerHTML = `<div class="kb-skeleton-grid">${Array(n).fill(`<div class="skel skel-card"></div>`).join('')}</div>`;
-  }
-
-  function buildCategories() {
-    const cats = [...new Set(kbDiseases.map(d => d.category || 'General').filter(Boolean))].sort();
-    const bar = $('catBar');
-    bar.innerHTML = `<button class="cat-pill active" data-cat="">All</button>` +
-      cats.slice(0, 12).map(c => `<button class="cat-pill" data-cat="${esc(c)}">${esc(c)}</button>`).join('');
-    bar.addEventListener('click', e => {
-      const pill = e.target.closest('.cat-pill');
-      if (!pill) return;
-      qsa('.cat-pill', bar).forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      kbActiveCategory = pill.dataset.cat;
-      searchKb();
-    });
-  }
-
-  async function searchKb() {
-    const q = ($('kbSearch').value || '').trim();
-    showKbSkeletons(6);
-    try {
-      const body = { limit: 60 };
-      if (q) body.query = q;
-      if (kbActiveCategory) body.category = kbActiveCategory;
-      const data = await api('/api/knowledge/search', { method: 'POST', body: JSON.stringify(body) });
-      renderKb(data.results || []);
-    } catch (_) {
-      $('kbGrid').innerHTML = '<p style="color:var(--err-tx);padding:16px">Search failed. Please try again.</p>';
-    }
-  }
-
-  function renderKb(list) {
-    const grid = $('kbGrid');
-    if (!list.length) {
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--tx3)">
-        <i class="fa-solid fa-magnifying-glass" style="font-size:2rem;margin-bottom:12px"></i>
-        <p>No conditions found. Try a different search.</p></div>`;
-      return;
-    }
-    grid.innerHTML = list.map(d => {
-      const syms = (d.symptoms || []).slice(0, 4);
-      return `<div class="kb-card" data-name="${esc(d.disease)}" tabindex="0" role="button" aria-label="View details for ${esc(d.disease)}">
-        <div class="kb-card-head">
-          <div class="kb-card-name">${esc(d.disease)}</div>
-          ${d.category ? `<span class="kb-card-cat">${esc(d.category)}</span>` : ''}
-        </div>
-        <div class="kb-card-syms">${syms.map(s => `<span class="sym-tag">${esc(s)}</span>`).join('')}${d.symptoms && d.symptoms.length > 4 ? `<span class="sym-tag">+${d.symptoms.length - 4} more</span>` : ''}</div>
-        <div class="kb-card-footer">
-          <span>${d.severity ? 'Severity: ' + esc(d.severity) : ''}</span>
-          <span class="kb-card-action"><i class="fa-solid fa-arrow-right"></i> Details</span>
-        </div>
-      </div>`;
-    }).join('');
-    grid.querySelectorAll('.kb-card').forEach(card => {
-      const open = () => openDiseaseDetail(card.dataset.name);
-      card.addEventListener('click', open);
-      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
-    });
-  }
-
-  async function openDiseaseDetail(name) {
-    openModal('detailModal');
-    $('detailModalTitle').textContent = name;
-    const body = $('detailModalBody');
-    body.innerHTML = '<div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</div>';
-    try {
-      const data = await api(`/api/knowledge/${encodeURIComponent(name)}`);
-      const d = data.disease || {};
-      const syms = (d.symptoms || []).map(s => `<span class="dd-sym">${esc(s)}</span>`).join('');
-      body.innerHTML = `
-        <div class="dd-header">
-          <h3 class="dd-title">${esc(d.disease || name)}</h3>
-          <div class="dd-meta">
-            ${d.category ? `<span class="dd-badge">${esc(d.category)}</span>` : ''}
-            ${d.severity ? `<span class="dd-badge">${esc(d.severity)}</span>` : ''}
-            ${d.specialist ? `<span class="dd-badge">See: ${esc(d.specialist)}</span>` : ''}
-          </div>
-        </div>
-        ${syms ? `<div class="dd-section"><h4>Symptoms</h4><div class="dd-syms">${syms}</div></div>` : ''}
-        ${d.causes ? `<div class="dd-section"><h4>Causes</h4><p>${esc(d.causes)}</p></div>` : ''}
-        ${d.risk_factors ? `<div class="dd-section"><h4>Risk Factors</h4><p>${esc(d.risk_factors)}</p></div>` : ''}
-        ${d.treatment || d.medicine ? `<div class="dd-section"><h4>Treatment</h4><p>${esc(d.treatment || d.medicine)}</p></div>` : ''}
-        ${d.prevention || d.prevention_tips ? `<div class="dd-section"><h4>Prevention</h4><p>${esc(d.prevention || d.prevention_tips)}</p></div>` : ''}
-        ${d.when_to_seek_care ? `<div class="dd-section"><h4>When to Seek Care</h4><p>${esc(d.when_to_seek_care)}</p></div>` : ''}`;
-    } catch (_) {
-      body.innerHTML = '<p style="color:var(--err-tx);text-align:center;padding:32px">Could not load details.</p>';
-    }
-  }
-
-  /* ─── HEALTH TRENDS ─────────────────────────────── */
-  async function initTrends() {
-    await loadTrendsSummary();
-    await loadReadingHistory();
-    setupLogForm();
-    setupMetricTabs();
-  }
-
-  function invalidateChartCache() {
-    chartCache = {};
-    chartDirty = {};
-    if (currentSection === 'trends') {
-      loadTrendsSummary();
-      loadReadingHistory();
-      renderChart(activeMetric);
-    }
-  }
-
-  async function loadTrendsSummary() {
-    try {
-      const data = await api(`/api/health-trends/summary/${USER_ID}`);
-      const s = data.summary || {};
-      const a = data.assessment || {};
-
-      Object.entries(METRIC_META).forEach(([k, m]) => {
-        const entry = s[k];
-        const valEl = $(m.valId), stEl = $(m.stId), tsEl = $(m.tsId);
-        if (!valEl) return;
-        if (entry && entry.latest) {
-          const l = entry.latest;
-          valEl.textContent = k === 'blood_pressure'
-            ? `${l.val_pri}/${l.val_sec || '—'} ${l.unit || 'mmHg'}`
-            : `${l.val_pri} ${l.unit || m.unit}`;
-          if (stEl) {
-            const stClass = statusCss(l.status);
-            stEl.textContent = l.status;
-            stEl.className = `vc-status ${stClass}`;
-          }
-          if (tsEl) tsEl.textContent = fmtShort(l.time);
-        } else {
-          valEl.textContent = '—';
-          if (stEl) { stEl.textContent = 'No data'; stEl.className = 'vc-status'; }
-          if (tsEl) tsEl.textContent = '';
+    
+    // Suggest autocomplete list
+    document.getElementById('userInput').addEventListener('input', handleSymptomInput);
+    
+    // Close suggestions list if clicked outside
+    document.addEventListener('click', (e) => {
+        const autoContainer = document.getElementById('autocompleteContainer');
+        const userInput = document.getElementById('userInput');
+        if (e.target !== autoContainer && e.target !== userInput) {
+            autoContainer.style.display = 'none';
         }
-      });
+    });
 
-      const badge = $('acBadge'), title = $('acTitle'), msg = $('acMsg');
-      if (a.title) {
-        const t = title; if (t) t.textContent = a.title;
-        const m = msg; if (m) m.textContent = a.message;
-        const st = (a.status || '').toLowerCase();
-        badge.className = 'ac-badge' + (st.includes('good') || st.includes('stable') ? ' good' : st.includes('attention') ? ' err' : ' warn');
-        badge.querySelector('i').className = `fa-solid ${a.icon || 'fa-circle-info'}`;
-        badge.querySelector('span').textContent = a.status || '';
-      }
-    } catch (_) {}
-  }
+    // Panel actions
+    document.getElementById('addReminderBtn').addEventListener('click', showAddReminderModal);
+    document.getElementById('testReminderBtn')?.addEventListener('click', testReminderAlert);
+    document.getElementById('viewHistoryBtn').addEventListener('click', viewHistory);
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
 
-  function statusCss(s) {
-    if (!s) return '';
-    const sl = s.toLowerCase();
-    if (sl.includes('high') || sl.includes('elevated') || sl.includes('stage')) return 'Elevated';
-    if (sl.includes('low')) return 'Low';
-    return 'Normal';
-  }
-
-  function badgeClass(s) {
-    const c = statusCss(s);
-    if (c === 'Elevated') return 'badge-err';
-    if (c === 'Low') return 'badge-warn';
-    return 'badge-ok';
-  }
-
-  async function loadReadingHistory() {
-    const tbody = $('historyBody');
-    try {
-      const data = await api(`/api/health-trends/user/${USER_ID}?limit=50`);
-      const logs = data.logs || [];
-      if (!logs.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No readings logged yet.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = logs.map(l => {
-        const val = l.metric_type === 'blood_pressure' && l.value_secondary
-          ? `${l.value_primary}/${l.value_secondary} ${l.unit}`
-          : `${l.value_primary} ${l.unit}`;
-        const stCls = statusCss(l.status);
-        const badgeCls = badgeClass(l.status);
-        return `<tr>
-          <td>${esc(fmt(l.timestamp))}</td>
-          <td>${esc(l.metric_type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()))}</td>
-          <td><strong>${esc(val)}</strong></td>
-          <td><span class="badge ${badgeCls}">${esc(l.status || 'Normal')}</span></td>
-          <td style="color:var(--tx3)">${esc(l.notes || '—')}</td>
-          <td>
-            <button class="btn btn-ghost btn-sm del-reading" data-id="${l.id}" aria-label="Delete reading">
-              <i class="fa-solid fa-trash-can" style="color:var(--err-tx)"></i>
-            </button>
-          </td>
-        </tr>`;
-      }).join('');
-      tbody.querySelectorAll('.del-reading').forEach(btn => {
-        btn.addEventListener('click', () => deleteReading(btn.dataset.id));
-      });
-    } catch (_) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-row" style="color:var(--err-tx)">Could not load readings.</td></tr>';
-    }
-  }
-
-  async function deleteReading(id) {
-    if (!confirm('Delete this reading?')) return;
-    try {
-      await api(`/api/health-trends/${id}`, { method: 'DELETE' });
-      toast('Reading deleted.', 'ok');
-      invalidateChartCache();
-    } catch (_) {
-      toast('Could not delete reading.', 'err');
-    }
-  }
-
-  function setupLogForm() {
-    const metricSel = $('logMetric');
-    const val2Group = $('val2Group');
-    const unitSel = $('logUnit');
-    const primaryLbl = $('primaryLbl');
-
-    function updateFields() {
-      const m = metricSel.value;
-      const meta = METRIC_META[m];
-      $('logVal1').placeholder = meta.ph1;
-      primaryLbl.textContent = meta.label + (meta.units ? ` (${meta.units[0]})` : '');
-      val2Group.style.display = meta.ph2 ? '' : 'none';
-      unitSel.innerHTML = (meta.units || [meta.unit]).map(u => `<option value="${esc(u)}">${esc(u)}</option>`).join('');
-    }
-    metricSel.addEventListener('change', updateFields);
-    updateFields();
-
-    $('logForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const metric = metricSel.value;
-      const v1 = parseFloat($('logVal1').value);
-      const v2 = $('logVal2').value ? parseFloat($('logVal2').value) : null;
-      const unit = unitSel.value;
-      const notes = $('logNotes').value.trim();
-
-      if (isNaN(v1) || v1 <= 0) { toast('Enter a valid reading value.', 'warn'); return; }
-
-      const fb = $('logFeedback');
-      fb.style.display = 'none';
-
-      try {
-        const data = await api('/api/health-trends/log', {
-          method: 'POST',
-          body: JSON.stringify({ user_id: USER_ID, metric_type: metric, value_primary: v1, value_secondary: v2, unit, notes })
+    // Knowledge Search events
+    document.getElementById('knowledgeSearchBtn')?.addEventListener('click', () => {
+        const q = document.getElementById('knowledgeSearchInput').value.trim();
+        loadMedicalKnowledge(q, state.activeCategory || '');
+    });
+    document.getElementById('knowledgeSearchInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const q = e.target.value.trim();
+            loadMedicalKnowledge(q, state.activeCategory || '');
+        }
+    });
+    document.querySelectorAll('#knowledgeCategoryPills .cat-pill').forEach(pill => {
+        pill.addEventListener('click', (e) => {
+            document.querySelectorAll('#knowledgeCategoryPills .cat-pill').forEach(p => p.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            state.activeCategory = e.currentTarget.dataset.category || '';
+            const q = document.getElementById('knowledgeSearchInput').value.trim();
+            loadMedicalKnowledge(q, state.activeCategory);
         });
-        const asmt = data.assessment || {};
-        fb.style.display = 'flex';
-        fb.className = 'log-feedback';
-        $('logFbIcon').className = 'fa-solid fa-circle-check';
-        $('logFbText').textContent = asmt.single_feedback || data.message || 'Reading logged.';
-        $('logVal1').value = '';
-        $('logVal2').value = '';
-        $('logNotes').value = '';
-        toast('Reading saved successfully.', 'ok');
-        invalidateChartCache();
-      } catch (_) {
-        fb.style.display = 'flex';
-        fb.className = 'log-feedback err';
-        $('logFbIcon').className = 'fa-solid fa-circle-xmark';
-        $('logFbText').textContent = 'Could not save reading. Please try again.';
-      }
     });
-  }
 
-  function setupMetricTabs() {
-    $('metricTabs').addEventListener('click', e => {
-      const tab = e.target.closest('.mt-tab');
-      if (!tab) return;
-      qsa('.mt-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeMetric = tab.dataset.metric;
-      renderChart(activeMetric);
+    // Health Trends Form events
+    document.getElementById('metricTypeSelect')?.addEventListener('change', handleMetricTypeChange);
+    document.getElementById('healthLogForm')?.addEventListener('submit', handleHealthLogSubmit);
+    
+    // Chart metric tab selector
+    document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            const metric = e.currentTarget.dataset.metric;
+            state.activeChartMetric = metric;
+            if (state.trendsSummary && state.trendsSummary[metric]) {
+                renderTrendCanvasChart(metric, state.trendsSummary[metric].history || []);
+            }
+        });
     });
-    renderChart(activeMetric);
-  }
+}
 
-  async function getChartData(metric) {
-    if (chartCache[metric] && !chartDirty[metric]) return chartCache[metric];
-    const data = await api(`/api/health-trends/user/${USER_ID}?metric_type=${metric}&limit=20`);
-    const logs = (data.logs || []).slice().reverse();
-    chartCache[metric] = logs;
-    return logs;
-  }
+// Menu Click Router
+function handleMenuClick(e) {
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    e.currentTarget.classList.add('active');
+    
+    const section = e.currentTarget.dataset.section;
+    switchSection(section);
+}
 
-  async function renderChart(metric) {
-    const canvas = $('trendCanvas');
+function switchSection(section) {
+    document.querySelectorAll('.app-section').forEach(sec => {
+        sec.style.display = 'none';
+    });
+    
+    const mainTitle = document.getElementById('mainTitle');
+    const mainSubtitle = document.getElementById('mainSubtitle');
+    
+    if (section === 'chat') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        if (mainTitle) mainTitle.textContent = 'MedVitals AI — Personal Health Assistant';
+        if (mainSubtitle) mainSubtitle.textContent = 'Symptom guidance, a growing condition library, and personal vital tracking';
+    } else if (section === 'knowledge') {
+        document.getElementById('sectionKnowledge').style.display = 'block';
+        if (mainTitle) mainTitle.textContent = '🧠 Medical Knowledge Base Search';
+        if (mainSubtitle) mainSubtitle.textContent = 'Comprehensive Medical Database covering Symptoms, Causes, Risk Factors, Prevention, Treatment, and Care';
+        loadMedicalKnowledge();
+    } else if (section === 'trends') {
+        document.getElementById('sectionTrends').style.display = 'block';
+        if (mainTitle) mainTitle.textContent = '📊 Health Trend Tracker';
+        if (mainSubtitle) mainSubtitle.textContent = 'Record and monitor Temperature, Weight, Blood Pressure, and Blood Glucose over time';
+        loadHealthTrends();
+    } else if (section === 'history') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        viewHistory();
+    } else if (section === 'reminders') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        showAddReminderModal();
+    } else if (section === 'analytics') {
+        document.getElementById('sectionChat').style.display = 'flex';
+        fetchAnalytics();
+    }
+}
+
+// Quick Start Example Symptom Chip Helper
+function sendExampleSymptom(text) {
+    // Switch to chat tab if not active
+    switchSection('chat');
+    document.querySelectorAll('.sidebar-menu .menu-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.sidebar-menu .menu-item[data-section="chat"]')?.classList.add('active');
+
+    const input = document.getElementById('userInput');
+    if (!input) return;
+    input.value = text;
+    sendMessage();
+}
+
+// Start Session API call
+async function startSession() {
+    try {
+        const res = await fetch('/api/session/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: state.userId,
+                device_info: { browser: navigator.userAgent }
+            })
+        });
+        const data = await res.json();
+        if (data.session_id) {
+            state.sessionId = data.session_id;
+            const sessIdEl = document.getElementById('sessionId');
+            if (sessIdEl) sessIdEl.textContent = state.sessionId.slice(0, 14) + '...';
+        }
+    } catch (error) {
+        console.error('Session initiation error:', error);
+        const sessIdEl = document.getElementById('sessionId');
+        if (sessIdEl) sessIdEl.textContent = 'Error';
+    }
+}
+
+// Health Connection Checker
+async function checkConnection() {
+    const statusBadge = document.getElementById('connectionStatus');
+    if (!statusBadge) return;
+    try {
+        const res = await fetch('/health');
+        const data = await res.json();
+        
+        statusBadge.className = 'status-badge status-connected';
+        statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Connected (${data.disease_count} Conditions Loaded)`;
+    } catch (error) {
+        console.error('Server offline:', error);
+        statusBadge.className = 'status-badge status-disconnected';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Server Disconnected';
+    }
+}
+
+// Send Message Flow
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    // Hide autocomplete
+    document.getElementById('autocompleteContainer').style.display = 'none';
+    
+    addMessage('user', message);
+    input.value = '';
+    
+    const typingIndicator = showTypingIndicator();
+    
+    try {
+        const res = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                symptoms: message,
+                session_id: state.sessionId,
+                user_id: state.userId
+            })
+        });
+        
+        const data = await res.json();
+        typingIndicator.remove();
+        
+        if (data.error) {
+            addMessage('bot', `Error processing request: ${data.error}`);
+            return;
+        }
+
+        // Check if backend requested conditional health measurements
+        if (data.requested_measurements && data.requested_measurements.length > 0) {
+            window.lastSymptomsPayload = {
+                symptoms: message,
+                session_id: state.sessionId,
+                user_id: state.userId
+            };
+            const formHtml = formatConditionalMeasurementsCard(data.requested_measurements, data.urgent_flags);
+            addMessage('bot', formHtml);
+            return;
+        }
+        
+        if (data.matches && data.matches.length > 0) {
+            const htmlResponse = formatMatchesResponse(data.matches, data.structured_response);
+            addMessage('bot', htmlResponse);
+            
+            // Log top match in recent searches
+            const topMatch = data.matches[0];
+            updateSearchHistory(message, topMatch.disease);
+        } else {
+            addMessage('bot', `<p><i class="fa-solid fa-circle-question"></i> No matches found for your symptoms. Please try describing them differently, or contact a healthcare provider if you feel unwell.</p>`);
+        }
+    } catch (error) {
+        typingIndicator.remove();
+        console.error('Chat error:', error);
+        addMessage('bot', `
+            <div class="chat-error-card" style="background-color: var(--danger-light); border: 1px solid var(--danger); border-radius: var(--radius-md); padding: 14px; margin: 6px 0; color: var(--text-main);">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px; color:var(--danger);">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:18px;"></i>
+                    <strong style="font-size:14px;">Connection / Network Error</strong>
+                </div>
+                <p style="font-size:13px; margin-bottom:10px;">Unable to communicate with the MedVitals AI server (${error.message || 'Server disconnected'}). Please verify your connection and try again.</p>
+                <button class="btn btn-sm btn-primary" onclick="document.getElementById('userInput').value='${message.replace(/'/g, "\\'")}'; sendMessage();"><i class="fa-solid fa-rotate-right"></i> Retry Message</button>
+            </div>
+        `);
+    }
+}
+
+window.handleTempUnitToggle = function(unit) {
+    const input = document.getElementById('condTemp');
+    if (!input) return;
+    if (unit === '°F') {
+        input.placeholder = "e.g. 101.3 °F";
+        input.min = "86";
+        input.max = "113";
+    } else {
+        input.placeholder = "e.g. 38.5 °C";
+        input.min = "30";
+        input.max = "45";
+    }
+};
+
+// Format Conditional Health Measurements Form Card
+function formatConditionalMeasurementsCard(requestedMeasurements, urgentFlags) {
+    let html = `<div class="conditional-measurements-card">`;
+    
+    if (urgentFlags && urgentFlags.length > 0) {
+        html += `
+            <div class="urgent-alert-banner">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <strong>⚠️ URGENT MEDICAL NOTICE</strong>
+                    <p>Because you reported <em>${urgentFlags.join(', ')}</em>, this should not be ignored. If you are currently unconscious, confused, having severe breathing difficulty, chest pain, or worsening symptoms, seek emergency medical care (Call 911 / 112) immediately.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    html += `
+        <div class="measurement-card-header">
+            <h4><i class="fa-solid fa-notes-medical"></i> Additional Health Measurements Suggested</h4>
+            <p>To better understand your symptoms, please enter relevant health measurements if available (optional):</p>
+        </div>
+        <form id="conditionalMeasurementsForm" onsubmit="submitConditionalMeasurements(event)">
+    `;
+
+    if (requestedMeasurements.includes('temperature')) {
+        html += `
+            <div class="measurement-form-row">
+                <label for="condTemp">🌡️ Body Temperature:</label>
+                <div class="temp-input-group" style="display:flex; gap:8px; align-items:center;">
+                    <input type="number" step="0.1" min="30" max="45" id="condTemp" class="form-control-sm" placeholder="e.g. 38.5 °C" style="flex:1;">
+                    <select id="condTempUnit" class="unit-select-sm" onchange="window.handleTempUnitToggle(this.value)" style="width:110px; padding:10px; border-radius:var(--radius-md); border:1px solid var(--border-color); background-color:var(--primary-bg); color:var(--text-main); font-weight:600; cursor:pointer;">
+                        <option value="°C" selected>°C</option>
+                        <option value="°F">°F</option>
+                    </select>
+                </div>
+            </div>
+        `;
+    }
+
+    if (requestedMeasurements.includes('blood_pressure')) {
+        html += `
+            <div class="measurement-form-row">
+                <label>🩺 Blood Pressure (mmHg):</label>
+                <div class="bp-inputs-row">
+                    <input type="number" step="1" min="50" max="250" id="condBpSys" class="form-control-sm" placeholder="Systolic (110)">
+                    <span class="slash">/</span>
+                    <input type="number" step="1" min="30" max="150" id="condBpDia" class="form-control-sm" placeholder="Diastolic (70)">
+                </div>
+            </div>
+        `;
+    }
+
+    if (requestedMeasurements.includes('weight')) {
+        html += `
+            <div class="measurement-form-row">
+                <label for="condWeight">⚖️ Body Weight (kg):</label>
+                <input type="number" step="0.1" min="1" max="300" id="condWeight" class="form-control-sm" placeholder="e.g. 64 kg">
+            </div>
+        `;
+    }
+
+    html += `
+            <div class="measurement-actions-row">
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Submit & Analyze</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="submitConditionalMeasurements(event, true)"><i class="fa-solid fa-forward"></i> Skip for Now</button>
+            </div>
+        </form>
+    </div>`;
+
+    return html;
+}
+
+window.submitConditionalMeasurements = async function(e, skip = false) {
+    if (e) e.preventDefault();
+    
+    if (!window.lastSymptomsPayload) return;
+    
+    const payload = { ...window.lastSymptomsPayload };
+    
+    if (skip) {
+        payload.skip_measurements = true;
+    } else {
+        const measurements = {};
+        const tempEl = document.getElementById('condTemp');
+        const tempUnitEl = document.getElementById('condTempUnit');
+        const bpSysEl = document.getElementById('condBpSys');
+        const bpDiaEl = document.getElementById('condBpDia');
+        const weightEl = document.getElementById('condWeight');
+        
+        if (tempEl && tempEl.value !== '') {
+            let val = parseFloat(tempEl.value);
+            const unit = tempUnitEl ? tempUnitEl.value : '°C';
+            if (unit === '°F' || val > 70) {
+                // Store converted °C for core vector evaluation, keep original unit flag
+                measurements.temperature = Math.round(((val - 32) * 5 / 9) * 10) / 10;
+                measurements.temp_unit = '°F';
+                measurements.temp_original = val;
+            } else {
+                measurements.temperature = val;
+                measurements.temp_unit = '°C';
+            }
+        }
+        if (bpSysEl && bpSysEl.value !== '') measurements.bp_sys = parseFloat(bpSysEl.value);
+        if (bpDiaEl && bpDiaEl.value !== '') measurements.bp_dia = parseFloat(bpDiaEl.value);
+        if (weightEl && weightEl.value !== '') measurements.weight = parseFloat(weightEl.value);
+        
+        payload.measurements = measurements;
+    }
+    
+    const cardEl = document.querySelector('.conditional-measurements-card');
+    if (cardEl) {
+        cardEl.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing symptoms and health measurements...</div>`;
+    }
+    
+    try {
+        const res = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        
+        if (cardEl && cardEl.parentElement) {
+            if (data.matches && data.matches.length > 0) {
+                const htmlResponse = formatMatchesResponse(data.matches, data.structured_response);
+                cardEl.parentElement.innerHTML = htmlResponse;
+                
+                if (data.matches[0]) {
+                    updateSearchHistory(payload.symptoms, data.matches[0].disease);
+                }
+                
+                // Refresh Health Trends dashboard automatically!
+                if (!skip && payload.measurements && Object.keys(payload.measurements).length > 0) {
+                    if (typeof loadHealthTrends === 'function') {
+                        loadHealthTrends();
+                    }
+                }
+            } else {
+                cardEl.parentElement.innerHTML = `<p><i class="fa-solid fa-circle-question"></i> No matching conditions found. Try describing symptoms differently.</p>`;
+            }
+        }
+    } catch (err) {
+        if (cardEl) {
+            cardEl.innerHTML = `<p style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error: ${err.message}</p>`;
+        }
+    }
+};
+
+
+// Format Matches in structured 5-section response format
+function formatMatchesResponse(matches, structuredResp) {
+    let html = `<div class="matches-response">`;
+    
+    // Recorded Vitals Banner (if measurements were entered/extracted)
+    if (structuredResp && structuredResp.measurements_summary && structuredResp.measurements_summary.length > 0) {
+        html += `<div class="response-section measurements-recorded-section">
+            <h4 class="section-title"><i class="fa-solid fa-notes-medical"></i> <strong>Recorded Health Vitals & Status:</strong></h4>
+            <div class="vitals-recorded-grid">`;
+            
+        structuredResp.measurements_summary.forEach(m => {
+            html += `
+                <div class="recorded-vital-chip">
+                    <span class="vital-icon"><i class="fa-solid ${m.icon}"></i></span>
+                    <div class="vital-details">
+                        <span class="vital-name">${m.metric}</span>
+                        <span class="vital-value"><strong>${m.value}</strong></span>
+                    </div>
+                    <span class="badge ${m.badge_class}">${m.status}</span>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    
+    // 1. Possible causes
+    html += `<div class="response-section causes-section">
+        <h4 class="section-title"><i class="fa-solid fa-virus-covid"></i> <strong>Possible Causes:</strong></h4>
+        <div class="causes-list">`;
+
+    
+    matches.slice(0, 5).forEach((match) => {
+        const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => match.severity.toLowerCase().includes(s)) 
+            ? 'badge-severity-high' 
+            : match.severity.toLowerCase().includes('moderate') 
+            ? 'badge-severity-moderate' 
+            : 'badge-severity-mild';
+            
+        html += `
+            <div class="cause-chip clickable-chip" onclick="openDiseaseDetailModal('${encodeURIComponent(match.disease)}')" title="Click to view full medical details for ${match.disease}">
+                <span class="cause-name"><strong>${match.disease}</strong> <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px; margin-left:4px; opacity:0.8;"></i></span>
+                <span class="badge badge-match">${match.match_percentage}% match</span>
+                <span class="badge ${severityClass}">${match.severity}</span>
+            </div>
+        `;
+    });
+    html += `</div></div>`;
+
+    
+    // 2. Why
+    const whyText = structuredResp && structuredResp.why 
+        ? structuredResp.why 
+        : `Your reported symptoms overlap significantly with the diagnostic criteria for these conditions.`;
+    html += `<div class="response-section why-section">
+        <h4 class="section-title"><i class="fa-solid fa-circle-info"></i> <strong>Why:</strong></h4>
+        <p>${whyText}</p>
+    </div>`;
+    
+    // 3. What you can do
+    let whatYouCanDoHtml = '';
+    if (structuredResp && structuredResp.what_you_can_do_details) {
+        const d = structuredResp.what_you_can_do_details;
+        whatYouCanDoHtml = `<ul class="care-bullets-list" style="list-style:none; padding-left:0; margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+            <li style="font-size:13px; line-height:1.5;"><strong style="color:var(--text-main);">💊 Treatment & Medication:</strong> ${d.treatment}</li>
+            <li style="font-size:13px; line-height:1.5;"><strong style="color:var(--text-main);">🛠️ Care Advice:</strong> ${d.advice}</li>
+            <li style="font-size:13px; line-height:1.5;"><strong style="color:var(--text-main);">🛡️ Prevention:</strong> ${d.prevention}</li>
+        </ul>`;
+    } else {
+        const whatYouCanDoText = structuredResp && structuredResp.what_you_can_do 
+            ? structuredResp.what_you_can_do 
+            : (matches[0] ? `Treatment: ${matches[0].treatment || matches[0].medicine || 'Rest & OTC care'}. Advice: ${matches[0].advice || 'Hydration'}` : 'Rest and stay hydrated.');
+        whatYouCanDoHtml = `<p>${whatYouCanDoText}</p>`;
+    }
+    
+    html += `<div class="response-section action-section">
+        <h4 class="section-title"><i class="fa-solid fa-hand-holding-medical"></i> <strong>What you can do:</strong></h4>
+        ${whatYouCanDoHtml}
+    </div>`;
+    
+    // 4. Seek medical care if
+    const seekCareText = structuredResp && structuredResp.seek_medical_care_if 
+        ? structuredResp.seek_medical_care_if 
+        : (matches[0] ? `Consult a ${matches[0].specialist || 'Primary Care Physician'} if symptoms persist beyond 3-5 days.` : 'Consult a physician if symptoms persist.');
+    html += `<div class="response-section seek-care-section">
+        <h4 class="section-title"><i class="fa-solid fa-user-doctor"></i> <strong>Seek medical care if:</strong></h4>
+        <p>${seekCareText}</p>
+    </div>`;
+    
+    // 5. Emergency warning
+    const emergencyText = structuredResp && structuredResp.emergency_warning 
+        ? structuredResp.emergency_warning 
+        : `Call emergency services (911 / 112) immediately if you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma.`;
+    html += `<div class="response-section emergency-section">
+        <h4 class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Emergency Warning:</strong></h4>
+        <p>${emergencyText}</p>
+    </div>`;
+
+    // Detailed matches expander dropdown button
+    html += `<details class="matched-details-expander">
+        <summary><i class="fa-solid fa-list-check"></i> View Full 6-Pillar Diagnostic Cards (${matches.length} matches)</summary>
+        <div class="detailed-cards-wrapper">`;
+        
+    matches.forEach((match) => {
+        const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => match.severity.toLowerCase().includes(s)) 
+            ? 'badge-severity-high' 
+            : match.severity.toLowerCase().includes('moderate') 
+            ? 'badge-severity-moderate' 
+            : 'badge-severity-mild';
+            
+        const symptomsStr = Array.isArray(match.symptoms) ? match.symptoms.join(', ') : (match.symptoms || 'N/A');
+
+        html += `
+            <div class="disease-card">
+                <div class="disease-card-header">
+                    <span class="disease-name"><strong><i class="fa-solid fa-disease"></i> ${match.disease}</strong></span>
+                    <div class="disease-badge-row">
+                        <span class="badge ${severityClass}">${match.severity} severity</span>
+                        <span class="badge badge-match">${match.match_percentage}% match</span>
+                    </div>
+                </div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-head-side-cough"></i> Symptoms:</strong> ${symptomsStr}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-dna"></i> Causes:</strong> ${match.causes || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-triangle-exclamation"></i> Risk Factors:</strong> ${match.risk_factors || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-capsules"></i> Treatment & Care:</strong> ${match.treatment || match.medicine || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-user-doctor"></i> Recommended Specialist:</strong> ${match.specialist}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-shield-halved"></i> Prevention:</strong> ${match.prevention || match.prevention_tips || 'N/A'}</div>
+                <div class="disease-detail"><strong><i class="fa-solid fa-hospital-user"></i> When to Seek Care:</strong> ${match.when_to_seek_care || 'N/A'}</div>
+            </div>
+        `;
+    });
+    
+    html += `</div></details></div>`;
+    return html;
+}
+
+
+// Add Chat bubble
+function addMessage(type, content) {
+    const messagesDiv = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}-message`;
+    
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'message-avatar';
+    avatarDiv.innerHTML = type === 'user' ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-robot"></i>';
+    
+    const wrapperDiv = document.createElement('div');
+    wrapperDiv.className = 'message-wrapper';
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.innerHTML = content;
+    
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'message-time';
+    timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    wrapperDiv.appendChild(contentDiv);
+    wrapperDiv.appendChild(timeDiv);
+    
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(wrapperDiv);
+    
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Show Typing Animation
+function showTypingIndicator() {
+    const messagesDiv = document.getElementById('chatMessages');
+    const indicator = document.createElement('div');
+    indicator.className = 'message bot-message';
+    
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'message-avatar';
+    avatarDiv.innerHTML = '<i class="fa-solid fa-robot"></i>';
+    
+    const wrapperDiv = document.createElement('div');
+    wrapperDiv.className = 'message-wrapper';
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.innerHTML = `
+        <div class="typing-indicator">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+        </div>
+    `;
+    
+    wrapperDiv.appendChild(contentDiv);
+    indicator.appendChild(avatarDiv);
+    indicator.appendChild(wrapperDiv);
+    
+    messagesDiv.appendChild(indicator);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    return indicator;
+}
+
+// Symptom Input Autocomplete suggest logic
+function handleSymptomInput(e) {
+    const value = e.target.value;
+    
+    // Clear existing timeout for debouncing
+    clearTimeout(state.suggestDebounceTimer);
+    
+    if (value.trim().length < 2) {
+        document.getElementById('autocompleteContainer').style.display = 'none';
+        return;
+    }
+    
+    // Debounce search by 200ms
+    state.suggestDebounceTimer = setTimeout(async () => {
+        try {
+            // Get the last token (if comma separated)
+            const tokens = value.split(',');
+            const lastToken = tokens[tokens.length - 1].trim();
+            
+            if (lastToken.length < 2) {
+                document.getElementById('autocompleteContainer').style.display = 'none';
+                return;
+            }
+            
+            const res = await fetch('/api/suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: lastToken })
+            });
+            const data = await res.json();
+            
+            if (data.error) return;
+            
+            renderSuggestions(data.suggestions, tokens);
+        } catch (error) {
+            console.error('Autocomplete retrieval error:', error);
+        }
+    }, 200);
+}
+
+// Render floating autocomplete box
+function renderSuggestions(suggestions, tokens) {
+    const container = document.getElementById('autocompleteContainer');
+    
+    const hasSymptoms = suggestions.symptoms && suggestions.symptoms.length > 0;
+    const hasDiseases = suggestions.diseases && suggestions.diseases.length > 0;
+    
+    if (!hasSymptoms && !hasDiseases) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    let html = '';
+    
+    if (hasSymptoms) {
+        html += `<div class="autocomplete-section-title">Matching Symptoms</div>`;
+        suggestions.symptoms.forEach(symptom => {
+            html += `
+                <div class="autocomplete-item" data-type="symptom" data-value="${symptom}">
+                    <i class="fa-solid fa-hand-holding-medical"></i>
+                    <span>${symptom}</span>
+                </div>
+            `;
+        });
+    }
+    
+    if (hasDiseases) {
+        html += `<div class="autocomplete-section-title">Matching Diseases</div>`;
+        suggestions.diseases.forEach(disease => {
+            html += `
+                <div class="autocomplete-item" data-type="disease" data-value="${disease}">
+                    <i class="fa-solid fa-virus"></i>
+                    <span>${disease}</span>
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+    
+    // Attach event listeners to newly created items
+    container.querySelectorAll('.autocomplete-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const val = item.dataset.value;
+            const type = item.dataset.type;
+            
+            const userInput = document.getElementById('userInput');
+            
+            if (type === 'symptom') {
+                // Replace the last typed token with the selected symptom
+                tokens[tokens.length - 1] = ' ' + val;
+                userInput.value = tokens.join(',').trim() + ', ';
+            } else {
+                userInput.value = val;
+            }
+            
+            userInput.focus();
+            container.style.display = 'none';
+        });
+    });
+}
+
+// ==========================================================================
+// Chat History Archives Modal
+// ==========================================================================
+async function viewHistory() {
+    const modal = document.getElementById('historyModal');
+    const content = document.getElementById('historyContent');
+    
+    modal.classList.add('active');
+    content.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading health records...</div>`;
+    
+    try {
+        const res = await fetch(`/api/history/user/${state.userId}`);
+        const data = await res.json();
+        
+        if (data.history && data.history.length > 0) {
+            let html = '';
+            data.history.forEach(session => {
+                const dateStr = new Date(session.start_time).toLocaleString();
+                html += `
+                    <div class="history-item" onclick="loadSessionArchive('${session.session_id}')" style="margin-bottom: 12px;">
+                        <div class="history-symptoms">
+                            <i class="fa-solid fa-comments"></i> Session from ${dateStr}
+                        </div>
+                        <div class="history-meta">
+                            <span class="history-date">${session.messages.length} message units</span>
+                            <span class="badge-history-top">Review Archive</span>
+                        </div>
+                    </div>
+                `;
+            });
+            content.innerHTML = html;
+        } else {
+            content.innerHTML = `
+                <div class="no-data-placeholder">
+                    <i class="fa-solid fa-box-open"></i>
+                    <p>No health session history found. Start a conversation to log symptoms.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        content.innerHTML = `<p style="color: var(--danger); text-align: center;"><i class="fa-solid fa-circle-exclamation"></i> Failed to retrieve history: ${error.message}</p>`;
+    }
+}
+
+// Load individual session details inside Modal
+window.loadSessionArchive = async function(sessionId) {
+    const content = document.getElementById('historyContent');
+    content.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading session details...</div>`;
+    
+    try {
+        const res = await fetch(`/api/history/${sessionId}`);
+        const data = await res.json();
+        
+        let html = `
+            <div style="margin-bottom:20px;">
+                <button class="btn btn-sm btn-outline" onclick="viewHistory()">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Sessions
+                </button>
+                <h3 style="margin-top:14px; font-family:'Outfit';">Session ${sessionId.slice(0, 18)}...</h3>
+            </div>
+            <div class="history-messages-scroller">
+        `;
+        
+        data.messages.forEach(msg => {
+            const timeStr = new Date(msg.time).toLocaleString();
+            let displayBot = msg.bot;
+            
+            // Check if bot response was stringified JSON matches
+            try {
+                const parsed = JSON.parse(msg.bot);
+                if (Array.isArray(parsed)) {
+                    displayBot = `Matched primary suspect conditions: ${parsed.join(', ')}`;
+                }
+            } catch(e) {}
+            
+            html += `
+                <div class="history-msg-item">
+                    <div class="history-msg-time"><i class="fa-solid fa-calendar-day"></i> ${timeStr}</div>
+                    <div class="history-msg-body">
+                        <strong>You:</strong> ${msg.user}<br><br>
+                        <strong>MedVitals AI:</strong> ${displayBot}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        content.innerHTML = html;
+    } catch (error) {
+        alert('Failed to load session details: ' + error.message);
+        viewHistory();
+    }
+};
+
+// ==========================================================================
+// Medication Reminders Logic
+// ==========================================================================
+function showAddReminderModal() {
+    state.reminderTimes = [];
+    document.getElementById('timeList').innerHTML = '';
+    document.getElementById('reminderModal').classList.add('active');
+    updateNotificationUI();
+}
+
+window.addReminderTime = function() {
+    const timeInput = document.getElementById('reminderTime');
+    const time = timeInput.value;
+    if (!time) return alert('Please pick a time first.');
+    
+    if (state.reminderTimes.includes(time)) {
+        return alert('This time is already scheduled.');
+    }
+    
+    state.reminderTimes.push(time);
+    
+    // Sort times sequentially
+    state.reminderTimes.sort();
+    
+    renderTimeBadges();
+    timeInput.value = '';
+};
+
+window.removeReminderTime = function(time) {
+    state.reminderTimes = state.reminderTimes.filter(t => t !== time);
+    renderTimeBadges();
+};
+
+function renderTimeBadges() {
+    const list = document.getElementById('timeList');
+    list.innerHTML = state.reminderTimes.map(t => 
+        `<span class="time-tag-badge">${t} <span onclick="removeReminderTime('${t}')"><i class="fa-solid fa-xmark"></i></span></span>`
+    ).join('');
+}
+
+// Request and Enable Browser Notifications
+window.requestNotificationPermission = function() {
+    if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications.");
+        return;
+    }
+    
+    Notification.requestPermission().then(permission => {
+        updateNotificationUI();
+        if (permission === 'granted') {
+            new Notification("🔔 Reminders Enabled", {
+                body: "MedVitals AI will notify you when it's time to take your doses.",
+                icon: "🩺"
+            });
+        }
+    });
+};
+
+function updateNotificationUI() {
+    const prompt = document.getElementById('notificationPrompt');
+    if (!prompt) return;
+    
+    if (!("Notification" in window)) {
+        prompt.style.display = 'none';
+        return;
+    }
+    
+    if (Notification.permission === 'granted') {
+        prompt.innerHTML = `
+            <div class="prompt-text" style="color: #065f46;">
+                <i class="fa-solid fa-bell" style="color: var(--success)"></i>
+                <span>Desktop notifications are active and ready.</span>
+            </div>
+        `;
+    } else if (Notification.permission === 'denied') {
+        prompt.innerHTML = `
+            <div class="prompt-text" style="color: #991b1b;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger)"></i>
+                <span>Notifications are blocked. Please enable them in browser settings for alerts.</span>
+            </div>
+        `;
+    } else {
+        prompt.style.display = 'flex';
+    }
+}
+
+// Save Reminder to local storage and backend API
+async function saveReminder() {
+    const medName = document.getElementById('medName').value.trim();
+    const dosage = document.getElementById('dosage').value.trim();
+    const duration = document.getElementById('duration').value;
+    
+    if (!medName || !dosage) {
+        return alert('Please fill in the medication name and dosage.');
+    }
+    
+    if (state.reminderTimes.length === 0) {
+        return alert('Please add at least one schedule time.');
+    }
+    
+    try {
+        const newReminder = {
+            id: Date.now(),
+            medication_name: medName,
+            dosage: dosage,
+            schedule_times: [...state.reminderTimes],
+            duration_days: parseInt(duration),
+            created_at: new Date().toISOString()
+        };
+        
+        // 1. Save to browser LocalStorage
+        let localReminders = JSON.parse(localStorage.getItem('medicationReminders') || '[]');
+        localReminders.push(newReminder);
+        localStorage.setItem('medicationReminders', JSON.stringify(localReminders));
+        
+        // 2. Submit to backend API for background worker scheduling
+        try {
+            await fetch('/api/notifications/medication-reminder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: state.userId,
+                    medication_name: medName,
+                    dosage: dosage,
+                    schedule_times: state.reminderTimes,
+                    duration_days: parseInt(duration)
+                })
+            });
+        } catch(apiError) {
+            console.warn('Could not sync reminder with backend database. Will rely on local alert schedule.', apiError);
+        }
+        
+        alert(`✅ Medication saved! You'll receive alert reminders for ${medName} at ${state.reminderTimes.join(', ')}.`);
+        closeModal('reminderModal');
+        
+        // Reset form
+        document.getElementById('medName').value = '';
+        document.getElementById('dosage').value = '';
+        document.getElementById('timeList').innerHTML = '';
+        document.getElementById('duration').value = '30';
+        state.reminderTimes = [];
+        
+        await loadReminders();
+        
+    } catch (error) {
+        alert('Error saving medication reminder: ' + error.message);
+    }
+}
+
+// Load reminders from LocalStorage
+async function loadReminders() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('medicationReminders') || '[]');
+        state.activeReminders = saved;
+        
+        const container = document.getElementById('activeReminders');
+        if (!container) return;
+        
+        if (state.activeReminders.length > 0) {
+            let html = '';
+            state.activeReminders.slice(0, 4).forEach(r => {
+                html += `
+                    <div class="reminder-card">
+                        <div class="reminder-title">${r.medication_name}</div>
+                        <div class="reminder-times-list">
+                            <i class="fa-solid fa-clock"></i> <span>Times: ${r.schedule_times.join(', ')}</span>
+                        </div>
+                        <div class="reminder-dosage-info">${r.dosage} • ${r.duration_days} days</div>
+                        <button class="delete-reminder-btn" onclick="deleteReminder(${r.id})" title="Delete Reminder">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            if (state.activeReminders.length > 4) {
+                html += `<p style="font-size:11px; text-align:center; color: var(--text-muted); margin-top:8px;">+${state.activeReminders.length - 4} more schedules active</p>`;
+            }
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = `
+                <div class="no-data-placeholder">
+                    <i class="fa-solid fa-prescription-bottle-medical"></i>
+                    <p>No active reminders</p>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.error('Error loading reminders:', e);
+    }
+}
+
+// Delete reminder
+window.deleteReminder = function(reminderId) {
+    if (confirm('Are you sure you want to delete this medication schedule?')) {
+        let localReminders = JSON.parse(localStorage.getItem('medicationReminders') || '[]');
+        localReminders = localReminders.filter(r => r.id !== reminderId);
+        localStorage.setItem('medicationReminders', JSON.stringify(localReminders));
+        loadReminders();
+    }
+};
+
+// Play Web Audio API synthesized medical alert chime
+function playReminderSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+
+        // Note 1: E5 (659.25 Hz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.3);
+
+        // Note 2: A5 (880 Hz)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.3);
+        gain2.gain.setValueAtTime(0.4, now + 0.3);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.3);
+        osc2.stop(now + 0.7);
+    } catch (e) {
+        console.warn('Audio context alert chime not supported or blocked:', e);
+    }
+}
+
+// Trigger comprehensive audio sound, desktop notification, and in-chat banner
+function triggerReminderAlert(medName, dosage) {
+    playReminderSound();
+    
+    if ("Notification" in window && Notification.permission === 'granted') {
+        new Notification(`💊 Medication Time: ${medName}`, {
+            body: `Take ${dosage}. Don't skip your dose!`,
+            icon: "🩺",
+            requireInteraction: true
+        });
+    }
+
+    addMessage('bot', `
+        <div style="background-color: var(--primary-light); border: 2px solid var(--primary); padding: 16px; border-radius: var(--radius-md); text-align: center;">
+            <h4 style="color: var(--primary-hover); font-size: 15px; margin-bottom: 6px;">
+                <i class="fa-solid fa-bell-ring fa-bounce"></i> 💊 MEDICATION REMINDER ALERT
+            </h4>
+            <p style="font-size: 14px; font-weight: 600; color: var(--text-main);">It is time to take your dose of <strong>${medName}</strong> (${dosage}).</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Scheduled reminder active • Stay on track with your prescription.</p>
+        </div>
+    `);
+}
+
+function testReminderAlert() {
+    triggerReminderAlert("Amoxicillin (Test Dose)", "500mg - 1 tablet");
+}
+
+// ==========================================================================
+// ↔️ Collapsible Sidebar Controllers
+// ==========================================================================
+function toggleLeftSidebar() {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+    container.classList.toggle('left-collapsed');
+    const isCollapsed = container.classList.contains('left-collapsed');
+    localStorage.setItem('medvitals_left_collapsed', isCollapsed ? 'true' : 'false');
+}
+
+function toggleRightSidebar() {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+    container.classList.toggle('right-collapsed');
+    const isCollapsed = container.classList.contains('right-collapsed');
+    localStorage.setItem('medvitals_right_collapsed', isCollapsed ? 'true' : 'false');
+}
+
+function initSidebarState() {
+    const container = document.querySelector('.app-container');
+    if (!container) return;
+    if (localStorage.getItem('medvitals_left_collapsed') === 'true') {
+        container.classList.add('left-collapsed');
+    }
+    if (localStorage.getItem('medvitals_right_collapsed') === 'true') {
+        container.classList.add('right-collapsed');
+    }
+}
+
+// Start scanning medication reminders automatically every 10 seconds
+function startReminderChecker() {
+    checkActiveLocalReminders();
+    setInterval(checkActiveLocalReminders, 10000);
+}
+
+// Automatically triggers audio sound, desktop notification, and in-chat alert at scheduled time mentioned
+async function checkActiveLocalReminders() {
+    const now = new Date();
+    const curHour = now.getHours();
+    const curMin = now.getMinutes();
+    const curTimeStr = `${String(curHour).padStart(2, '0')}:${String(curMin).padStart(2, '0')}`;
+    
+    // 1. Check local reminders saved in browser
+    if (state.activeReminders && state.activeReminders.length > 0) {
+        state.activeReminders.forEach(reminder => {
+            if (!reminder.schedule_times) return;
+            reminder.schedule_times.forEach(scheduledTime => {
+                const parts = scheduledTime.trim().split(':');
+                if (parts.length === 2) {
+                    const normTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+                    if (normTime === curTimeStr) {
+                        const storageKey = `last_notified_${reminder.id}_${normTime}_${now.toDateString()}`;
+                        const lastNotified = localStorage.getItem(storageKey);
+                        
+                        if (!lastNotified) {
+                            triggerReminderAlert(reminder.medication_name, reminder.dosage);
+                            localStorage.setItem(storageKey, 'true');
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    // 2. Poll backend for due database notifications
+    try {
+        const res = await fetch(`/api/reminders/due?user_id=${state.userId || 1}`);
+        const data = await res.json();
+        if (data.due_reminders && data.due_reminders.length > 0) {
+            data.due_reminders.forEach(r => {
+                triggerReminderAlert(r.title || 'Medication Reminder', r.message || 'Time to take your scheduled dose.');
+            });
+            loadReminders();
+        }
+    } catch (err) {}
+}
+
+
+// ==========================================================================
+// Recent Searches & History (Side panel)
+// ==========================================================================
+async function loadSearchHistory() {
+    const saved = localStorage.getItem('searchHistory');
+    if (saved) {
+        state.searchHistory = JSON.parse(saved);
+        updateSearchDisplay();
+    }
+}
+
+function updateSearchHistory(symptoms, match) {
+    state.searchHistory = state.searchHistory.filter(s => s.symptoms !== symptoms);
+    state.searchHistory.unshift({
+        symptoms,
+        match,
+        time: new Date().toISOString()
+    });
+    
+    if (state.searchHistory.length > 5) {
+        state.searchHistory.pop();
+    }
+    
+    localStorage.setItem('searchHistory', JSON.stringify(state.searchHistory));
+    updateSearchDisplay();
+}
+
+function updateSearchDisplay() {
+    const container = document.getElementById('recentSearches');
+    if (!container) return;
+    
+    if (state.searchHistory.length > 0) {
+        let html = '';
+        state.searchHistory.forEach(s => {
+            const timeAgo = formatTimeAgo(new Date(s.time));
+            html += `
+                <div class="history-item" onclick="searchAgain('${s.symptoms}')">
+                    <div class="history-symptoms">${s.symptoms}</div>
+                    <div class="history-meta">
+                        <span class="history-date">${timeAgo}</span>
+                        ${s.match ? `<span class="badge-history-top">${s.match}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = `
+            <div class="no-data-placeholder">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <p>No recent symptom checks</p>
+            </div>
+        `;
+    }
+}
+
+window.searchAgain = function(symptoms) {
+    const userInput = document.getElementById('userInput');
+    userInput.value = symptoms;
+    sendMessage();
+};
+
+function formatTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval + "y ago";
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval + "mo ago";
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval + "d ago";
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval + "h ago";
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval + "m ago";
+    return "just now";
+}
+
+// ==========================================================================
+// Analytics Dashboard
+// ==========================================================================
+async function fetchAnalytics() {
+    const typingIndicator = showTypingIndicator();
+    try {
+        const res = await fetch('/api/analytics?days=30');
+        const data = await res.json();
+        typingIndicator.remove();
+        
+        let message = `
+            <div style="font-family:'Outfit';">
+                <h3 style="margin-bottom:12px;"><i class="fa-solid fa-chart-pie"></i> Usage Analytics (Last 30 Days)</h3>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:16px; font-size:13px;">
+                    <tr style="border-bottom:1px solid var(--border-color);"><td style="padding:8px 0; font-weight:600; color:var(--text-muted);">Total Sessions:</td><td style="padding:8px 0; text-align:right; font-weight:700;">${data.total_sessions}</td></tr>
+                    <tr style="border-bottom:1px solid var(--border-color);"><td style="padding:8px 0; font-weight:600; color:var(--text-muted);">Total Message Units:</td><td style="padding:8px 0; text-align:right; font-weight:700;">${data.total_messages}</td></tr>
+                    <tr style="border-bottom:1px solid var(--border-color);"><td style="padding:8px 0; font-weight:600; color:var(--text-muted);">Avg. Messages/Session:</td><td style="padding:8px 0; text-align:right; font-weight:700;">${data.avg_messages_per_session.toFixed(1)}</td></tr>
+                </table>
+        `;
+        
+        if (data.popular_searches && data.popular_searches.length > 0) {
+            message += `<h4 style="font-size:13px; margin-bottom:8px;"><i class="fa-solid fa-fire"></i> Most Searched Conditions:</h4><ul style="padding-left:20px; font-size:13px; color:var(--text-muted); margin-bottom:12px;">`;
+            data.popular_searches.slice(0, 5).forEach(s => {
+                message += `<li style="margin-bottom:4px;"><strong>${s.disease}</strong>: checked ${s.count} times</li>`;
+            });
+            message += `</ul>`;
+        }
+        
+        if (data.popular_symptoms && data.popular_symptoms.length > 0) {
+            message += `<h4 style="font-size:13px; margin-bottom:8px;"><i class="fa-solid fa-tags"></i> Top Reported Symptoms:</h4><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
+            data.popular_symptoms.slice(0, 6).forEach(s => {
+                message += `<span class="badge badge-symptom-tag">${s.symptom} (${s.count})</span>`;
+            });
+            message += `</div>`;
+        }
+        
+        message += `</div>`;
+        addMessage('bot', message);
+    } catch (error) {
+        typingIndicator.remove();
+        addMessage('bot', `<p style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Failed to compile analytics: ${error.message}</p>`);
+    }
+}
+
+// ==========================================================================
+// Modal Controllers
+// ==========================================================================
+window.closeModal = function(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+};
+
+// ==========================================================================
+// Theme Toggler Support
+// ==========================================================================
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    setTheme(theme);
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    const toggleBtn = document.getElementById('themeToggleBtn');
+    if (toggleBtn) {
+        const icon = toggleBtn.querySelector('i');
+        if (theme === 'dark') {
+            icon.className = 'fa-solid fa-sun';
+            toggleBtn.title = 'Switch to Light Theme';
+        } else {
+            icon.className = 'fa-solid fa-moon';
+            toggleBtn.title = 'Switch to Dark Theme';
+        }
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+}
+
+// ==========================================================================
+// 🧠 Medical Knowledge Base Search Module
+// ==========================================================================
+
+async function loadMedicalKnowledge(query = '', category = '') {
+    const container = document.getElementById('knowledgeResults');
+    if (!container) return;
+    const meta = document.getElementById('knowledgeResultsMeta');
+    
+    container.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching Medical Knowledge Base...</div>`;
+    
+    try {
+        const res = await fetch('/api/knowledge/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: query, category: category, limit: 12 })
+        });
+        const data = await res.json();
+        
+        if (data.error) {
+            container.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);">${data.error}</p></div>`;
+            return;
+        }
+        
+        const results = data.results || [];
+        if (meta) meta.textContent = query || category ? `Showing ${results.length} of ${data.total || results.length} matching conditions${category ? ` in ${category}` : ''}.` : `Showing ${results.length} of ${data.total || results.length} conditions. Search or choose a category to narrow the list.`;
+        if (results.length === 0) {
+            container.innerHTML = `<div class="no-data-placeholder"><i class="fa-solid fa-folder-open"></i><p>No medical conditions found matching "${query}".</p></div>`;
+            return;
+        }
+        
+        let html = '';
+        results.forEach(d => {
+            const severity = (d.severity || 'unspecified').toLowerCase();
+            const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => severity.includes(s)) 
+                ? 'badge-severity-high' 
+                : severity.includes('moderate') 
+                ? 'badge-severity-moderate' 
+                : 'badge-severity-mild';
+                
+            const symptomsStr = Array.isArray(d.symptoms) ? d.symptoms.join(', ') : (d.symptoms || 'N/A');
+            
+            html += `
+                <div class="knowledge-card">
+                    <div class="knowledge-card-header">
+                        <div class="title-row">
+                            <h3><i class="fa-solid fa-book-medical"></i> ${d.disease}</h3>
+                            <span class="badge ${severityClass}">${d.severity || 'Unspecified'}</span>
+                        </div>
+                        <span class="cat-tag"><i class="fa-solid fa-tag"></i> ${d.category}</span>
+                    </div>
+                    <div class="knowledge-pillars">
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-head-side-cough"></i> Symptoms:</strong>
+                            <p>${symptomsStr}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-dna"></i> Causes:</strong>
+                            <p>${d.causes || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-triangle-exclamation"></i> Risk Factors:</strong>
+                            <p>${d.risk_factors || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-shield-halved"></i> Prevention:</strong>
+                            <p>${d.prevention || d.prevention_tips || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box">
+                            <strong><i class="fa-solid fa-capsules"></i> General Treatment Information:</strong>
+                            <p>${d.treatment || d.medicine || 'N/A'}</p>
+                        </div>
+                        <div class="pillar-box warning-pillar">
+                            <strong><i class="fa-solid fa-user-doctor"></i> When to Seek Medical Care:</strong>
+                            <p>${d.when_to_seek_care || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    } catch (error) {
+        container.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error loading knowledge base: ${error.message}</p></div>`;
+    }
+}
+
+
+// ==========================================================================
+// 📊 Health Trend Tracking Module
+// ==========================================================================
+
+state.activeChartMetric = 'temperature';
+state.trendsSummary = null;
+
+function handleMetricTypeChange(e) {
+    const val = e.target.value;
+    const priLabel = document.getElementById('primaryLabel');
+    const secGroup = document.getElementById('secondaryValGroup');
+    const unitSelect = document.getElementById('unitSelect');
+    const priInput = document.getElementById('valPrimaryInput');
+    
+    if (val === 'temperature') {
+        priLabel.textContent = 'Temperature (°F)';
+        priInput.placeholder = 'e.g. 98.6';
+        secGroup.style.display = 'none';
+        unitSelect.innerHTML = '<option value="°F">°F</option><option value="°C">°C</option>';
+    } else if (val === 'weight') {
+        priLabel.textContent = 'Weight (kg)';
+        priInput.placeholder = 'e.g. 72.5';
+        secGroup.style.display = 'none';
+        unitSelect.innerHTML = '<option value="kg">kg</option><option value="lbs">lbs</option>';
+    } else if (val === 'blood_pressure') {
+        priLabel.textContent = 'Systolic (mmHg)';
+        priInput.placeholder = 'e.g. 120';
+        secGroup.style.display = 'block';
+        unitSelect.innerHTML = '<option value="mmHg">mmHg</option>';
+    } else if (val === 'blood_glucose') {
+        priLabel.textContent = 'Blood Glucose (mg/dL)';
+        priInput.placeholder = 'e.g. 95';
+        secGroup.style.display = 'none';
+        unitSelect.innerHTML = '<option value="mg/dL">mg/dL</option>';
+    }
+}
+
+async function handleHealthLogSubmit(e) {
+    e.preventDefault();
+    const metricType = document.getElementById('metricTypeSelect').value;
+    const priVal = parseFloat(document.getElementById('valPrimaryInput').value);
+    const secInput = document.getElementById('valSecondaryInput').value;
+    const secVal = secInput !== '' ? parseFloat(secInput) : null;
+    const unit = document.getElementById('unitSelect').value;
+    const notes = document.getElementById('notesInput').value.trim();
+    
+    if (isNaN(priVal) || priVal <= 0) {
+        alert('Please enter a valid reading value.');
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/health-trends/log', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: state.userId,
+                metric_type: metricType,
+                value_primary: priVal,
+                value_secondary: secVal,
+                unit: unit,
+                notes: notes
+            })
+        });
+        const data = await res.json();
+        
+        if (data.error) {
+            alert(`Error saving reading: ${data.error}`);
+            return;
+        }
+        
+        // Display instant feedback toast with reassuring clinical evaluation
+        if (data.assessment && data.assessment.single_feedback) {
+            const feedbackBanner = document.getElementById('vitalLogFeedback');
+            const feedbackText = document.getElementById('feedbackText');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            
+            feedbackText.textContent = data.assessment.single_feedback;
+            if (data.log && data.log.status === 'Normal') {
+                feedbackIcon.className = 'fa-solid fa-circle-check';
+                feedbackBanner.className = 'instant-feedback-banner feedback-good';
+            } else {
+                feedbackIcon.className = 'fa-solid fa-circle-info';
+                feedbackBanner.className = 'instant-feedback-banner feedback-alert';
+            }
+            feedbackBanner.style.display = 'flex';
+        }
+
+        // Reset form inputs
+        document.getElementById('valPrimaryInput').value = '';
+        document.getElementById('valSecondaryInput').value = '';
+        document.getElementById('notesInput').value = '';
+        
+        // Reload health trends summary
+        await loadHealthTrends();
+    } catch (error) {
+        alert(`Failed to save vital reading: ${error.message}`);
+    }
+}
+
+async function loadHealthTrends() {
+    try {
+        const resSum = await fetch(`/api/health-trends/summary/${state.userId}`);
+        const dataSum = await resSum.json();
+        
+        if (dataSum.summary) {
+            state.trendsSummary = dataSum.summary;
+            updateMetricSummaryCards(dataSum.summary);
+            
+            const activeMetric = state.activeChartMetric || 'temperature';
+            if (dataSum.summary[activeMetric]) {
+                renderTrendCanvasChart(activeMetric, dataSum.summary[activeMetric].history || []);
+            }
+        }
+        
+        if (dataSum.assessment) {
+            updateOverallAssessmentUI(dataSum.assessment);
+        }
+
+        // Load detailed table logs
+        const resLogs = await fetch(`/api/health-trends/user/${state.userId}`);
+        const dataLogs = await resLogs.json();
+        
+        if (dataLogs.logs) {
+            renderHealthLogsTable(dataLogs.logs);
+        }
+    } catch (error) {
+        console.error('Error loading health trends:', error);
+    }
+}
+
+function updateOverallAssessmentUI(assessment) {
+    const badge = document.getElementById('overallStatusBadge');
+    const icon = document.getElementById('overallStatusIcon');
+    const text = document.getElementById('overallStatusText');
+    const title = document.getElementById('overallAssessmentTitle');
+    const msg = document.getElementById('overallAssessmentMsg');
+    const time = document.getElementById('overallAssessmentTime');
+    
+    if (badge) badge.className = `assessment-badge ${assessment.css_class}`;
+    if (icon) icon.className = `fa-solid ${assessment.icon}`;
+    if (text) text.textContent = `Overall Condition: ${assessment.status}`;
+    if (title) title.textContent = assessment.title;
+    if (msg) msg.textContent = assessment.message;
+    if (time) time.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+}
+
+
+function updateMetricSummaryCards(summary) {
+    // 1. Temperature
+    const temp = summary.temperature;
+    const valTemp = document.getElementById('valTemp');
+    const statusTemp = document.getElementById('statusTemp');
+    const timeTemp = document.getElementById('timeTemp');
+    if (temp && temp.latest) {
+        valTemp.textContent = temp.latest.val_pri;
+        statusTemp.textContent = temp.latest.status;
+        statusTemp.className = `status-tag status-${temp.latest.status.toLowerCase().replace(/\s+/g, '-')}`;
+        timeTemp.textContent = new Date(temp.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // 2. Weight
+    const wt = summary.weight;
+    const valWeight = document.getElementById('valWeight');
+    const statusWeight = document.getElementById('statusWeight');
+    const timeWeight = document.getElementById('timeWeight');
+    if (wt && wt.latest) {
+        valWeight.textContent = wt.latest.val_pri;
+        statusWeight.textContent = wt.delta ? (wt.delta > 0 ? `+${wt.delta} kg` : `${wt.delta} kg`) : 'Normal';
+        statusWeight.className = `status-tag status-normal`;
+        timeWeight.textContent = new Date(wt.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // 3. Blood Pressure
+    const bp = summary.blood_pressure;
+    const valBp = document.getElementById('valBp');
+    const statusBp = document.getElementById('statusBp');
+    const timeBp = document.getElementById('timeBp');
+    if (bp && bp.latest) {
+        valBp.textContent = `${bp.latest.val_pri}/${bp.latest.val_sec || '--'}`;
+        statusBp.textContent = bp.latest.status;
+        statusBp.className = `status-tag status-${bp.latest.status.toLowerCase().replace(/\s+/g, '-')}`;
+        timeBp.textContent = new Date(bp.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // 4. Glucose
+    const gl = summary.blood_glucose;
+    const valGlucose = document.getElementById('valGlucose');
+    const statusGlucose = document.getElementById('statusGlucose');
+    const timeGlucose = document.getElementById('timeGlucose');
+    if (gl && gl.latest) {
+        valGlucose.textContent = gl.latest.val_pri;
+        statusGlucose.textContent = gl.latest.status;
+        statusGlucose.className = `status-tag status-${gl.latest.status.toLowerCase().replace(/\s+/g, '-')}`;
+        timeGlucose.textContent = new Date(gl.latest.time).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+}
+
+function renderHealthLogsTable(logs) {
+    const tbody = document.getElementById('healthLogsTableBody');
+    if (!tbody) return;
+    
+    if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center">No vital logs recorded yet. Use the form above to record your first reading.</td></tr>`;
+        return;
+    }
+    
+    let html = '';
+    logs.forEach(l => {
+        const metricNameMap = {
+            'temperature': '🌡️ Temperature',
+            'weight': '⚖️ Weight',
+            'blood_pressure': '🩸 Blood Pressure',
+            'blood_glucose': '🍬 Blood Glucose'
+        };
+        const mName = metricNameMap[l.metric_type] || l.metric_type;
+        const readingStr = l.value_secondary ? `${l.value_primary} / ${l.value_secondary} ${l.unit}` : `${l.value_primary} ${l.unit}`;
+        const dateStr = new Date(l.timestamp).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const statusClass = `status-tag status-${(l.status || 'normal').toLowerCase().replace(/\s+/g, '-')}`;
+        
+        html += `
+            <tr>
+                <td>${dateStr}</td>
+                <td><strong>${mName}</strong></td>
+                <td><span class="reading-val">${readingStr}</span></td>
+                <td><span class="${statusClass}">${l.status}</span></td>
+                <td>${l.notes || '-'}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteHealthLog(${l.id})"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+window.deleteHealthLog = async function(logId) {
+    if (!confirm('Are you sure you want to delete this vital reading?')) return;
+    try {
+        const res = await fetch(`/api/health-trends/${logId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.message) {
+            await loadHealthTrends();
+        }
+    } catch (e) {
+        alert('Failed to delete log.');
+    }
+};
+
+// Canvas Line Chart Renderer
+function renderTrendCanvasChart(metricType, history) {
+    const canvas = document.getElementById('trendChartCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const wrap = canvas.parentElement;
-    canvas.width = wrap.offsetWidth || 400;
-    canvas.height = 210;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    let logs = [];
-    try { logs = await getChartData(metric); } catch (_) {}
-
-    if (!logs.length) {
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '14px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('No data yet — log a reading to see the chart.', canvas.width / 2, canvas.height / 2);
-      return;
-    }
-
-    const meta = METRIC_META[metric];
-    const vals = logs.map(l => l.value_primary);
-    const min = Math.min(...vals), max = Math.max(...vals);
-    const range = max - min || 1;
-    const padX = 48, padY = 24, padB = 36;
-    const w = canvas.width - padX * 2;
-    const h = canvas.height - padY - padB;
-
-    const isDark = document.documentElement.dataset.theme === 'dark';
-    const lineColor = '#0f766e';
-    const fillColor = isDark ? 'rgba(15,118,110,.15)' : 'rgba(15,118,110,.08)';
-    const gridColor = isDark ? '#334155' : '#e2e8f0';
-    const textColor = isDark ? '#94a3b8' : '#64748b';
-
-    ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padY + (h / 4) * i;
-      ctx.beginPath(); ctx.moveTo(padX, y); ctx.lineTo(padX + w, y); ctx.stroke();
-      const val = max - (range / 4) * i;
-      ctx.fillStyle = textColor; ctx.font = '11px Inter,sans-serif'; ctx.textAlign = 'right';
-      ctx.fillText(val.toFixed(1), padX - 6, y + 4);
-    }
-
-    const pts = logs.map((l, i) => ({
-      x: padX + (w / Math.max(logs.length - 1, 1)) * i,
-      y: padY + h - ((l.value_primary - min) / range) * h,
-      log: l
-    }));
-
-    ctx.beginPath();
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.lineTo(pts[pts.length - 1].x, padY + h);
-    ctx.lineTo(pts[0].x, padY + h);
-    ctx.closePath();
-    ctx.fillStyle = fillColor; ctx.fill();
-
-    ctx.beginPath(); ctx.strokeStyle = lineColor; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-    ctx.stroke();
-
-    pts.forEach(p => {
-      ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = lineColor; ctx.strokeStyle = isDark ? '#1e293b' : '#fff'; ctx.lineWidth = 2;
-      ctx.fill(); ctx.stroke();
-    });
-
-    logs.forEach((l, i) => {
-      const x = padX + (w / Math.max(logs.length - 1, 1)) * i;
-      ctx.fillStyle = textColor; ctx.font = '10px Inter,sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText(l.time ? l.time.slice(0, 6) : '', x, padY + h + 16);
-    });
-
-    const tip = $('chartTip');
-    canvas.onmousemove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      let closest = null, minDist = Infinity;
-      pts.forEach(p => { const d = Math.abs(p.x - mx); if (d < minDist) { minDist = d; closest = p; } });
-      if (closest && minDist < 28) {
-        tip.classList.add('visible');
-        tip.textContent = `${closest.log.value_primary} ${meta.unit}${closest.log.value_secondary ? '/' + closest.log.value_secondary : ''} · ${closest.log.status || 'Normal'} · ${closest.log.time || ''}`;
-        let tx = closest.x + rect.left - wrap.getBoundingClientRect().left + 8;
-        const tw = tip.offsetWidth;
-        if (tx + tw > wrap.offsetWidth) tx = closest.x - tw - 8;
-        tip.style.left = tx + 'px';
-        tip.style.top = (closest.y - 36) + 'px';
-      } else {
-        tip.classList.remove('visible');
-      }
-    };
-    canvas.onmouseleave = () => tip.classList.remove('visible');
-  }
-
-  /* ─── REMINDERS ─────────────────────────────────── */
-  async function loadReminders() {
-    const list = $('remindersList');
-    list.innerHTML = '';
-    try {
-      const data = await api(`/api/reminders/active?user_id=${USER_ID}`);
-      const reminders = data.reminders || [];
-      if (!reminders.length) {
-        list.innerHTML = `<div class="empty-reminders">
-          <i class="fa-solid fa-bell-slash"></i>
-          <p>No active reminders. Add one to get started.</p>
-        </div>`;
+    
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width || 600;
+    canvas.height = rect.height || 200;
+    
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    
+    if (!history || history.length === 0) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`No historical data for ${metricType}. Log entries to generate trend graph.`, w / 2, h / 2);
         return;
-      }
-      list.innerHTML = reminders.map(r => `
-        <div class="reminder-card" data-id="${r.id}">
-          <div class="rem-icon"><i class="fa-solid fa-pills"></i></div>
-          <div class="rem-body">
-            <div class="rem-name">${esc(r.title || r.med_name || 'Medication')}</div>
-            <div class="rem-meta">
-              <i class="fa-regular fa-clock"></i> ${esc(r.time_formatted || '')} &nbsp;·&nbsp;
-              ${esc(r.message || '')}
-            </div>
-          </div>
-        </div>`).join('');
-    } catch (_) {
-      list.innerHTML = '<p style="color:var(--err-tx);padding:16px">Could not load reminders.</p>';
     }
-  }
-
-  async function createReminder(payload) {
-    await api('/api/reminders/create', { method: 'POST', body: JSON.stringify(payload) });
-  }
-
-  function initReminderModal() {
-    const freqWrap = $('freqPills');
-    const dayGroup = $('dayPickerGroup');
-
-    freqWrap.addEventListener('click', e => {
-      const pill = e.target.closest('.fpill');
-      if (!pill) return;
-      qsa('.fpill', freqWrap).forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      freqChoice = pill.dataset.freq;
-      dayGroup.style.display = freqChoice === 'custom' ? '' : 'none';
+    
+    const padding = { top: 30, right: 30, bottom: 40, left: 50 };
+    const chartW = w - padding.left - padding.right;
+    const chartH = h - padding.top - padding.bottom;
+    
+    const values = history.map(d => d.value_primary);
+    let minVal = Math.min(...values);
+    let maxVal = Math.max(...values);
+    
+    if (minVal === maxVal) {
+        minVal = minVal * 0.9;
+        maxVal = maxVal * 1.1;
+    }
+    
+    const valRange = maxVal - minVal || 1;
+    
+    // Draw background grid lines
+    ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#334155' : '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        
+        const gridVal = (maxVal - (valRange / 4) * i).toFixed(1);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(gridVal, padding.left - 8, y + 4);
+    }
+    ctx.stroke();
+    
+    // Plot points
+    const points = history.map((item, idx) => {
+        const x = padding.left + (chartW / (history.length - 1 || 1)) * idx;
+        const y = padding.top + chartH - ((item.value_primary - minVal) / valRange) * chartH;
+        return { x, y, item };
     });
-
-    $('dayPills').addEventListener('click', e => {
-      const pill = e.target.closest('.dpill');
-      if (pill) pill.classList.toggle('active');
+    
+    // Draw gradient area
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, h - padding.bottom);
+    gradient.addColorStop(0, 'rgba(2, 132, 199, 0.35)');
+    gradient.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
+    
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, h - padding.bottom);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(points[points.length - 1].x, h - padding.bottom);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    
+    // Draw connecting trend line
+    ctx.beginPath();
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 3;
+    points.forEach((p, idx) => {
+        if (idx === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
     });
-
-    $('addReminderForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = $('remMedName').value.trim();
-      const dosage = $('remDosage').value.trim();
-      const time = $('remTime').value;
-      const days = parseInt($('remDays').value) || 30;
-
-      if (!name || !time) { toast('Enter medication name and time.', 'warn'); return; }
-
-      try {
-        await createReminder({ user_id: USER_ID, med_name: name, dosage, time, duration_days: days });
-        toast(`Reminder set for ${name}.`, 'ok', 'Reminder Scheduled');
-        closeModal('addReminderModal');
-        $('addReminderForm').reset();
-        qsa('.fpill').forEach((p, i) => p.classList.toggle('active', i === 0));
-        loadReminders();
-      } catch (_) {
-        toast('Could not schedule reminder.', 'err');
-      }
+    ctx.stroke();
+    
+    // Draw data points & X-axis labels
+    points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#0284c7';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#f1f5f9' : '#1e293b';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.item.value_primary, p.x, p.y - 10);
+        
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.fillText(p.item.time, p.x, h - padding.bottom + 20);
     });
-  }
+}
 
-  async function pollDueReminders() {
+// ==========================================================================
+// 📖 Interactive Disease Details Modal Controller
+// ==========================================================================
+
+window.openDiseaseDetailModal = async function(encodedDiseaseName) {
+    const diseaseName = decodeURIComponent(encodedDiseaseName);
+    const modal = document.getElementById('diseaseDetailModal');
+    const titleSpan = document.getElementById('detailModalTitle');
+    const contentDiv = document.getElementById('diseaseDetailContent');
+    
+    if (!modal || !contentDiv) return;
+    
+    if (titleSpan) titleSpan.textContent = diseaseName;
+    contentDiv.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading full medical profile for ${diseaseName}...</div>`;
+    modal.classList.add('active');
+    
     try {
-      const data = await api(`/api/reminders/due?user_id=${USER_ID}`);
-      const due = data.due_reminders || [];
-      due.forEach(r => toast(r.message || r.title, 'info', r.title || 'Medication Reminder'));
-    } catch (_) {}
-  }
+        const res = await fetch(`/api/knowledge/${encodeURIComponent(diseaseName)}`);
+        const data = await res.json();
+        
+        if (data.error || !data.disease) {
+            contentDiv.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);">Medical knowledge details not found for "${diseaseName}".</p></div>`;
+            return;
+        }
+        
+        const d = data.disease;
+        const severityClass = ['high', 'severe', 'moderate-to-severe'].some(s => d.severity.toLowerCase().includes(s)) 
+            ? 'badge-severity-high' 
+            : d.severity.toLowerCase().includes('moderate') 
+            ? 'badge-severity-moderate' 
+            : 'badge-severity-mild';
+            
+        const symptomsStr = Array.isArray(d.symptoms) ? d.symptoms.join(', ') : (d.symptoms || 'N/A');
 
-  /* ─── THEME ─────────────────────────────────────── */
-  function applyTheme(dark) {
-    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-    const icon = dark ? 'fa-sun' : 'fa-moon';
-    const label = dark ? 'Light Mode' : 'Dark Mode';
-    if ($('themeIcon')) $('themeIcon').className = `fa-solid ${icon}`;
-    if ($('themeLabel')) $('themeLabel').textContent = label;
-    if ($('mobileThemeIcon')) $('mobileThemeIcon').className = `fa-solid ${icon}`;
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
-    if (currentSection === 'trends') renderChart(activeMetric);
-  }
-
-  /* ─── BOOT ──────────────────────────────────────── */
-  function boot() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme === 'dark');
-
-    qsa('.sb-item[data-section]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        showSection(btn.dataset.section);
-        if (window.innerWidth <= 768) toggleSidebar(false);
-      });
-    });
-    qsa('.bn-item[data-section]').forEach(btn => {
-      btn.addEventListener('click', () => showSection(btn.dataset.section));
-    });
-
-    $('menuBtn').addEventListener('click', () => toggleSidebar());
-    $('sidebarBackdrop').addEventListener('click', () => toggleSidebar(false));
-
-    $('themeToggleBtn').addEventListener('click', () => applyTheme(document.documentElement.dataset.theme !== 'dark'));
-    $('themeToggleMobile').addEventListener('click', () => applyTheme(document.documentElement.dataset.theme !== 'dark'));
-
-    $('historyBtn').addEventListener('click', openHistory);
-    $('closeHistoryModal').addEventListener('click', () => closeModal('historyModal'));
-    $('closeDetailModal').addEventListener('click', () => closeModal('detailModal'));
-    $('closeAddReminderModal').addEventListener('click', () => closeModal('addReminderModal'));
-    $('openAddReminderBtn').addEventListener('click', () => openModal('addReminderModal'));
-
-    qsa('.modal').forEach(m => {
-      m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
-    });
-
-    if ('Notification' in window && Notification.permission === 'default') {
-      $('notifBar').style.display = 'flex';
+        contentDiv.innerHTML = `
+            <div class="knowledge-card modal-knowledge-card">
+                <div class="knowledge-card-header">
+                    <div class="title-row" style="margin-bottom:6px;">
+                        <h3 style="font-size:20px; font-weight:700; color:var(--primary);"><i class="fa-solid fa-disease"></i> ${d.disease}</h3>
+                        <span class="badge ${severityClass}" style="font-size:12px; padding:4px 10px;">${d.severity} Severity</span>
+                    </div>
+                    <div class="meta-info-row" style="display:flex; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--text-muted); background:var(--primary-bg); padding:10px 14px; border-radius:var(--radius-md); margin-top:6px;">
+                        <span><i class="fa-solid fa-tag" style="color:var(--primary);"></i> <strong>Category:</strong> ${d.category}</span>
+                        <span><i class="fa-solid fa-user-doctor" style="color:var(--primary);"></i> <strong>Specialist:</strong> ${d.specialist}</span>
+                        <span><i class="fa-solid fa-users" style="color:var(--primary);"></i> <strong>Target Group:</strong> ${d.age_group || 'All ages'}</span>
+                    </div>
+                </div>
+                <div class="knowledge-pillars" style="margin-top:14px; display:flex; flex-direction:column; gap:12px;">
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-head-side-cough"></i> 🩺 1. Symptoms:</strong>
+                        <p>${symptomsStr}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-dna"></i> 🧬 2. Causes:</strong>
+                        <p>${d.causes || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-triangle-exclamation"></i> ⚠️ 3. Risk Factors:</strong>
+                        <p>${d.risk_factors || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-shield-halved"></i> 🛡️ 4. Prevention & Precautions:</strong>
+                        <p>${d.prevention || d.prevention_tips || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box">
+                        <strong><i class="fa-solid fa-capsules"></i> 💊 5. General Treatment Information & Medications:</strong>
+                        <p>${d.treatment || d.medicine || 'N/A'}</p>
+                    </div>
+                    <div class="pillar-box warning-pillar">
+                        <strong><i class="fa-solid fa-hospital-user"></i> 👨‍⚕️ 6. When to Seek Medical Care:</strong>
+                        <p>${d.when_to_seek_care || 'N/A'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        contentDiv.innerHTML = `<div class="no-data-placeholder"><p style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Network error: ${error.message}</p></div>`;
     }
-    $('enableNotifsBtn') && $('enableNotifsBtn').addEventListener('click', () => {
-      Notification.requestPermission().then(p => {
-        if (p === 'granted') { $('notifBar').style.display = 'none'; toast('Notifications enabled.', 'ok'); }
-      });
-    });
+};
 
-    initChat();
-    initReminderModal();
-    startSession();
-    showSection('chat');
+// Global ESC key listener for modal closing
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    }
+});
 
-    reminderPollTimer = setInterval(pollDueReminders, 60000);
 
-    api('/health').then(d => {
-      const count = d.disease_count;
-      const el = $('diseaseCountWelcome');
-      if (el && count) el.textContent = count + '+';
-    }).catch(() => {});
 
-    window.addEventListener('resize', () => {
-      if (currentSection === 'trends') renderChart(activeMetric);
-    });
-  }
-
-  document.readyState === 'loading'
-    ? document.addEventListener('DOMContentLoaded', boot)
-    : boot();
-})();
+async function updateDiseaseCount() {
+    try {
+        const response = await fetch('/health');
+        const data = await response.json();
+        if (data.disease_count) document.querySelectorAll('[data-disease-count]').forEach(el => el.textContent = `${data.disease_count}+`);
+    } catch (_) { /* Keep the page usable when the count endpoint is unavailable. */ }
+}

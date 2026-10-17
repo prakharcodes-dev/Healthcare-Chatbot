@@ -967,9 +967,16 @@ def create_reminder():
         dosage = data.get('dosage', '1 tablet')
         time_str = data.get('time', '09:00') # HH:MM
         duration_days = int(data.get('duration_days', 30))
-        
+
+        # Validate time format before splitting to avoid cryptic 500 errors
+        parts = str(time_str).split(':')
+        if len(parts) != 2 or not parts[0].isdigit() or not parts[1].isdigit():
+            return jsonify({'error': 'Invalid time format. Expected HH:MM (e.g. "09:30").'}), 400
+        hour, minute = int(parts[0]), int(parts[1])
+        if not (0 <= hour <= 23 and 0 <= minute <= 59):
+            return jsonify({'error': 'Invalid time value. Hour must be 0-23 and minute 0-59.'}), 400
+
         now = datetime.utcnow()
-        hour, minute = map(int, time_str.split(':'))
         
         reminders_created = []
         for day in range(min(duration_days, 30)):
