@@ -1,6 +1,6 @@
 # Symptom Matcher — Evaluation Results
 
-> Generated: 2026-10-17 19:17  
+> Generated: 2026-10-17 19:20  
 > Dataset: `data/diseases.json` (727 diseases)  
 > Test cases: `evaluation/test_cases.json` (60 cases)
 
