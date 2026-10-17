@@ -530,9 +530,16 @@
   function statusCss(s) {
     if (!s) return '';
     const sl = s.toLowerCase();
-    if (sl.includes('high') || sl.includes('elevated')) return 'Elevated';
+    if (sl.includes('high') || sl.includes('elevated') || sl.includes('stage')) return 'Elevated';
     if (sl.includes('low')) return 'Low';
     return 'Normal';
+  }
+
+  function badgeClass(s) {
+    const c = statusCss(s);
+    if (c === 'Elevated') return 'badge-err';
+    if (c === 'Low') return 'badge-warn';
+    return 'badge-ok';
   }
 
   async function loadReadingHistory() {
@@ -549,7 +556,7 @@
           ? `${l.value_primary}/${l.value_secondary} ${l.unit}`
           : `${l.value_primary} ${l.unit}`;
         const stCls = statusCss(l.status);
-        const badgeCls = stCls === 'Elevated' ? 'badge-err' : stCls === 'Low' ? 'badge-warn' : 'badge-ok';
+        const badgeCls = badgeClass(l.status);
         return `<tr>
           <td>${esc(fmt(l.timestamp))}</td>
           <td>${esc(l.metric_type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()))}</td>
