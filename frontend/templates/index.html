@@ -1,561 +1,450 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedVitals AI - Smart Healthcare Assistant</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedVitals AI — Personal Health Assistant</title>
+<meta name="description" content="AI-powered symptom analysis, medication reminders, and health trend tracking across 370+ medical conditions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-heart-pulse"></i>
-                </div>
-                <h2>MedVitals AI</h2>
-            </div>
-            
-            <nav class="sidebar-menu">
-                <div class="menu-item active" data-section="chat">
-                    <i class="fa-solid fa-comment-medical"></i>
-                    <div class="menu-text">
-                        <span class="menu-title">Symptom Checker</span>
-                        <span class="menu-subtitle">Check symptoms</span>
-                    </div>
-                </div>
-                <div class="menu-item" data-section="knowledge">
-                    <i class="fa-solid fa-book-medical"></i>
-                    <div class="menu-text">
-                        <span class="menu-title">Medical Knowledge</span>
-                        <span class="menu-subtitle">Search <span data-disease-count>700+</span> conditions</span>
-                    </div>
-                </div>
-                <div class="menu-item" data-section="trends">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <div class="menu-text">
-                        <span class="menu-title">Health Trends</span>
-                        <span class="menu-subtitle">Track vital metrics</span>
-                    </div>
-                </div>
-                <div class="menu-item" data-section="reminders">
-                    <i class="fa-solid fa-clock"></i>
-                    <div class="menu-text">
-                        <span class="menu-title">Set Reminders</span>
-                        <span class="menu-subtitle">Medication alerts</span>
-                    </div>
-                </div>
-                <div class="menu-item" data-section="history">
-                    <i class="fa-solid fa-history"></i>
-                    <div class="menu-text">
-                        <span class="menu-title">Chat History</span>
-                        <span class="menu-subtitle">Past conversations</span>
-                    </div>
-                </div>
-                <div class="menu-item" data-section="analytics">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <div class="menu-text">
-                        <span class="menu-title">Analytics</span>
-                        <span class="menu-subtitle">Usage stats</span>
-                    </div>
-                </div>
-            </nav>
-            
-            <div class="sidebar-user">
-                <div class="user-avatar">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </div>
-                <div class="user-info">
-                    <h4>Prakhar Singh</h4>
-                    <p>Personal Health Profile</p>
-                </div>
-            </div>
-        </aside>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="app-header">
-                <div class="header-left-group" style="display: flex; align-items: center; gap: 14px;">
-                    <button id="toggleLeftSidebarBtn" class="sidebar-toggle-btn" title="Collapse / Expand Navigation Sidebar">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <div class="header-title">
-                        <h1 id="mainTitle">MedVitals AI — Personal Health Assistant</h1>
-                        <p id="mainSubtitle">Instant symptom insights, <span data-disease-count>700+</span> condition lookup & vital health tracking</p>
-                    </div>
-                </div>
-                <div class="header-status">
-                    <span id="connectionStatus" class="status-badge status-loading">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...
-                    </span>
-                    <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
-                        <i class="fa-solid fa-moon"></i>
-                    </button>
-                    <button id="toggleRightSidebarBtn" class="sidebar-toggle-btn" title="Collapse / Expand Quick Actions Panel">
-                        <i class="fa-solid fa-sliders"></i>
-                    </button>
-                </div>
-            </header>
+<div class="app" id="app">
 
-            <!-- 1. Symptom Chat Section -->
-            <section class="app-section" id="sectionChat">
-                <div id="chatMessages" class="chat-messages">
-                    <!-- Modern Interactive Welcome Hero Card -->
-                    <div class="welcome-hero-card">
-                        <div class="welcome-hero-header">
-                            <div class="welcome-hero-icon">
-                                <i class="fa-solid fa-heart-pulse"></i>
-                            </div>
-                            <div class="welcome-hero-title">
-                                <h2>Welcome to MedVitals AI!</h2>
-                                <p>Your intelligent personal health assistant. How would you like to get started today?</p>
-                            </div>
-                        </div>
-
-                        <!-- 3 Core Feature Highlights -->
-                        <div class="welcome-features-grid">
-                            <div class="feature-card" onclick="switchSection('chat')">
-                                <div class="feature-icon chat-feat-icon"><i class="fa-solid fa-comment-medical"></i></div>
-                                <div class="feature-details">
-                                    <h4>1. Symptom Checker</h4>
-                                    <p>Describe your symptoms in simple words to get instant potential causes & care steps.</p>
-                                </div>
-                            </div>
-
-                            <div class="feature-card" onclick="switchSection('knowledge')">
-                                <div class="feature-icon know-feat-icon"><i class="fa-solid fa-book-medical"></i></div>
-                                <div class="feature-details">
-                                    <h4>2. <span data-disease-count>Growing</span> Condition Library</h4>
-                                    <p>Search by condition, symptom, or category; open a profile for practical health information.</p>
-                                </div>
-                            </div>
-
-                            <div class="feature-card" onclick="switchSection('trends')">
-                                <div class="feature-icon trend-feat-icon"><i class="fa-solid fa-chart-line"></i></div>
-                                <div class="feature-details">
-                                    <h4>3. Health Trend Tracker</h4>
-                                    <p>Log Temperature, BP, Weight & Glucose to view visual trend graphs & condition assessments.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Clickable Example Prompt Chips -->
-                        <div class="symptom-chips-wrapper">
-                            <div class="chips-title">
-                                <i class="fa-solid fa-lightbulb"></i> <span>Click an example symptom below to test instant analysis:</span>
-                            </div>
-                            <div class="symptom-chips-grid">
-                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('fever, severe headache, body aches')">
-                                    <span class="chip-emoji">🤒</span> Fever & Severe Headache
-                                </button>
-                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('dry cough, sore throat, fatigue')">
-                                    <span class="chip-emoji">🫁</span> Cough & Sore Throat
-                                </button>
-                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('dizziness, fainting, weakness')">
-                                    <span class="chip-emoji">🤕</span> Dizziness & Fainting
-                                </button>
-                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('stomach pain, nausea, loss of appetite')">
-                                    <span class="chip-emoji">🤢</span> Stomach Pain & Nausea
-                                </button>
-                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('joint pain, stiffness, muscle aches')">
-                                    <span class="chip-emoji">🦵</span> Joint Pain & Muscle Aches
-                                </button>
-                                <button class="symptom-chip-btn" onclick="sendExampleSymptom('runny nose, sneezing, chest congestion')">
-                                    <span class="chip-emoji">🤧</span> Cold & Chest Congestion
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="hero-disclaimer">
-                            <i class="fa-solid fa-triangle-exclamation"></i> <span><strong>Medical Disclaimer:</strong> MedVitals AI is an informational decision-support tool, not a substitute for professional medical advice, diagnosis, or emergency treatment.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Input area with autocomplete suggestions -->
-                <div class="chat-input-wrapper">
-                    <div class="autocomplete-container" id="autocompleteContainer">
-                        <!-- Suggestion items dynamically inserted here -->
-                    </div>
-                    <div class="chat-input-container">
-                        <input type="text" id="userInput" class="chat-input" placeholder="Type symptoms (e.g. fever, headache, dry cough)..." autocomplete="off">
-                        <button id="sendBtn" class="send-btn" title="Send Message">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 2. Medical Knowledge Search Section -->
-            <section class="app-section" id="sectionKnowledge" style="display: none;">
-                <div class="knowledge-container">
-                    <div class="section-intro-card">
-                        <div class="intro-icon"><i class="fa-solid fa-book-medical"></i></div>
-                        <div class="intro-text">
-                            <h3>Verified Medical Knowledge Base</h3>
-                            <p>Explore <span data-disease-count>700+</span> conditions by name, symptom, or category. Each profile highlights symptoms, prevention, care information, and when to seek help.</p>
-                        </div>
-                    </div>
-                    <div class="knowledge-search-bar">
-                        <div class="search-input-wrapper">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="knowledgeSearchInput" placeholder="Search by condition or symptom (try asthma, fever, or headache)...">
-                            <button id="knowledgeSearchBtn" class="btn btn-primary"><i class="fa-solid fa-search"></i> Search</button>
-                        </div>
-                        <div class="category-pills" id="knowledgeCategoryPills">
-                            <span class="cat-pill active" data-category="">All Categories</span>
-                            <span class="cat-pill" data-category="respiratory">Respiratory</span>
-                            <span class="cat-pill" data-category="cardiovascular">Cardiovascular</span>
-                            <span class="cat-pill" data-category="allergy">Allergy & Immunology</span>
-                            <span class="cat-pill" data-category="pediatrics">Pediatrics</span>
-                            <span class="cat-pill" data-category="bacterial">Bacterial</span>
-                            <span class="cat-pill" data-category="viral">Viral</span>
-                            <span class="cat-pill" data-category="endocrine">Endocrine</span>
-                            <span class="cat-pill" data-category="neurological">Neurological</span>
-                            <span class="cat-pill" data-category="gastrointestinal">Gastrointestinal</span>
-                            <span class="cat-pill" data-category="dermatological">Dermatological</span>
-                            <span class="cat-pill" data-category="autoimmune">Autoimmune</span>
-                        </div>
-                    </div>
-                    <div class="knowledge-results-meta" id="knowledgeResultsMeta" aria-live="polite">Browse the full library or choose a category to get started.</div>
-                    <div class="knowledge-results-grid" id="knowledgeResults">
-                        <!-- Disease knowledge cards with 6 pillars inserted here dynamically -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3. Health Trend Tracker Section -->
-            <section class="app-section" id="sectionTrends" style="display: none;">
-                <div class="trends-container">
-                    <div class="section-intro-card">
-                        <div class="intro-icon"><i class="fa-solid fa-chart-line"></i></div>
-                        <div class="intro-text">
-                            <h3>Health Trend Tracker & Vital Logging</h3>
-                            <p>Log your daily Body Temperature, Weight, Blood Pressure, or Glucose to monitor long-term health trends, view visual line charts, and receive clinical assessments.</p>
-                        </div>
-                    </div>
-
-                    <!-- Overall Health Assessment Banner -->
-                    <div class="overall-assessment-card" id="healthAssessmentBanner">
-                        <div class="assessment-header">
-                            <div class="assessment-badge status-normal" id="overallStatusBadge">
-                                <i class="fa-solid fa-circle-check" id="overallStatusIcon"></i> <span id="overallStatusText">Overall Condition: Good & Stable</span>
-                            </div>
-                            <span class="assessment-time" id="overallAssessmentTime">Updated live</span>
-                        </div>
-                        <div class="assessment-body">
-                            <h3 id="overallAssessmentTitle">Your Vitals Look Great! Condition is Normal & Good 👍</h3>
-                            <p id="overallAssessmentMsg">All your recorded health vitals (Body Temperature, Weight, Blood Pressure, and Blood Glucose) are in healthy, safe, and optimal target ranges. There is no cause for concern!</p>
-                        </div>
-                    </div>
-
-                    <!-- Instant Vital Log Feedback Toast Banner (hidden by default) -->
-                    <div class="instant-feedback-banner" id="vitalLogFeedback" style="display: none;">
-                        <div class="feedback-content">
-                            <i class="fa-solid fa-notes-medical" id="feedbackIcon"></i>
-                            <span id="feedbackText">Recorded reading successfully!</span>
-                        </div>
-                        <button class="close-feedback-btn" onclick="document.getElementById('vitalLogFeedback').style.display='none'">&times;</button>
-                    </div>
-
-                    <!-- Metrics Summary Dashboard -->
-                    <div class="metrics-summary-grid">
-
-                        <div class="metric-card" id="cardTemp">
-                            <div class="metric-icon temp-icon"><i class="fa-solid fa-temperature-three-quarters"></i></div>
-                            <div class="metric-info">
-                                <span class="metric-label">Body Temperature</span>
-                                <div class="metric-val-row">
-                                    <span class="metric-val" id="valTemp">--</span>
-                                    <span class="metric-unit">°F</span>
-                                    <span class="status-tag" id="statusTemp">No Data</span>
-                                </div>
-                                <span class="metric-time" id="timeTemp">Log your first reading</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card" id="cardWeight">
-                            <div class="metric-icon weight-icon"><i class="fa-solid fa-weight-scale"></i></div>
-                            <div class="metric-info">
-                                <span class="metric-label">Body Weight</span>
-                                <div class="metric-val-row">
-                                    <span class="metric-val" id="valWeight">--</span>
-                                    <span class="metric-unit">kg</span>
-                                    <span class="status-tag" id="statusWeight">No Data</span>
-                                </div>
-                                <span class="metric-time" id="timeWeight">Log your first reading</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card" id="cardBp">
-                            <div class="metric-icon bp-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-                            <div class="metric-info">
-                                <span class="metric-label">Blood Pressure</span>
-                                <div class="metric-val-row">
-                                    <span class="metric-val" id="valBp">--/--</span>
-                                    <span class="metric-unit">mmHg</span>
-                                    <span class="status-tag" id="statusBp">No Data</span>
-                                </div>
-                                <span class="metric-time" id="timeBp">Log your first reading</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card" id="cardGlucose">
-                            <div class="metric-icon glucose-icon"><i class="fa-solid fa-droplet"></i></div>
-                            <div class="metric-info">
-                                <span class="metric-label">Blood Glucose</span>
-                                <div class="metric-val-row">
-                                    <span class="metric-val" id="valGlucose">--</span>
-                                    <span class="metric-unit">mg/dL</span>
-                                    <span class="status-tag" id="statusGlucose">No Data</span>
-                                </div>
-                                <span class="metric-time" id="timeGlucose">Log your first reading</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Record Reading Form & Chart Box Grid -->
-                    <div class="trends-main-grid">
-                        <div class="log-form-card">
-                            <h3><i class="fa-solid fa-plus-circle"></i> Record Vital Reading</h3>
-                            <form id="healthLogForm">
-                                <div class="form-group">
-                                    <label for="metricTypeSelect">Metric</label>
-                                    <select id="metricTypeSelect" class="form-control" required>
-                                        <option value="temperature">🌡️ Body Temperature</option>
-                                        <option value="weight">⚖️ Body Weight</option>
-                                        <option value="blood_pressure">🩸 Blood Pressure</option>
-                                        <option value="blood_glucose">🍬 Blood Glucose</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group-row">
-                                    <div class="form-group" id="primaryValGroup">
-                                        <label for="valPrimaryInput" id="primaryLabel">Temperature (°F)</label>
-                                        <input type="number" step="0.1" id="valPrimaryInput" class="form-control" placeholder="e.g. 98.6" required>
-                                    </div>
-                                    <div class="form-group" id="secondaryValGroup" style="display: none;">
-                                        <label for="valSecondaryInput">Diastolic (mmHg)</label>
-                                        <input type="number" step="1" id="valSecondaryInput" class="form-control" placeholder="e.g. 80">
-                                    </div>
-                                    <div class="form-group" style="max-width: 110px;">
-                                        <label for="unitSelect">Unit</label>
-                                        <select id="unitSelect" class="form-control">
-                                            <option value="°F">°F</option>
-                                            <option value="°C">°C</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="notesInput">Notes / Context (Optional)</label>
-                                    <input type="text" id="notesInput" class="form-control" placeholder="e.g., Fasting, morning reading, post-exercise">
-                                </div>
-
-                                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-floppy-disk"></i> Save Vital Reading</button>
-                            </form>
-                        </div>
-
-                        <div class="chart-card">
-                            <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-chart-line"></i> Trend History Visualization</h3>
-                                <div class="chart-metric-selector">
-                                    <button class="chart-tab active" data-metric="temperature">Temp</button>
-                                    <button class="chart-tab" data-metric="weight">Weight</button>
-                                    <button class="chart-tab" data-metric="blood_pressure">BP</button>
-                                    <button class="chart-tab" data-metric="blood_glucose">Glucose</button>
-                                </div>
-                            </div>
-                            <div class="chart-container-inner">
-                                <canvas id="trendChartCanvas" height="200"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recorded Logs Table -->
-                    <div class="log-history-card">
-                        <h3><i class="fa-solid fa-list-numeric"></i> Recent Vital Logs</h3>
-                        <div class="table-responsive">
-                            <table class="logs-table">
-                                <thead>
-                                    <tr>
-                                        <th>Date & Time</th>
-                                        <th>Metric</th>
-                                        <th>Reading</th>
-                                        <th>Status</th>
-                                        <th>Notes</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="healthLogsTableBody">
-                                    <tr><td colspan="6" class="text-center">Loading health logs...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-
-        <!-- Right Panels for Quick Actions, Reminders, and Recent Activity -->
-        <aside class="right-panel">
-            <!-- Quick Start Help Guide -->
-            <section class="panel-section help-guide-card">
-                <h3><i class="fa-solid fa-circle-question"></i> How to Use</h3>
-                <ul class="quick-guide-list">
-                    <li><i class="fa-solid fa-comment-medical"></i> <strong>Symptom Checker:</strong> Type symptoms below or click sample chips for instant analysis.</li>
-                    <li><i class="fa-solid fa-book-medical"></i> <strong>Medical Knowledge:</strong> Search <span data-disease-count>700+</span> conditions and explore practical health information.</li>
-                    <li><i class="fa-solid fa-heart-pulse"></i> <strong>Health Trends:</strong> Record temperature, BP, weight & glucose metrics over time.</li>
-                </ul>
-            </section>
-                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Actions</h3>
-                <div class="action-grid" style="grid-template-columns: 1fr 1fr;">
-                    <button class="action-btn" id="addReminderBtn">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Add Reminder</span>
-                    </button>
-                    <button class="action-btn" id="testReminderBtn">
-                        <i class="fa-solid fa-bell-ring"></i>
-                        <span>Test Alert</span>
-                    </button>
-                    <button class="action-btn" id="viewHistoryBtn" style="grid-column: span 2;">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                        <span>View Chat History</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Medication Reminders Section -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-bell"></i> Active Reminders</h3>
-                <div id="activeReminders" class="reminders-list">
-                    <div class="no-data-placeholder">
-                        <i class="fa-solid fa-prescription-bottle-medical"></i>
-                        <p>No active reminders</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Recent Searches Section -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-magnifying-glass"></i> Recent Searches</h3>
-                <div id="recentSearches" class="recent-searches-list">
-                    <div class="no-data-placeholder">
-                        <i class="fa-solid fa-folder-open"></i>
-                        <p>No recent symptom checks</p>
-                    </div>
-                </div>
-            </section>
-        </aside>
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sb-brand">
+      <div class="sb-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+      <div>
+        <div class="sb-name">MedVitals<span class="sb-ai">AI</span></div>
+        <div class="sb-tagline">Personal Health Assistant</div>
+      </div>
     </div>
 
-    <!-- Add Reminder Modal -->
-    <div class="modal" id="reminderModal">
-        <div class="modal-backdrop" onclick="closeModal('reminderModal')"></div>
-        <div class="modal-dialog">
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-bell"></i> Add Medication Reminder</h2>
-                <button class="close-btn" onclick="closeModal('reminderModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="notification-permission-prompt" id="notificationPrompt">
-                    <div class="prompt-text">
-                        <i class="fa-solid fa-bell-slash"></i>
-                        <span>Enable notifications for real-time dosage alerts.</span>
-                    </div>
-                    <button class="btn btn-sm btn-primary" onclick="requestNotificationPermission()">Enable</button>
-                </div>
-                
-                <div class="form-group">
-                    <label for="medName">Medication Name</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-pills"></i>
-                        <input type="text" id="medName" placeholder="e.g., Amoxicillin" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="dosage">Dosage Strength</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-weight-hanging"></i>
-                        <input type="text" id="dosage" placeholder="e.g., 500mg or 2 tablets" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Schedule Times</label>
-                    <div class="time-input-group">
-                        <input type="time" id="reminderTime">
-                        <button type="button" class="btn btn-secondary" onclick="addReminderTime()">
-                            <i class="fa-solid fa-plus"></i> Add Time
-                        </button>
-                    </div>
-                    <div class="time-tags-list" id="timeList">
-                        <!-- Added times will appear here as badges -->
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="duration">Duration (days)</label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <input type="number" id="duration" value="30" min="1" max="365">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('reminderModal')">Cancel</button>
-                <button class="btn btn-primary" onclick="saveReminder()">Save Reminder</button>
-            </div>
+    <nav class="sb-nav" role="navigation">
+      <div class="sb-section-label">Main</div>
+      <button class="sb-item active" data-section="chat" id="navChat" aria-current="page">
+        <i class="fa-solid fa-comment-medical"></i><span>Symptom Checker</span>
+      </button>
+      <button class="sb-item" data-section="knowledge" id="navKnowledge">
+        <i class="fa-solid fa-book-medical"></i><span>Medical Knowledge</span>
+      </button>
+      <button class="sb-item" data-section="trends" id="navTrends">
+        <i class="fa-solid fa-chart-line"></i><span>Health Trends</span>
+      </button>
+      <button class="sb-item" data-section="reminders" id="navReminders">
+        <i class="fa-solid fa-bell"></i><span>Medication Reminders</span>
+      </button>
+
+      <div class="sb-section-label" style="margin-top:8px">Tools</div>
+      <button class="sb-item" id="historyBtn">
+        <i class="fa-solid fa-clock-rotate-left"></i><span>Chat History</span>
+      </button>
+    </nav>
+
+    <div class="sb-footer">
+      <button class="sb-item" id="themeToggleBtn">
+        <i class="fa-solid fa-moon" id="themeIcon"></i>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+      <div class="sb-disclaimer">
+        <i class="fa-solid fa-shield-halved"></i>
+        AI guidance only — not a substitute for professional medical care.
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar" id="topbar">
+      <div class="tb-left">
+        <button class="tb-icon-btn" id="menuBtn" aria-label="Toggle menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="tb-title" id="pageTitle">Symptom Checker</div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-status" id="connStatus">
+          <span class="status-dot online"></span>
+          <span>Connected</span>
         </div>
-    </div>
+        <button class="tb-icon-btn" id="themeToggleMobile" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon" id="mobileThemeIcon"></i>
+        </button>
+      </div>
+    </header>
 
-    <!-- History Modal -->
-    <div class="modal" id="historyModal">
-        <div class="modal-backdrop" onclick="closeModal('historyModal')"></div>
-        <div class="modal-dialog modal-lg">
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-history"></i> Chat History Archive</h2>
-                <button class="close-btn" onclick="closeModal('historyModal')">&times;</button>
+    <main class="content" role="main">
+
+      <section class="view active" id="sectionChat">
+        <div class="chat-layout">
+          <div class="chat-feed" id="chatFeed" aria-live="polite" aria-label="Conversation">
+            <div class="chat-welcome" id="chatWelcome">
+              <div class="welcome-icon"><i class="fa-solid fa-stethoscope"></i></div>
+              <h1 class="welcome-title">How can I help you today?</h1>
+              <p class="welcome-sub">Describe your symptoms and I'll help identify possible conditions from our database of <strong id="diseaseCountWelcome">370+</strong> medical conditions.</p>
+              <div class="welcome-disclaimer">
+                <i class="fa-solid fa-circle-info"></i>
+                This tool provides informational guidance only. Always consult a qualified healthcare professional for diagnosis and treatment.
+              </div>
+              <div class="suggestion-grid" id="suggestionGrid">
+                <button class="sug-btn" data-text="I have fever, headache, and body aches">
+                  <i class="fa-solid fa-thermometer-half"></i>
+                  <div><strong>Fever &amp; headache</strong><span>with body aches</span></div>
+                </button>
+                <button class="sug-btn" data-text="I have chest pain and shortness of breath">
+                  <i class="fa-solid fa-lungs"></i>
+                  <div><strong>Chest pain</strong><span>shortness of breath</span></div>
+                </button>
+                <button class="sug-btn" data-text="I have persistent cough and sore throat">
+                  <i class="fa-solid fa-head-side-cough"></i>
+                  <div><strong>Cough &amp; sore throat</strong><span>persistent for days</span></div>
+                </button>
+                <button class="sug-btn" data-text="I have abdominal pain and nausea after eating">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <div><strong>Abdominal pain</strong><span>nausea after meals</span></div>
+                </button>
+                <button class="sug-btn" data-text="I have joint pain and swelling in my knees">
+                  <i class="fa-solid fa-bone"></i>
+                  <div><strong>Joint pain</strong><span>swelling in knees</span></div>
+                </button>
+                <button class="sug-btn" data-text="I have skin rash with itching and redness">
+                  <i class="fa-solid fa-hand-dots"></i>
+                  <div><strong>Skin rash</strong><span>itching and redness</span></div>
+                </button>
+              </div>
             </div>
-            <div class="modal-body history-modal-body" id="historyContent">
-                <div class="loading-spinner">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i> Loading archives...
-                </div>
+          </div>
+
+          <div class="composer-area">
+            <div class="ac-dropdown" id="acDropdown" role="listbox"></div>
+            <div class="composer-box" id="composerBox">
+              <textarea
+                class="composer-input"
+                id="chatInput"
+                placeholder="Describe your symptoms in detail…"
+                rows="1"
+                aria-label="Describe your symptoms"
+                autocomplete="off"
+              ></textarea>
+              <button class="composer-send" id="sendBtn" aria-label="Send">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
             </div>
+            <div class="composer-meta">
+              <span><kbd>Enter</kbd> send &nbsp;·&nbsp; <kbd>Shift+Enter</kbd> new line</span>
+              <span id="sessionBadge" class="session-badge"></span>
+            </div>
+          </div>
         </div>
-    </div>
+      </section>
 
-    <!-- Interactive Disease Detail Modal -->
-    <div class="modal" id="diseaseDetailModal">
-        <div class="modal-backdrop" onclick="closeModal('diseaseDetailModal')"></div>
-        <div class="modal-dialog modal-lg">
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-book-medical"></i> <span id="detailModalTitle">Disease Medical Details</span></h2>
-                <button class="close-btn" onclick="closeModal('diseaseDetailModal')">&times;</button>
+      <section class="view" id="sectionKnowledge">
+        <div class="page-pad">
+          <div class="page-head">
+            <h2>Medical Knowledge Base</h2>
+            <p class="page-desc">Explore <span id="kbDiseaseCount">370+</span> conditions across 20+ medical specialties.</p>
+          </div>
+          <div class="kb-toolbar">
+            <div class="kb-search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="search" id="kbSearch" placeholder="Search conditions or symptoms…" aria-label="Search knowledge base" autocomplete="off">
             </div>
-            <div class="modal-body" id="diseaseDetailContent" style="max-height: 70vh; overflow-y: auto;">
-                <div class="loading-spinner">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i> Loading medical knowledge...
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="closeModal('diseaseDetailModal')">Close</button>
-            </div>
+            <div class="cat-bar" id="catBar" role="group" aria-label="Filter by category"></div>
+          </div>
+          <div class="kb-grid" id="kbGrid">
+            <div class="kb-skeleton-grid" id="kbSkeletons"></div>
+          </div>
         </div>
+      </section>
+
+      <section class="view" id="sectionTrends">
+        <div class="page-pad">
+          <div class="page-head">
+            <h2>Health Trends</h2>
+            <p class="page-desc">Track and visualise your vital signs over time.</p>
+          </div>
+
+          <div class="assessment-card" id="assessCard">
+            <div class="ac-badge" id="acBadge">
+              <i id="acIcon" class="fa-solid fa-circle-info"></i>
+              <span id="acStatus">Log vitals to see your health assessment</span>
+            </div>
+            <div class="ac-detail">
+              <div class="ac-title" id="acTitle"></div>
+              <div class="ac-msg" id="acMsg"></div>
+            </div>
+            <div class="ac-time" id="acTime"></div>
+          </div>
+
+          <div class="vitals-grid" id="vitalsGrid">
+            <div class="vital-card" data-metric="temperature">
+              <div class="vc-icon temp"><i class="fa-solid fa-thermometer-half"></i></div>
+              <div class="vc-body">
+                <div class="vc-label">Temperature</div>
+                <div class="vc-value" id="valTemp">--</div>
+                <div class="vc-row">
+                  <span class="vc-status" id="stTemp">No data</span>
+                  <span class="vc-when" id="tsTemp"></span>
+                </div>
+              </div>
+            </div>
+            <div class="vital-card" data-metric="weight">
+              <div class="vc-icon wt"><i class="fa-solid fa-weight-scale"></i></div>
+              <div class="vc-body">
+                <div class="vc-label">Weight</div>
+                <div class="vc-value" id="valWeight">--</div>
+                <div class="vc-row">
+                  <span class="vc-status" id="stWeight">No data</span>
+                  <span class="vc-when" id="tsWeight"></span>
+                </div>
+              </div>
+            </div>
+            <div class="vital-card" data-metric="blood_pressure">
+              <div class="vc-icon bp"><i class="fa-solid fa-heart-pulse"></i></div>
+              <div class="vc-body">
+                <div class="vc-label">Blood Pressure</div>
+                <div class="vc-value" id="valBp">--</div>
+                <div class="vc-row">
+                  <span class="vc-status" id="stBp">No data</span>
+                  <span class="vc-when" id="tsBp"></span>
+                </div>
+              </div>
+            </div>
+            <div class="vital-card" data-metric="blood_glucose">
+              <div class="vc-icon gl"><i class="fa-solid fa-droplet"></i></div>
+              <div class="vc-body">
+                <div class="vc-label">Blood Glucose</div>
+                <div class="vc-value" id="valGlucose">--</div>
+                <div class="vc-row">
+                  <span class="vc-status" id="stGlucose">No data</span>
+                  <span class="vc-when" id="tsGlucose"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="trends-cols">
+            <div class="chart-panel">
+              <div class="panel-head">
+                <h3>Trend Chart</h3>
+                <div class="metric-tabs" id="metricTabs" role="group" aria-label="Metric selector">
+                  <button class="mt-tab active" data-metric="temperature">Temp</button>
+                  <button class="mt-tab" data-metric="weight">Weight</button>
+                  <button class="mt-tab" data-metric="blood_pressure">BP</button>
+                  <button class="mt-tab" data-metric="blood_glucose">Glucose</button>
+                </div>
+              </div>
+              <div class="chart-wrap" style="position:relative;height:210px">
+                <canvas id="trendCanvas" aria-label="Health trend chart"></canvas>
+                <div class="ct-tip" id="chartTip" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <div class="log-panel">
+              <h3>Log a Reading</h3>
+              <form id="logForm" novalidate>
+                <div class="fg">
+                  <label for="logMetric">Metric</label>
+                  <select id="logMetric" class="finput">
+                    <option value="temperature">Temperature</option>
+                    <option value="weight">Weight</option>
+                    <option value="blood_pressure">Blood Pressure</option>
+                    <option value="blood_glucose">Blood Glucose</option>
+                  </select>
+                </div>
+                <div class="fg">
+                  <label id="primaryLbl" for="logVal1">Value</label>
+                  <input type="number" id="logVal1" class="finput" placeholder="e.g. 98.6" step="any">
+                </div>
+                <div class="fg" id="val2Group" style="display:none">
+                  <label for="logVal2">Diastolic (mmHg)</label>
+                  <input type="number" id="logVal2" class="finput" placeholder="e.g. 80">
+                </div>
+                <div class="frow">
+                  <div class="fg">
+                    <label for="logUnit">Unit</label>
+                    <select id="logUnit" class="finput">
+                      <option value="°F">°F</option>
+                      <option value="°C">°C</option>
+                    </select>
+                  </div>
+                  <div class="fg">
+                    <label for="logNotes">Notes</label>
+                    <input type="text" id="logNotes" class="finput" placeholder="Optional">
+                  </div>
+                </div>
+                <div class="log-feedback" id="logFeedback" style="display:none" role="alert">
+                  <i id="logFbIcon" class="fa-solid fa-circle-check"></i>
+                  <span id="logFbText"></span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                  <i class="fa-solid fa-plus"></i> Log Reading
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="history-panel">
+            <div class="panel-head">
+              <h3>Reading History</h3>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table" aria-label="Health readings">
+                <thead>
+                  <tr>
+                    <th>Date &amp; Time</th>
+                    <th>Metric</th>
+                    <th>Reading</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody">
+                  <tr><td colspan="6" class="empty-row">No readings logged yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="sectionReminders">
+        <div class="page-pad">
+          <div class="page-head">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+              <div>
+                <h2>Medication Reminders</h2>
+                <p class="page-desc">Schedule and manage your medication reminders.</p>
+              </div>
+              <button class="btn btn-primary" id="openAddReminderBtn">
+                <i class="fa-solid fa-plus"></i> Add Reminder
+              </button>
+            </div>
+          </div>
+
+          <div class="notif-bar" id="notifBar" style="display:none">
+            <i class="fa-solid fa-bell"></i>
+            <span>Enable notifications to receive medication reminders in your browser.</span>
+            <button class="btn btn-sm btn-primary" id="enableNotifsBtn">Enable</button>
+          </div>
+
+          <div class="reminders-list" id="remindersList"></div>
+
+          <div class="emergency-card">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Emergency Numbers</h3>
+            <div class="emg-grid">
+              <div class="emg-item emg-primary">
+                <div class="emg-ico"><i class="fa-solid fa-truck-medical"></i></div>
+                <div><div class="emg-label">Medical Emergency</div><div class="emg-num">108</div><div class="emg-country">India</div></div>
+              </div>
+              <div class="emg-item emg-primary">
+                <div class="emg-ico"><i class="fa-solid fa-shield-halved"></i></div>
+                <div><div class="emg-label">All Emergencies</div><div class="emg-num">112</div><div class="emg-country">India</div></div>
+              </div>
+              <div class="emg-item">
+                <div class="emg-ico"><i class="fa-solid fa-phone"></i></div>
+                <div><div class="emg-label">Emergency</div><div class="emg-num">911</div><div class="emg-country">US</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<nav class="bottom-nav" id="bottomNav" aria-label="Mobile navigation">
+  <button class="bn-item active" data-section="chat"><i class="fa-solid fa-comment-medical"></i><span>Chat</span></button>
+  <button class="bn-item" data-section="knowledge"><i class="fa-solid fa-book-medical"></i><span>Knowledge</span></button>
+  <button class="bn-item" data-section="trends"><i class="fa-solid fa-chart-line"></i><span>Trends</span></button>
+  <button class="bn-item" data-section="reminders"><i class="fa-solid fa-bell"></i><span>Reminders</span></button>
+</nav>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="toasts" id="toastArea" aria-live="polite"></div>
+
+<div class="modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle">
+  <div class="modal-card modal-lg">
+    <div class="modal-header">
+      <h2 id="detailModalTitle">Condition Details</h2>
+      <button class="modal-close" id="closeDetailModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
+    <div class="modal-body" id="detailModalBody">
+      <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</div>
+    </div>
+  </div>
+</div>
 
-    <!-- Custom JS -->
-    <script src="/static/js/main.js"></script>
+<div class="modal" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+  <div class="modal-card modal-lg">
+    <div class="modal-header">
+      <h2 id="historyModalTitle">Chat History</h2>
+      <button class="modal-close" id="closeHistoryModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="historyModalBody">
+      <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</div>
+    </div>
+  </div>
+</div>
 
+<div class="modal" id="addReminderModal" role="dialog" aria-modal="true" aria-labelledby="addReminderTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="addReminderTitle">Add Medication Reminder</h2>
+      <button class="modal-close" id="closeAddReminderModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="addReminderForm" novalidate>
+        <div class="fg">
+          <label for="remMedName">Medication Name</label>
+          <input type="text" id="remMedName" class="finput" placeholder="e.g. Paracetamol 500mg" required>
+        </div>
+        <div class="fg">
+          <label for="remDosage">Dosage</label>
+          <input type="text" id="remDosage" class="finput" placeholder="e.g. 1 tablet">
+        </div>
+        <div class="fg">
+          <label for="remTime">Reminder Time</label>
+          <input type="time" id="remTime" class="finput" required>
+        </div>
+        <div class="fg">
+          <label for="remDays">Duration (days)</label>
+          <input type="number" id="remDays" class="finput" value="30" min="1" max="365">
+        </div>
+        <div class="fg">
+          <label>Frequency</label>
+          <div class="freq-pills" id="freqPills" role="group">
+            <button type="button" class="fpill active" data-freq="daily">Daily</button>
+            <button type="button" class="fpill" data-freq="weekly">Weekly</button>
+            <button type="button" class="fpill" data-freq="custom">Custom</button>
+          </div>
+        </div>
+        <div class="fg" id="dayPickerGroup" style="display:none">
+          <label>Days</label>
+          <div class="day-pills" id="dayPills" role="group">
+            <button type="button" class="dpill" data-day="Mon">Mon</button>
+            <button type="button" class="dpill" data-day="Tue">Tue</button>
+            <button type="button" class="dpill" data-day="Wed">Wed</button>
+            <button type="button" class="dpill" data-day="Thu">Thu</button>
+            <button type="button" class="dpill" data-day="Fri">Fri</button>
+            <button type="button" class="dpill" data-day="Sat">Sat</button>
+            <button type="button" class="dpill" data-day="Sun">Sun</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-bell"></i> Schedule Reminder
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/main.js"></script>
 </body>
 </html>
