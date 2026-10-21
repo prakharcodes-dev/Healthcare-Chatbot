@@ -28,42 +28,46 @@
                 <div class="menu-item active" data-section="chat">
                     <i class="fa-solid fa-comment-medical"></i>
                     <div class="menu-text">
-                        <span class="menu-title">Symptom Checker</span>
-                        <span class="menu-subtitle">Check symptoms</span>
+                        <span class="menu-title" data-i18n="navChecker">Symptom Checker</span>
+                        <span class="menu-subtitle" data-i18n="navCheckerSub">Check symptoms</span>
                     </div>
                 </div>
                 <div class="menu-item" data-section="knowledge">
                     <i class="fa-solid fa-book-medical"></i>
                     <div class="menu-text">
-                        <span class="menu-title">Medical Knowledge</span>
+                        <span class="menu-title" data-i18n="navLibrary">Medical Knowledge</span>
                         <span class="menu-subtitle">Search <span data-disease-count>700+</span> conditions</span>
                     </div>
                 </div>
                 <div class="menu-item" data-section="trends">
                     <i class="fa-solid fa-chart-line"></i>
                     <div class="menu-text">
-                        <span class="menu-title">Health Trends</span>
-                        <span class="menu-subtitle">Track vital metrics</span>
+                        <span class="menu-title" data-i18n="navTrends">Health Trends</span>
+                        <span class="menu-subtitle" data-i18n="navTrendsSub">Track vital metrics</span>
                     </div>
                 </div>
                 <div class="menu-item" data-section="reminders">
                     <i class="fa-solid fa-clock"></i>
                     <div class="menu-text">
-                        <span class="menu-title">Set Reminders</span>
+                        <span class="menu-title" data-i18n="navReminders">Set Reminders</span>
                         <span class="menu-subtitle">Medication alerts</span>
                     </div>
                 </div>
                 <div class="menu-item" data-section="history">
                     <i class="fa-solid fa-history"></i>
                     <div class="menu-text">
-                        <span class="menu-title">Chat History</span>
+                        <span class="menu-title" data-i18n="navHistory">Chat History</span>
                         <span class="menu-subtitle">Past conversations</span>
                     </div>
+                </div>
+                <div class="menu-item" data-section="safety">
+                    <i class="fa-solid fa-shield-heart"></i>
+                    <div class="menu-text"><span class="menu-title" data-i18n="safetyNav">Health & Safety</span><span class="menu-subtitle" data-i18n="safetySub">Everyday wellness guidance</span></div>
                 </div>
                 <div class="menu-item" data-section="analytics">
                     <i class="fa-solid fa-chart-pie"></i>
                     <div class="menu-text">
-                        <span class="menu-title">Analytics</span>
+                        <span class="menu-title" data-i18n="navAnalytics">Analytics</span>
                         <span class="menu-subtitle">Usage stats</span>
                     </div>
                 </div>
@@ -93,6 +97,10 @@
                     </div>
                 </div>
                 <div class="header-status">
+                    <label class="language-picker-label" for="languagePicker"><i class="fa-solid fa-language"></i><span data-i18n="language">Language</span></label>
+                    <select id="languagePicker" class="language-picker" aria-label="Choose interface language">
+                        <option value="en">English</option><option value="hi">हिन्दी</option><option value="bn">বাংলা</option><option value="es">Español</option>
+                    </select>
                     <span id="connectionStatus" class="status-badge status-loading">
                         <i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...
                     </span>
@@ -115,8 +123,8 @@
                                 <i class="fa-solid fa-heart-pulse"></i>
                             </div>
                             <div class="welcome-hero-title">
-                                <h2>Welcome to MedVitals AI!</h2>
-                                <p>Your intelligent personal health assistant. How would you like to get started today?</p>
+                                <h2 data-i18n="welcomeTitle">Welcome to MedVitals AI!</h2>
+                                <p data-i18n="welcomeText">Your intelligent personal health assistant. How would you like to get started today?</p>
                             </div>
                         </div>
 
@@ -150,7 +158,7 @@
                         <!-- Clickable Example Prompt Chips -->
                         <div class="symptom-chips-wrapper">
                             <div class="chips-title">
-                                <i class="fa-solid fa-lightbulb"></i> <span>Click an example symptom below to test instant analysis:</span>
+                                <i class="fa-solid fa-lightbulb"></i> <span data-i18n="sampleTitle">Click an example symptom below to test instant analysis:</span>
                             </div>
                             <div class="symptom-chips-grid">
                                 <button class="symptom-chip-btn" onclick="sendExampleSymptom('fever, severe headache, body aches')">
@@ -186,7 +194,7 @@
                         <!-- Suggestion items dynamically inserted here -->
                     </div>
                     <div class="chat-input-container">
-                        <input type="text" id="userInput" class="chat-input" placeholder="Type symptoms (e.g. fever, headache, dry cough)..." autocomplete="off">
+                        <input type="text" id="userInput" class="chat-input" data-i18n-placeholder="symptomPlaceholder" placeholder="Type symptoms (e.g. fever, headache, dry cough)..." autocomplete="off">
                         <button id="sendBtn" class="send-btn" title="Send Message">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
@@ -200,7 +208,7 @@
                     <div class="section-intro-card">
                         <div class="intro-icon"><i class="fa-solid fa-book-medical"></i></div>
                         <div class="intro-text">
-                            <h3>Verified Medical Knowledge Base</h3>
+                            <h3 data-i18n="libraryTitle">Medical Knowledge Base</h3>
                             <p>Explore <span data-disease-count>700+</span> conditions by name, symptom, or category. Each profile highlights symptoms, prevention, care information, and when to seek help.</p>
                         </div>
                     </div>
@@ -229,6 +237,27 @@
                     <div class="knowledge-results-grid" id="knowledgeResults">
                         <!-- Disease knowledge cards with 6 pillars inserted here dynamically -->
                     </div>
+                </div>
+            </section>
+
+            <section class="app-section safety-section" id="sectionSafety" style="display:none;">
+                <div class="safety-container">
+                    <div class="language-coverage-note"><i class="fa-solid fa-language"></i><span data-i18n="resultsEnglish">Condition names, the disease library, and symptom-check results are currently available in English.</span></div>
+                    <div class="safety-hero">
+                        <span class="safety-hero-icon"><i class="fa-solid fa-shield-heart"></i></span>
+                        <div><p class="safety-eyebrow" data-i18n="safetyEyebrow">PRACTICAL, EVERYDAY GUIDANCE</p><h2 data-i18n="safetyTitle">Small habits that support your health</h2><p data-i18n="safetyIntro">General guidance for adults. Your needs may differ based on age, pregnancy, disability, health conditions, medicines, and local recommendations.</p></div>
+                    </div>
+                    <div class="safety-grid">
+                        <article class="safety-card"><span class="safety-icon"><i class="fa-solid fa-utensils"></i></span><h3 data-i18n="foodTitle">Food and hydration</h3><p data-i18n="foodText">Choose a varied diet with vegetables, fruit, pulses and whole grains when available. Prefer safe drinking water. Needs vary; follow medical advice if you have a condition that affects food or fluids.</p></article>
+                        <article class="safety-card"><span class="safety-icon"><i class="fa-solid fa-person-walking"></i></span><h3 data-i18n="moveTitle">Move regularly</h3><p data-i18n="moveText">Build activity gradually in a way that feels safe for you. WHO’s adult guideline is 150–300 minutes of moderate aerobic activity weekly, or an equivalent amount of vigorous activity; some activity is better than none.</p></article>
+                        <article class="safety-card"><span class="safety-icon"><i class="fa-solid fa-bed"></i></span><h3 data-i18n="sleepTitle">Sleep and mental wellbeing</h3><p data-i18n="sleepText">Keep a regular sleep routine where possible and make time for rest and social connection. If distress is persistent or interferes with daily life, contact a qualified health professional.</p></article>
+                        <article class="safety-card"><span class="safety-icon"><i class="fa-solid fa-hand-sparkles"></i></span><h3 data-i18n="preventTitle">Prevent infection and injury</h3><p data-i18n="preventText">Wash hands, follow food-safety practices, and ask a local health professional which vaccines and screening are recommended for you. Use seat belts and helmets; avoid tobacco and exposure to second-hand smoke.</p></article>
+                        <article class="safety-card"><span class="safety-icon"><i class="fa-solid fa-pills"></i></span><h3 data-i18n="medicineTitle">Use medicines safely</h3><p data-i18n="medicineText">Use medicines only as directed by a qualified professional or the official label. Check before combining medicines or supplements. Never share prescription medicines, and do not stop long-term treatment without advice.</p></article>
+                        <article class="safety-card"><span class="safety-icon"><i class="fa-solid fa-stethoscope"></i></span><h3 data-i18n="careTitle">Know when to get care</h3><p data-i18n="careText">Arrange medical advice for new, persistent, worsening, or worrying symptoms. People with chronic conditions should follow their personalized care plan and routine check-ups.</p></article>
+                    </div>
+                    <article class="safety-emergency"><span class="safety-icon emergency-icon"><i class="fa-solid fa-triangle-exclamation"></i></span><div><h3 data-i18n="emergencyTitle">Get emergency help now</h3><p data-i18n="emergencyText">Call your local emergency number for severe difficulty breathing, chest pressure or pain, fainting or unresponsiveness, severe bleeding, a seizure that will not stop, or sudden face drooping, arm weakness, or speech trouble. Do not wait for an online response.</p></div></article>
+                    <p class="safety-disclaimer" data-i18n="safetyDisclaimer">This guide is general information, not personal medical advice or a diagnosis. Follow local public-health advice and a qualified clinician’s recommendations. Vaccine, screening, diet, and activity guidance can vary by person and country.</p>
+                    <div class="safety-sources"><strong data-i18n="sourcesTitle">Trusted sources</strong><a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" rel="noopener noreferrer">WHO: Healthy diet</a><a href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener noreferrer">WHO: Physical activity</a><a href="https://www.who.int/news-room/fact-sheets/detail/stroke" target="_blank" rel="noopener noreferrer">WHO: Stroke warning signs</a><a href="https://www.who.int/news-room/fact-sheets/detail/heart-attack" target="_blank" rel="noopener noreferrer">WHO: Heart attack</a><a href="https://www.who.int/health-topics/noncommunicable-diseases" target="_blank" rel="noopener noreferrer">WHO: NCD prevention</a><a href="https://www.who.int/health-topics/vaccines-and-immunization" target="_blank" rel="noopener noreferrer">WHO: Vaccines</a></div>
                 </div>
             </section>
 

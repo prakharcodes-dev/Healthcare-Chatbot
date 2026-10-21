@@ -8,14 +8,14 @@
 
 > 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com](https://healthcare-chatbot-1-ynxb.onrender.com)
 
-MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **727 medical conditions**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **727 condition records (702 distinct condition names)**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
 
 ---
 
 ## ✨ Key Features
 
 ### 🧠 1. Better Medical Knowledge Search & Interactive Disease Modals
-- **6-Pillar Medical Knowledge Engine**: Every condition in the **711 disease database** covers 6 comprehensive medical pillars:
+- **6-Pillar Medical Knowledge Engine**: Condition profiles are normalized for six information areas (some details are general when the source record does not provide condition-specific data):
   1. 🩺 **Symptoms:** Complete list of associated medical symptoms
   2. 🧬 **Causes:** Underlying biological, pathogen, genetic, or environmental etiologies
   3. ⚠️ **Risk Factors:** Predisposing factors (age, family history, lifestyle, immune status)
@@ -67,9 +67,17 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 - Automatically corrects typos (e.g. `pian` $\rightarrow$ `pain`, `blede` $\rightarrow$ `bleed`, `nausia` $\rightarrow$ `nausea`) using token-level Levenshtein distance and weighted vector cosine similarity.
 - Autocomplete suggestion box offering real-time symptom and disease suggestions as you type.
 
-### ⏰ 7. Self-Triggering Medication Reminders & Themes
-- **Self-Triggering Automatic Reminders**: Schedule medication dosage alerts with custom times and dosages. A continuous 10-second background polling engine checks due times and automatically fires reminders at the exact scheduled time — complete with Web Audio API chime sounds, desktop popups, and in-chat reminder cards.
-- **Dark & Light Themes**: High-contrast, accessible design system supporting dark mode and light mode.
+### ⏰ 7. Medication Reminders & Themes
+- Schedule medication reminders with custom times and dosages, with browser notifications and in-chat alerts.
+- **Dark & Light Themes**: Theme support for light and dark mode.
+
+### 🌐 8. Language Support & Health and Safety Guide
+- Choose **English, Hindi, Bengali, or Spanish** from the language menu. The safety guide and selected navigation and welcome text are localized.
+- The **Health & Safety** page offers general guidance on food and hydration, physical activity, sleep and mental wellbeing, infection and injury prevention, medicine safety, and when to seek care.
+- The guide includes emergency warning signs and directs users to call their **local emergency number** for urgent help.
+- The disease library and symptom-check results remain in English. The language selector does not translate medical records or diagnostic outputs.
+- Guidance is general information, not personal medical advice. Recommendations can vary by person and location; consult a qualified health professional for individual care.
+- Reference sources: [WHO healthy diet](https://www.who.int/news-room/fact-sheets/detail/healthy-diet), [WHO physical activity](https://www.who.int/news-room/fact-sheets/detail/physical-activity), [WHO stroke](https://www.who.int/news-room/fact-sheets/detail/stroke), [WHO heart attack](https://www.who.int/news-room/fact-sheets/detail/heart-attack), [WHO vaccines and immunization](https://www.who.int/health-topics/vaccines-and-immunization), and [WHO noncommunicable diseases](https://www.who.int/health-topics/noncommunicable-diseases).
 
 ---
 
@@ -77,16 +85,17 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/` | Serves the main SPA frontend (`index.html`) |
-| `GET` | `/health` | Application status & loaded disease count health check |
-| `POST` | `/predict` | Primary symptom analysis, typo correction & 5-section response |
-| `GET` | `/api/diseases` | List & filter all 711 conditions in the medical knowledge base |
-| `GET` | `/api/diseases/<name>` | Fetch complete 6-pillar medical details for a specific disease |
-| `POST` | `/api/vitals` | Log a new health vital measurement (temperature, weight, BP, glucose) |
-| `GET` | `/api/vitals` | Retrieve recorded health vital log history & analytics |
-| `DELETE` | `/api/vitals/<id>` | Delete a specific health vital log entry |
-| `POST` | `/api/notifications/medication-reminder` | Schedule a new medication reminder |
-| `POST` | `/api/suggest` | Autocomplete search suggestions for symptoms and conditions |
+| `GET` | `/` | Serves the main frontend (`index.html`) |
+| `GET` | `/health` | Application status and loaded condition-record count |
+| `POST` | `/predict` | Symptom analysis and structured response |
+| `POST` | `/api/knowledge/search` | Search conditions by name, symptom, or category |
+| `GET` | `/api/knowledge/<disease_name>` | Fetch a condition profile |
+| `POST` | `/api/health-trends/log` | Save a health measurement |
+| `GET` | `/api/health-trends/user/<user_id>` | Retrieve a user's health log |
+| `GET` | `/api/health-trends/summary/<user_id>` | Retrieve health trend summary |
+| `POST` | `/api/reminders/create` | Create a medication reminder |
+| `POST` | `/api/notifications/medication-reminder` | Create a medication reminder notification |
+| `POST` | `/api/suggest` | Suggest matching symptoms and conditions |
 
 ---
 
@@ -128,7 +137,7 @@ HEALTHCARE CHATBOT/
 │   ├── notifications.py      # Job schedulers & notification triggers
 │   └── utils.py              # Symptom sanitizers, typo correction map & sentiment analyzers
 ├── data/                     # Data storage
-│   └── diseases.json         # Comprehensive database of 727 medical conditions
+│   └── diseases.json         # Dataset containing 727 condition records (702 distinct names)
 ├── evaluation/               # Matcher evaluation framework (new-features branch)
 │   ├── evaluate.py           # Evaluation runner — top-1/3/5 accuracy & failure analysis
 │   ├── test_cases.json       # 60 test cases (exact / partial / typo)
@@ -167,7 +176,7 @@ Start the Flask development server:
 python run.py
 ```
 Upon startup:
-- The backend loads **727 disease** records from `data/diseases.json` and normalizes all 6 medical pillars.
+- The backend loads **727 condition records (702 distinct condition names)** from `data/diseases.json` and normalizes all 6 medical pillars.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
 - Your default web browser automatically opens to `http://127.0.0.1:5000`.
@@ -180,7 +189,7 @@ Upon startup:
 This chatbot is for **informational and educational purposes only**. It does not constitute medical advice, professional diagnosis, or treatment recommendations. Always consult a qualified medical professional before starting any drug regimen or if you are feeling unwell.
 
 ### 🚨 Emergency Protocol
-In case of a medical emergency, call your local emergency services (e.g., 911 or 112) immediately.
+In case of a medical emergency, call the emergency number used where you are. Do not wait for an online response.
 
 ### 🔒 Privacy Note
 All conversation logs, medication reminders, and health vital log files are kept entirely local in your SQLite database (`instance/healthcare_chatbot.db`) and browser local storage. No health profile data is transmitted externally.
