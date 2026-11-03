@@ -2498,8 +2498,6 @@ body.modal-open {
     #sectionKnowledge .search-input-wrapper { flex-wrap: wrap; }
     #sectionKnowledge .search-input-wrapper input { flex: 1 1 100%; }
 }
-<<<<<<< Updated upstream
-=======
 
 
 /* Language picker and trusted health & safety guide */
@@ -2508,7 +2506,7 @@ body.modal-open {
 .language-picker { max-width:112px; padding:8px 10px; border:1px solid var(--border-color); border-radius:var(--radius-md); background:var(--card-bg); color:var(--text-main); font:inherit; font-size:13px; }
 .safety-section { overflow:hidden; }
 .safety-container { height:100%; overflow-y:auto; padding:26px 32px 40px; }
-.safety-hero { display:flex; align-items:center; gap:18px; padding:26px; border:1px solid var(--border-color); border-radius:20px; background:linear-gradient(120deg,var(--card-bg),#e9f5fd); margin-bottom:16px; }
+.safety-hero { display:flex; align-items:center; gap:18px; padding:26px; border:1px solid var(--border-color); border-radius:20px; background:linear-gradient(120deg,var(--card-bg),#e9f5fd); background:linear-gradient(120deg,var(--card-bg),color-mix(in srgb,var(--primary) 9%,var(--card-bg))); margin-bottom:16px; }
 .safety-hero-icon { flex:0 0 54px; width:54px; height:54px; display:grid; place-items:center; border-radius:16px; background:var(--primary-grad); color:white; font-size:23px; }
 .safety-eyebrow { color:var(--primary); font-size:11px; letter-spacing:1px; font-weight:800; margin-bottom:5px; }
 .safety-hero h2 { font-size:22px; margin-bottom:6px; color:var(--text-main); }
@@ -2518,7 +2516,7 @@ body.modal-open {
 .safety-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:var(--primary-light); color:var(--primary); margin-bottom:12px; }
 .safety-card h3,.safety-emergency h3 { color:var(--text-main); font-size:15px; margin-bottom:7px; }
 .safety-card p,.safety-emergency p { color:var(--text-muted); font-size:13px; line-height:1.65; }
-.safety-emergency { display:flex; gap:14px; align-items:flex-start; margin-top:14px; padding:20px; border:1px solid var(--danger); border-radius:16px; background:var(--danger-light); }
+.safety-emergency { display:flex; gap:14px; align-items:flex-start; margin-top:14px; padding:20px; border:1px solid var(--danger); border-radius:16px; background:var(--danger-light); background:color-mix(in srgb,#ef4444 8%,var(--card-bg)); }
 .emergency-icon { flex:0 0 38px; background:#fee2e2; color:#b91c1c; }
 .safety-disclaimer { margin:14px 0; color:var(--text-muted); font-size:12px; line-height:1.6; }
 .safety-sources { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding:14px 16px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:14px; font-size:12px; }
@@ -3040,4 +3038,3 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 .assessment-badge.status-empty { background:var(--primary-bg); color:var(--text-muted); border:1px solid var(--border-color); }
->>>>>>> Stashed changes
