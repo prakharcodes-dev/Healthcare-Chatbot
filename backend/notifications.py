@@ -4,11 +4,13 @@ import smtplib
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from backend.extensions import db, scheduler
-from backend.models import Notification, User
+from backend.extensions import scheduler
+from backend.models import Notification
 
 class NotificationManager:
     def __init__(self):
+        self.app = None
+        self.repository = None
         self.email_enabled = os.getenv('EMAIL_ENABLED', 'False').lower() == 'true'
         self.email_settings = {
             'smtp_server': os.getenv('SMTP_SERVER', 'smtp.gmail.com'),
@@ -17,6 +19,27 @@ class NotificationManager:
             'password': os.getenv('EMAIL_PASSWORD', ''),
             'from_email': os.getenv('FROM_EMAIL', 'noreply@healthcarebot.com')
         }
+
+    def bind_app(self, app):
+        self.app = app
+
+    def restore_pending_jobs(self):
+        """Rebuild in-memory date jobs after a process restart."""
+        if self.app is None:
+            return
+        with self.app.app_context():
+            pending = self.repository.list_pending()
+            for notification in pending:
+                if notification.scheduled_time and notification.scheduled_time > datetime.utcnow():
+                    scheduler.add_job(
+                        self._send_scheduled,
+                        trigger='date',
+                        run_date=notification.scheduled_time,
+                        args=[notification.id],
+                        id=f'notif_{notification.id}',
+                        replace_existing=True,
+                        misfire_grace_time=3600,
+                    )
     
     def send_email(self, to_email, subject, body):
         if not self.email_enabled:
@@ -48,8 +71,7 @@ class NotificationManager:
             scheduled_time=scheduled_time,
             status='pending'
         )
-        db.session.add(notification)
-        db.session.commit()
+        self.repository.add_many([notification])
         
         scheduler.add_job(
             self._send_scheduled,
@@ -57,23 +79,25 @@ class NotificationManager:
             run_date=scheduled_time,
             args=[notification.id],
             id=f"notif_{notification.id}",
-            replace_existing=True
+            replace_existing=True,
+            misfire_grace_time=3600,
         )
         
         return notification
     
     def _send_scheduled(self, notification_id):
         # We need app context to access SQLAlchemy queries in background threads
-        from flask import current_app
-        with current_app.app_context():
-            notification = Notification.query.get(notification_id)
+        if self.app is None:
+            return
+        with self.app.app_context():
+            notification = self.repository.get(notification_id)
             if not notification or notification.status != 'pending':
                 return
             
-            user = User.query.get(notification.user_id)
+            user = self.repository.get_user(notification.user_id)
             if not user or not user.notifications_enabled:
                 notification.status = 'skipped'
-                db.session.commit()
+                self.repository.save()
                 return
             
             result = None
@@ -82,7 +106,7 @@ class NotificationManager:
             
             notification.sent_time = datetime.utcnow()
             notification.status = 'sent' if result and result['status'] == 'success' else 'failed'
-            db.session.commit()
+            self.repository.save()
     
     def create_medication_reminder(self, user_id, med_name, dosage, schedule_times, duration_days):
         reminders = []

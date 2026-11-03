@@ -123,7 +123,7 @@ The matcher was evaluated against **60 test cases** drawn from the live dataset 
 
 ## 📁 Project Architecture
 
-The application is built cleanly using modular Flask and MVC best practices:
+The backend is a Flask modular monolith. HTTP routes live in `backend/routes.py`; pure symptom parsing and health-metric rules live under `backend/core/`; use-case orchestration is in `backend/services/`; SQLAlchemy persistence adapters are in `backend/repositories/`. `backend/__init__.py` is the application factory and wires one service registry into `app.extensions`. The browser UI is served by Flask from `frontend/`.
 
 ```
 HEALTHCARE CHATBOT/
@@ -134,8 +134,14 @@ HEALTHCARE CHATBOT/
 │   ├── history.py            # Chat session loggers & analytics managers
 │   ├── matcher.py            # Token-level fuzzy symptom matcher & vector engine
 │   ├── models.py             # Database schemas (User, Sessions, HealthLog, Notifications)
-│   ├── notifications.py      # Job schedulers & notification triggers
-│   └── utils.py              # Symptom sanitizers, typo correction map & sentiment analyzers
+│   ├── notifications.py      # Job scheduling and notification delivery
+│   ├── routes.py             # HTTP routes (API behavior)
+│   ├── utils.py              # Symptom sanitizers and helper functions
+│   ├── core/                 # Framework-independent symptom and metric rules
+│   ├── services/             # Assessment, response shaping, and app service registry
+│   └── repositories/         # Chat and health-log persistence adapters
+├── migrations/               # Explicit SQL migrations (never auto-applied)
+├── tests/unit/               # Unit tests for pure assessment logic
 ├── data/                     # Data storage
 │   └── diseases.json         # Dataset containing 727 condition records (702 distinct names)
 ├── evaluation/               # Matcher evaluation framework (new-features branch)
@@ -153,6 +159,9 @@ HEALTHCARE CHATBOT/
 ├── instance/                 # Local data directory
 │   └── healthcare_chatbot.db # SQLite database
 ├── run.py                    # Server entrypoint
+├── Dockerfile                # Container startup; single web worker for scheduler safety
+├── requirements.txt          # Python dependencies
+└── README.md                 # Project guide and deployment constraints
 ├── requirements.txt          # Python dependencies
 └── README.md                 # Project documentation
 ```
@@ -179,6 +188,14 @@ Upon startup:
 - The backend loads **727 condition records (702 distinct condition names)** from `data/diseases.json` and normalizes all 6 medical pillars.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
+
+### Architecture and deployment notes
+
+- SQLite remains the default database at `instance/healthcare_chatbot.db`. `db.create_all()` only creates missing tables; it does not apply the optional query-index migration. Review and back up the database before manually applying `migrations/0001_add_query_indexes.sql`.
+- Production startup requires a strong `SECRET_KEY` environment variable. Set `APP_ENV=production`; the Docker image sets this by default. `CORS_ORIGINS` is an optional comma-separated allow-list for separately hosted frontends; same-origin hosting needs no CORS configuration.
+- The in-process APScheduler is enabled by default (`ENABLE_SCHEDULER=false` disables it). Docker uses one Gunicorn worker because multiple web workers or replicas would each run a scheduler and could send duplicate reminders. A production multi-instance deployment needs a dedicated scheduler/worker and distributed job claiming before scaling horizontally.
+- This project currently has no authentication or authorization flow. API endpoints that accept or default a `user_id` cannot prove ownership, and history, notification, and health-log records must be treated as accessible to anyone who can reach the API. Do not use it for private or real patient data until authenticated identity, per-user authorization, request protections, and an operational database backup/retention plan are implemented.
+- Symptom match percentages are heuristic similarity scores, not probabilities or diagnoses. Dataset content and general health guidance require clinical review before patient-facing clinical use.
 - Your default web browser automatically opens to `http://127.0.0.1:5000`.
 
 ---

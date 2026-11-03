@@ -1,5 +1,6 @@
 import os
 import json
+import secrets
 from flask import Flask
 from flask_cors import CORS
 from backend.config import Config
@@ -7,6 +8,9 @@ from backend.extensions import db, scheduler
 from backend.matcher import EnhancedDiseaseMatcher
 from backend.history import ChatHistoryManager
 from backend.notifications import NotificationManager
+from backend.repositories.health_repository import HealthLogRepository
+from backend.repositories.notification_repository import NotificationRepository
+from backend.services.registry import ServiceRegistry
 
 def load_diseases():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -112,7 +116,7 @@ def load_diseases():
     return normalized
 
 
-def create_app():
+def create_app(config_overrides=None):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     template_dir = os.path.abspath(os.path.join(base_dir, 'frontend', 'templates'))
     static_dir = os.path.abspath(os.path.join(base_dir, 'frontend', 'static'))
@@ -125,28 +129,34 @@ def create_app():
     
     # Load configuration
     app.config.from_object(Config)
+    if config_overrides:
+        app.config.update(config_overrides)
+
+    if app.config['APP_ENV'] == 'production' and not app.config.get('SECRET_KEY'):
+        raise RuntimeError('SECRET_KEY must be configured in production.')
+    if not app.config.get('SECRET_KEY'):
+        app.config['SECRET_KEY'] = secrets.token_hex(32)
     
     # Enable CORS
-    CORS(app, supports_credentials=True)
+    if app.config['CORS_ORIGINS']:
+        CORS(app, origins=app.config['CORS_ORIGINS'], supports_credentials=False)
     
     # Initialize SQLAlchemy database
     db.init_app(app)
-    
-    # Initialize background scheduler
-    if not scheduler.running:
-        scheduler.start()
     
     # Load diseases and initialize services
     diseases = load_diseases()
     matcher = EnhancedDiseaseMatcher(diseases)
     chat_history = ChatHistoryManager()
     notifications = NotificationManager()
+    notification_records = NotificationRepository()
+    notifications.repository = notification_records
+    notifications.bind_app(app)
+    health_logs = HealthLogRepository()
+    app.extensions['medvitals'] = ServiceRegistry(diseases, matcher, chat_history, notifications, health_logs, notification_records)
     
     # Save services in app configuration for route access
-    app.config['DISEASES'] = diseases
-    app.config['MATCHER'] = matcher
-    app.config['CHAT_HISTORY'] = chat_history
-    app.config['NOTIFICATIONS'] = notifications
+    app.config['DISEASES'] = diseases  # retained for the local startup banner and compatibility
     
     # Register API blueprint
     from backend.routes import api_bp
@@ -155,5 +165,9 @@ def create_app():
     # Create DB tables
     with app.app_context():
         db.create_all()
+        if app.config['APP_ENV'] != 'testing' and os.getenv('ENABLE_SCHEDULER', 'true').lower() == 'true':
+            if not scheduler.running:
+                scheduler.start()
+            notifications.restore_pending_jobs()
         
     return app

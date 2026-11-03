@@ -24,6 +24,7 @@
                 <h2>MedVitals AI</h2>
             </div>
             
+<<<<<<< Updated upstream
             <nav class="sidebar-menu">
                 <div class="menu-item active" data-section="chat">
                     <i class="fa-solid fa-comment-medical"></i>
@@ -71,6 +72,32 @@
                         <span class="menu-subtitle">Usage stats</span>
                     </div>
                 </div>
+=======
+            <nav class="sidebar-menu" aria-label="Main navigation">
+                <p class="nav-group-label" data-i18n="navWorkspace">Workspace</p>
+                <button class="menu-item active" type="button" data-section="chat" aria-current="page">
+                    <i class="fa-solid fa-comment-medical" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navChecker">Symptom Checker</span><span class="menu-subtitle" data-i18n="navCheckerSub">Check symptoms</span></span>
+                </button>
+                <button class="menu-item" type="button" data-section="knowledge">
+                    <i class="fa-solid fa-book-medical" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navLibrary">Medical Knowledge</span><span class="menu-subtitle" data-i18n="navLibrarySub">Search conditions</span></span>
+                </button>
+                <button class="menu-item" type="button" data-section="trends">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navTrends">Health Trends</span><span class="menu-subtitle" data-i18n="navTrendsSub">Track vital metrics</span></span>
+                </button>
+                <button class="menu-item" type="button" data-section="safety">
+                    <i class="fa-solid fa-shield-heart" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="safetyNav">Health & Safety</span><span class="menu-subtitle" data-i18n="safetySub">Everyday wellness guidance</span></span>
+                </button>
+                <p class="nav-group-label nav-tools-label" data-i18n="navTools">Tools</p>
+                <button class="menu-item nav-action" type="button" data-section="reminders">
+                    <i class="fa-solid fa-clock" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navReminders">Set Reminders</span><span class="menu-subtitle" data-i18n="navRemindersSub">Medication alerts</span></span>
+                </button>
+                <button class="menu-item nav-action" type="button" data-section="history">
+                    <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navHistory">Chat History</span><span class="menu-subtitle" data-i18n="navHistorySub">Review past sessions</span></span>
+                </button>
+                <button class="menu-item nav-action" type="button" data-section="analytics">
+                    <i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navAnalytics">Analytics</span><span class="menu-subtitle" data-i18n="navAnalyticsSub">Usage overview</span></span>
+                </button>
+>>>>>>> Stashed changes
             </nav>
             
             <div class="sidebar-user">
@@ -88,7 +115,7 @@
         <main class="main-content">
             <header class="app-header">
                 <div class="header-left-group" style="display: flex; align-items: center; gap: 14px;">
-                    <button id="toggleLeftSidebarBtn" class="sidebar-toggle-btn" title="Collapse / Expand Navigation Sidebar">
+                    <button id="toggleLeftSidebarBtn" class="sidebar-toggle-btn" type="button" aria-label="Toggle navigation sidebar" title="Collapse / Expand Navigation Sidebar">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <div class="header-title">
@@ -107,7 +134,7 @@
                     <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
                         <i class="fa-solid fa-moon"></i>
                     </button>
-                    <button id="toggleRightSidebarBtn" class="sidebar-toggle-btn" title="Collapse / Expand Quick Actions Panel">
+                    <button id="toggleRightSidebarBtn" class="sidebar-toggle-btn panel-drawer-toggle" type="button" aria-label="Open quick actions" aria-expanded="false" title="Open quick actions">
                         <i class="fa-solid fa-sliders"></i>
                     </button>
                 </div>
@@ -115,7 +142,7 @@
 
             <!-- 1. Symptom Chat Section -->
             <section class="app-section" id="sectionChat">
-                <div id="chatMessages" class="chat-messages">
+                <div id="chatMessages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions">
                     <!-- Modern Interactive Welcome Hero Card -->
                     <div class="welcome-hero-card">
                         <div class="welcome-hero-header">
@@ -128,30 +155,19 @@
                             </div>
                         </div>
 
-                        <!-- 3 Core Feature Highlights -->
+                        <!-- Primary destinations -->
                         <div class="welcome-features-grid">
-                            <div class="feature-card" onclick="switchSection('chat')">
-                                <div class="feature-icon chat-feat-icon"><i class="fa-solid fa-comment-medical"></i></div>
-                                <div class="feature-details">
-                                    <h4>1. Symptom Checker</h4>
-                                    <p>Describe your symptoms in simple words to get instant potential causes & care steps.</p>
-                                </div>
+                            <div class="feature-card" role="button" tabindex="0" onclick="switchSection('chat')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchSection('chat')}">
+                                <div class="feature-icon chat-feat-icon"><i class="fa-solid fa-comment-medical" aria-hidden="true"></i></div>
+                                <div class="feature-details"><h4>1. Symptom Checker</h4><p>Describe your symptoms in simple words to get potential causes and care steps.</p></div>
                             </div>
-
-                            <div class="feature-card" onclick="switchSection('knowledge')">
-                                <div class="feature-icon know-feat-icon"><i class="fa-solid fa-book-medical"></i></div>
-                                <div class="feature-details">
-                                    <h4>2. <span data-disease-count>Growing</span> Condition Library</h4>
-                                    <p>Search by condition, symptom, or category; open a profile for practical health information.</p>
-                                </div>
+                            <div class="feature-card" role="button" tabindex="0" onclick="switchSection('knowledge')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchSection('knowledge')}">
+                                <div class="feature-icon know-feat-icon"><i class="fa-solid fa-book-medical" aria-hidden="true"></i></div>
+                                <div class="feature-details"><h4>2. <span data-disease-count>Growing</span> Condition Library</h4><p>Search by condition, symptom, or category; open profiles for practical information.</p></div>
                             </div>
-
-                            <div class="feature-card" onclick="switchSection('trends')">
-                                <div class="feature-icon trend-feat-icon"><i class="fa-solid fa-chart-line"></i></div>
-                                <div class="feature-details">
-                                    <h4>3. Health Trend Tracker</h4>
-                                    <p>Log Temperature, BP, Weight & Glucose to view visual trend graphs & condition assessments.</p>
-                                </div>
+                            <div class="feature-card" role="button" tabindex="0" onclick="switchSection('trends')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchSection('trends')}">
+                                <div class="feature-icon trend-feat-icon"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></div>
+                                <div class="feature-details"><h4>3. Health Trend Tracker</h4><p>Record temperature, blood pressure, weight, and glucose readings over time.</p></div>
                             </div>
                         </div>
 
@@ -219,18 +235,18 @@
                             <button id="knowledgeSearchBtn" class="btn btn-primary"><i class="fa-solid fa-search"></i> Search</button>
                         </div>
                         <div class="category-pills" id="knowledgeCategoryPills">
-                            <span class="cat-pill active" data-category="">All Categories</span>
-                            <span class="cat-pill" data-category="respiratory">Respiratory</span>
-                            <span class="cat-pill" data-category="cardiovascular">Cardiovascular</span>
-                            <span class="cat-pill" data-category="allergy">Allergy & Immunology</span>
-                            <span class="cat-pill" data-category="pediatrics">Pediatrics</span>
-                            <span class="cat-pill" data-category="bacterial">Bacterial</span>
-                            <span class="cat-pill" data-category="viral">Viral</span>
-                            <span class="cat-pill" data-category="endocrine">Endocrine</span>
-                            <span class="cat-pill" data-category="neurological">Neurological</span>
-                            <span class="cat-pill" data-category="gastrointestinal">Gastrointestinal</span>
-                            <span class="cat-pill" data-category="dermatological">Dermatological</span>
-                            <span class="cat-pill" data-category="autoimmune">Autoimmune</span>
+                            <button type="button" class="cat-pill active" data-category="" aria-pressed="true">All Categories</button>
+                            <button type="button" class="cat-pill" data-category="respiratory" aria-pressed="false">Respiratory</button>
+                            <button type="button" class="cat-pill" data-category="cardiovascular" aria-pressed="false">Cardiovascular</button>
+                            <button type="button" class="cat-pill" data-category="allergy" aria-pressed="false">Allergy & Immunology</button>
+                            <button type="button" class="cat-pill" data-category="pediatrics" aria-pressed="false">Pediatrics</button>
+                            <button type="button" class="cat-pill" data-category="bacterial" aria-pressed="false">Bacterial</button>
+                            <button type="button" class="cat-pill" data-category="viral" aria-pressed="false">Viral</button>
+                            <button type="button" class="cat-pill" data-category="endocrine" aria-pressed="false">Endocrine</button>
+                            <button type="button" class="cat-pill" data-category="neurological" aria-pressed="false">Neurological</button>
+                            <button type="button" class="cat-pill" data-category="gastrointestinal" aria-pressed="false">Gastrointestinal</button>
+                            <button type="button" class="cat-pill" data-category="dermatological" aria-pressed="false">Dermatological</button>
+                            <button type="button" class="cat-pill" data-category="autoimmune" aria-pressed="false">Autoimmune</button>
                         </div>
                     </div>
                     <div class="knowledge-results-meta" id="knowledgeResultsMeta" aria-live="polite">Browse the full library or choose a category to get started.</div>
@@ -276,13 +292,13 @@
                     <div class="overall-assessment-card" id="healthAssessmentBanner">
                         <div class="assessment-header">
                             <div class="assessment-badge status-normal" id="overallStatusBadge">
-                                <i class="fa-solid fa-circle-check" id="overallStatusIcon"></i> <span id="overallStatusText">Overall Condition: Good & Stable</span>
+                                <i class="fa-solid fa-circle-check" id="overallStatusIcon"></i> <span id="overallStatusText">No readings yet</span>
                             </div>
                             <span class="assessment-time" id="overallAssessmentTime">Updated live</span>
                         </div>
                         <div class="assessment-body">
-                            <h3 id="overallAssessmentTitle">Your Vitals Look Great! Condition is Normal & Good 👍</h3>
-                            <p id="overallAssessmentMsg">All your recorded health vitals (Body Temperature, Weight, Blood Pressure, and Blood Glucose) are in healthy, safe, and optimal target ranges. There is no cause for concern!</p>
+                            <h3 id="overallAssessmentTitle">Start by recording a reading</h3>
+                            <p id="overallAssessmentMsg">Your trend summary will appear here after you record a health measurement. This tracker is informational and does not replace clinical assessment.</p>
                         </div>
                     </div>
 
@@ -435,8 +451,9 @@
         </main>
 
 
-        <!-- Right Panels for Quick Actions, Reminders, and Recent Activity -->
-        <aside class="right-panel">
+        <div id="rightDrawerOverlay" class="right-drawer-overlay" aria-hidden="true"></div>
+        <!-- Right panel groups secondary actions and recent activity -->
+        <aside class="right-panel" id="quickActionsPanel" aria-label="Quick actions and recent activity">
             <!-- Quick Start Help Guide -->
             <section class="panel-section help-guide-card">
                 <h3><i class="fa-solid fa-circle-question"></i> How to Use</h3>
@@ -456,9 +473,13 @@
                         <i class="fa-solid fa-bell-ring"></i>
                         <span>Test Alert</span>
                     </button>
-                    <button class="action-btn" id="viewHistoryBtn" style="grid-column: span 2;">
+                    <button class="action-btn" id="viewHistoryBtn">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                         <span>View Chat History</span>
+                    </button>
+                    <button class="action-btn" id="viewAnalyticsBtn">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Usage Analytics</span>
                     </button>
                 </div>
             </section>
@@ -486,14 +507,22 @@
             </section>
         </aside>
     </div>
+    <div class="bottom-tab-bar">
+        <nav aria-label="Mobile main navigation">
+            <button class="bottom-tab-item active" type="button" data-section="chat" aria-current="page"><i class="fa-solid fa-comment-medical" aria-hidden="true"></i><span data-i18n="navChecker">Check</span></button>
+            <button class="bottom-tab-item" type="button" data-section="knowledge"><i class="fa-solid fa-book-medical" aria-hidden="true"></i><span data-i18n="navLibraryShort">Library</span></button>
+            <button class="bottom-tab-item" type="button" data-section="trends"><i class="fa-solid fa-chart-line" aria-hidden="true"></i><span data-i18n="navTrendsShort">Trends</span></button>
+            <button class="bottom-tab-item" type="button" data-section="safety"><i class="fa-solid fa-shield-heart" aria-hidden="true"></i><span data-i18n="safetyNav">Safety</span></button>
+        </nav>
+    </div>
 
     <!-- Add Reminder Modal -->
-    <div class="modal" id="reminderModal">
+    <div class="modal" id="reminderModal" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
         <div class="modal-backdrop" onclick="closeModal('reminderModal')"></div>
         <div class="modal-dialog">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-bell"></i> Add Medication Reminder</h2>
-                <button class="close-btn" onclick="closeModal('reminderModal')">&times;</button>
+                <h2 id="reminderModalTitle"><i class="fa-solid fa-bell"></i> Add Medication Reminder</h2>
+                <button class="close-btn" type="button" aria-label="Close dialog" onclick="closeModal('reminderModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="notification-permission-prompt" id="notificationPrompt">
@@ -549,12 +578,12 @@
     </div>
 
     <!-- History Modal -->
-    <div class="modal" id="historyModal">
+    <div class="modal" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
         <div class="modal-backdrop" onclick="closeModal('historyModal')"></div>
         <div class="modal-dialog modal-lg">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-history"></i> Chat History Archive</h2>
-                <button class="close-btn" onclick="closeModal('historyModal')">&times;</button>
+                <h2 id="historyModalTitle"><i class="fa-solid fa-history"></i> Chat History Archive</h2>
+                <button class="close-btn" type="button" aria-label="Close dialog" onclick="closeModal('historyModal')">&times;</button>
             </div>
             <div class="modal-body history-modal-body" id="historyContent">
                 <div class="loading-spinner">
@@ -565,12 +594,12 @@
     </div>
 
     <!-- Interactive Disease Detail Modal -->
-    <div class="modal" id="diseaseDetailModal">
+    <div class="modal" id="diseaseDetailModal" role="dialog" aria-modal="true" aria-labelledby="diseaseModalTitle">
         <div class="modal-backdrop" onclick="closeModal('diseaseDetailModal')"></div>
         <div class="modal-dialog modal-lg">
             <div class="modal-header">
-                <h2><i class="fa-solid fa-book-medical"></i> <span id="detailModalTitle">Disease Medical Details</span></h2>
-                <button class="close-btn" onclick="closeModal('diseaseDetailModal')">&times;</button>
+                <h2 id="diseaseModalTitle"><i class="fa-solid fa-book-medical"></i> <span id="detailModalTitle">Disease Medical Details</span></h2>
+                <button class="close-btn" type="button" aria-label="Close dialog" onclick="closeModal('diseaseDetailModal')">&times;</button>
             </div>
             <div class="modal-body" id="diseaseDetailContent" style="max-height: 70vh; overflow-y: auto;">
                 <div class="loading-spinner">
