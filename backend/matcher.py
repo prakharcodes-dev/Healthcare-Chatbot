@@ -5,7 +5,7 @@ class EnhancedDiseaseMatcher:
     def __init__(self, diseases):
         self.diseases = diseases
         self.symptom_index = self._build_symptom_index()
-        self.disease_vectors = self._build_disease_vectors()
+        self.symptom_to_idx, self.disease_vectors = self._build_disease_vectors()
     
     def _build_symptom_index(self):
         symptom_index = {}
@@ -21,22 +21,25 @@ class EnhancedDiseaseMatcher:
         return symptom_index
     
     def _build_disease_vectors(self):
-        vectors = {}
-        all_symptoms = set()
+        # A single deterministic vocabulary must be reused at query time. The
+        # former implementation rebuilt it from a set in vector_match(), so
+        # vector positions could differ and duplicate disease names overwrote
+        # one another in a dict.
+        vocabulary = sorted({
+            symptom.strip().casefold()
+            for disease in self.diseases
+            for symptom in disease.get('symptoms', [])
+            if isinstance(symptom, str) and symptom.strip()
+        })
+        symptom_to_idx = {symptom: idx for idx, symptom in enumerate(vocabulary)}
+        vectors = []
         for disease in self.diseases:
-            for symptom in disease['symptoms']:
-                all_symptoms.add(symptom.lower())
-        
-        all_symptoms = list(all_symptoms)
-        symptom_to_idx = {s: i for i, s in enumerate(all_symptoms)}
-        
-        for disease in self.diseases:
-            vector = [0] * len(all_symptoms)
-            for symptom in disease['symptoms']:
-                vector[symptom_to_idx[symptom.lower()]] = 1
-            vectors[disease['disease']] = vector
-        
-        return vectors
+            vector = [0] * len(vocabulary)
+            for symptom in disease.get('symptoms', []):
+                if isinstance(symptom, str) and symptom.strip():
+                    vector[symptom_to_idx[symptom.strip().casefold()]] = 1
+            vectors.append(vector)
+        return symptom_to_idx, vectors
     
     def _fuzzy_match(self, user_symptom, symptom_list, threshold=70):
         matches = []
@@ -76,10 +79,12 @@ class EnhancedDiseaseMatcher:
             for user_symptom, weight in symptom_weights.items():
                 best_score = 0
                 
-                if user_symptom.lower() in [s.lower() for s in disease['symptoms']]:
+                disease_symptoms = disease.get('symptoms', [])
+                normalized_symptoms = {s.strip().casefold() for s in disease_symptoms if isinstance(s, str)}
+                if user_symptom.strip().casefold() in normalized_symptoms:
                     best_score = 1.0
                 else:
-                    fuzzy_matches = self._fuzzy_match(user_symptom, disease['symptoms'], 70)
+                    fuzzy_matches = self._fuzzy_match(user_symptom, disease_symptoms, 70)
                     if fuzzy_matches:
                         best_score = fuzzy_matches[0][1] / 100.0
                 
@@ -105,6 +110,7 @@ class EnhancedDiseaseMatcher:
                     'match_score': round(final_score, 2),
                     'match_percentage': round(final_score),
                     'confidence': round(confidence, 2),
+                    'score_interpretation': 'heuristic symptom similarity; not a diagnostic probability',
                     'matched_symptoms': matched_symptoms,
                     'severity': disease.get('severity', 'unknown'),
                     'category': disease.get('category', 'unknown'),
@@ -127,23 +133,22 @@ class EnhancedDiseaseMatcher:
         if not self.disease_vectors:
             return []
         
-        all_symptoms = list(set([s for d in self.diseases for s in d['symptoms']]))
-        symptom_to_idx = {s.lower(): i for i, s in enumerate(all_symptoms)}
-        
-        user_vector = [0] * len(all_symptoms)
+        user_vector = [0] * len(self.symptom_to_idx)
         for symptom in user_symptoms:
-            if symptom.lower() in symptom_to_idx:
-                user_vector[symptom_to_idx[symptom.lower()]] = 1
+            if isinstance(symptom, str) and symptom.strip().casefold() in self.symptom_to_idx:
+                user_vector[self.symptom_to_idx[symptom.strip().casefold()]] = 1
         
         similarities = []
-        for disease_name, disease_vector in self.disease_vectors.items():
+        for disease_idx, disease_vector in enumerate(self.disease_vectors):
             similarity = self._cosine_similarity(user_vector, disease_vector)
             if similarity > 0:
-                disease = next(d for d in self.diseases if d['disease'] == disease_name)
+                disease = self.diseases[disease_idx]
+                disease_name = disease['disease']
                 similarities.append({
                     'disease': disease_name,
                     'match_score': round(similarity * 100, 2),
                     'match_percentage': round(similarity * 100),
+                    'score_interpretation': 'heuristic symptom similarity; not a diagnostic probability',
                     'severity': disease.get('severity', 'unknown'),
                     'category': disease.get('category', 'unknown'),
                     'medicine': disease.get('medicine', 'N/A'),

@@ -3,16 +3,18 @@ from datetime import datetime, timedelta
 from collections import Counter
 from flask import Blueprint, request, jsonify, current_app, render_template
 from fuzzywuzzy import process
-from backend.models import ChatSession, ChatMessage, DiseaseSearch, UserHealthProfile, Notification, HealthLog
+from backend.models import Notification, HealthLog
 from backend.utils import (
-    clean_symptoms, 
     generate_session_id, 
     analyze_sentiment, 
     detect_relevant_measurements, 
     check_urgent_safety_triggers,
     extract_inline_measurements
 )
-from backend.extensions import db
+from backend.core.health_metrics import evaluate_health_metric_status
+from backend.services.chat_response import build_structured_chat_response
+from backend.services.symptom_assessment import SymptomAssessmentService
+from backend.services.registry import get_services
 
 api_bp = Blueprint('api', __name__)
 
@@ -23,7 +25,8 @@ def home():
 
 @api_bp.route('/health')
 def health_check():
-    diseases = current_app.config.get('DISEASES', [])
+    services = get_services(current_app._get_current_object())
+    diseases = services.diseases
     return jsonify({
         'status': 'running',
         'disease_count': len(diseases),
@@ -35,7 +38,7 @@ def start_session():
     try:
         data = request.get_json() or {}
         session_id = generate_session_id()
-        chat_history = current_app.config['CHAT_HISTORY']
+        chat_history = get_services(current_app._get_current_object()).chat_history
         session = chat_history.create_session(
             session_id, 
             data.get('user_id'),
@@ -48,162 +51,14 @@ def start_session():
 @api_bp.route('/api/session/<session_id>/end', methods=['POST'])
 def end_session(session_id):
     try:
-        session = ChatSession.query.filter_by(session_id=session_id).first()
+        chat_history = get_services(current_app._get_current_object()).chat_history
+        session = chat_history.repository.find_session(session_id)
         if session:
-            session.end_time = datetime.utcnow()
-            db.session.commit()
+            chat_history.repository.end_session(session)
             return jsonify({'message': 'Session ended'})
         return jsonify({'error': 'Session not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-def evaluate_health_metric_status(metric_type, val_pri, val_sec=None):
-    metric_type = (metric_type or '').lower().strip()
-    if metric_type == 'temperature':
-        # Accept either °F or °C; normalize float comparison
-        temp_f = val_pri * 9/5 + 32 if val_pri < 50 else val_pri
-        if temp_f < 97.0:
-            return 'Low'
-        elif 97.0 <= temp_f <= 99.5:
-            return 'Normal'
-        elif 99.5 < temp_f <= 102.0:
-            return 'Elevated'
-        else:
-            return 'High'
-    elif metric_type == 'blood_pressure':
-        sys = val_pri
-        dia = val_sec if val_sec is not None else 80
-        if sys < 120 and dia < 80:
-            return 'Normal'
-        elif 120 <= sys <= 129 and dia < 80:
-            return 'Elevated'
-        elif (130 <= sys <= 139) or (80 <= dia <= 89):
-            return 'High (Stage 1)'
-        else:
-            return 'High (Stage 2)'
-    elif metric_type == 'blood_glucose':
-        if val_pri < 70:
-            return 'Low'
-        elif 70 <= val_pri <= 99:
-            return 'Normal'
-        elif 100 <= val_pri <= 125:
-            return 'Elevated'
-        else:
-            return 'High'
-    elif metric_type == 'weight':
-        return 'Normal'
-    return 'Normal'
-
-def build_structured_chat_response(user_symptoms, final_matches, user_measurements=None, urgent_flags=None):
-    measurements_summary = []
-    if user_measurements:
-        if 'temperature' in user_measurements:
-            t_c = user_measurements['temperature']
-            t_f = round(t_c * 9/5 + 32, 1)
-            st_temp = evaluate_health_metric_status('temperature', t_f)
-            measurements_summary.append({
-                'metric': 'Body Temperature',
-                'value': f"{t_c} °C ({t_f} °F)",
-                'status': st_temp,
-                'type': 'temperature',
-                'icon': 'fa-temperature-high',
-                'badge_class': 'badge-severity-high' if st_temp in ['High', 'Elevated'] else 'badge-severity-mild'
-            })
-        if 'bp_sys' in user_measurements:
-            sys_v = user_measurements['bp_sys']
-            dia_v = user_measurements.get('bp_dia', 80)
-            st_bp = evaluate_health_metric_status('blood_pressure', sys_v, dia_v)
-            measurements_summary.append({
-                'metric': 'Blood Pressure',
-                'value': f"{int(sys_v)}/{int(dia_v)} mmHg",
-                'status': st_bp,
-                'type': 'blood_pressure',
-                'icon': 'fa-heart-pulse',
-                'badge_class': 'badge-severity-high' if 'High' in st_bp else ('badge-severity-moderate' if 'Elevated' in st_bp else 'badge-severity-mild')
-            })
-        if 'weight' in user_measurements:
-            wt_v = user_measurements['weight']
-            measurements_summary.append({
-                'metric': 'Body Weight',
-                'value': f"{wt_v} kg",
-                'status': 'Normal',
-                'type': 'weight',
-                'icon': 'fa-weight-scale',
-                'badge_class': 'badge-match'
-            })
-
-    if not final_matches:
-        return {
-            'possible_causes': [],
-            'why': f"No condition matches found in dataset for reported symptoms: {', '.join(user_symptoms)}.",
-            'what_you_can_do': "Rest, stay hydrated, monitor your health closely, and consult a doctor if you feel unwell.",
-            'seek_medical_care_if': "Symptoms persist, worsen over 24-48 hours, or new unexplained symptoms develop.",
-            'emergency_warning': "If you experience severe shortness of breath, sudden chest pain, loss of consciousness, or severe trauma, call emergency services (911/112) immediately.",
-            'measurements_summary': measurements_summary
-        }
-    
-    top_3 = final_matches[:3]
-    top_match = top_3[0]
-    
-    possible_causes = [m['disease'] for m in final_matches[:5]]
-    symptoms_str = ", ".join(user_symptoms)
-    
-    why_text = f"Your reported symptoms ({symptoms_str}) overlap significantly with the diagnostic criteria for these conditions, especially {top_match['disease']} ({top_match['match_percentage']}% match)."
-    
-    # Append submitted health measurements if present
-    if user_measurements:
-        m_parts = []
-        if 'temperature' in user_measurements:
-            m_parts.append(f"Temperature: {user_measurements['temperature']} °C")
-        if 'bp_sys' in user_measurements:
-            bp_s = f"{user_measurements['bp_sys']}/{user_measurements.get('bp_dia', 80)}"
-            m_parts.append(f"Blood Pressure: {bp_s} mmHg")
-        if 'weight' in user_measurements:
-            m_parts.append(f"Weight: {user_measurements['weight']} kg")
-            
-        if m_parts:
-            why_text += f" Recorded Measurements: {', '.join(m_parts)}. Combining your symptoms and measurements suggests these possible health concerns."
-
-    care_details = {
-        'treatment': top_match.get('treatment') or top_match.get('medicine') or 'Symptomatic rest and fluid intake.',
-        'advice': top_match.get('advice') or 'Rest, stay well-hydrated, and monitor your symptoms closely.',
-        'prevention': top_match.get('prevention') or top_match.get('prevention_tips') or 'Follow clean hygiene practices and avoid known symptom triggers.',
-        'specialist': top_match.get('specialist', 'Primary Care Physician')
-    }
-
-    care_items = []
-    if top_match.get('treatment'):
-        care_items.append(f"Treatment: {top_match['treatment']}")
-    elif top_match.get('medicine'):
-        care_items.append(f"Medications: {top_match['medicine']}")
-    if top_match.get('advice'):
-        care_items.append(f"Advice: {top_match['advice']}")
-    if top_match.get('prevention'):
-        care_items.append(f"Prevention: {top_match['prevention']}")
-        
-    what_you_can_do = " | ".join(care_items) if care_items else "Rest, maintain proper fluid intake, and seek medical consultation."
-    
-    spec = top_match.get('specialist', 'Primary Care Physician')
-    seek_care = top_match.get('when_to_seek_care') or f"Consult a {spec} if symptoms persist beyond 3-5 days or progressively worsen."
-    
-    is_high = any('high' in m.get('severity', '').lower() or 'severe' in m.get('severity', '').lower() for m in top_3)
-    if urgent_flags:
-        emergency = f"⚠️ URGENT SAFETY ALERT: Because you reported {', '.join(urgent_flags)}, this requires prompt attention. If you are currently unconscious, confused, experiencing severe breathing difficulty, chest pain, or rapidly worsening symptoms, seek emergency medical care immediately (Call 911 / 112). This informational assistant is not a substitute for an emergency physician diagnosis."
-    elif is_high:
-        emergency = f"EMERGENCY WARNING: High-severity condition detected ({top_match['disease']}). Seek immediate emergency medical care (Call 911 / 112) if you experience severe shortness of breath, sudden chest pain, stiff neck with high fever, confusion, or severe bleeding."
-    else:
-        emergency = "EMERGENCY WARNING: Call emergency services (911 / 112) or visit the nearest emergency room immediately if you develop sudden chest pain, severe shortness of breath, loss of consciousness, or severe bleeding."
-        
-    return {
-        'possible_causes': possible_causes,
-        'why': why_text,
-        'what_you_can_do': what_you_can_do,
-        'what_you_can_do_details': care_details,
-        'seek_medical_care_if': seek_care,
-        'emergency_warning': emergency,
-        'measurements_summary': measurements_summary
-    }
-
 
 @api_bp.route('/predict', methods=['POST'])
 def predict():
@@ -216,15 +71,18 @@ def predict():
         session_id = data.get('session_id', generate_session_id())
         user_id = data.get('user_id', 1)
         
-        chat_history = current_app.config['CHAT_HISTORY']
-        matcher = current_app.config['MATCHER']
+        services = get_services(current_app._get_current_object())
+        chat_history = services.chat_history
+        matcher = services.matcher
         
-        session = ChatSession.query.filter_by(session_id=session_id).first()
+        session = chat_history.repository.find_session(session_id)
         if not session:
             session = chat_history.create_session(session_id, user_id)
         
         start_time = datetime.utcnow()
-        user_symptoms = clean_symptoms(symptoms_input) if isinstance(symptoms_input, str) else symptoms_input
+        assessment = SymptomAssessmentService().assess(symptoms_input, matcher)
+        user_symptoms = list(assessment.report.positive)
+        negated_symptoms = list(assessment.report.negated)
         
         if not user_symptoms:
             chat_history.add_message(session_id, str(symptoms_input), 'Please enter your symptoms to begin analysis.', 'question')
@@ -244,6 +102,7 @@ def predict():
             return jsonify({
                 'requested_measurements': needed_measurements,
                 'user_symptoms': user_symptoms,
+                'negated_symptoms': negated_symptoms,
                 'session_id': session_id,
                 'urgent_flags': urgent_flags,
                 'message': 'To better understand your symptoms, please enter relevant health measurements if available.'
@@ -252,6 +111,7 @@ def predict():
             
         # Step 2: If measurements were submitted by the user, validate & save to HealthLog
         valid_measurements = {}
+        measurement_logs = []
         if submitted_measurements and isinstance(submitted_measurements, dict):
             s_str = ", ".join(user_symptoms)
             
@@ -273,7 +133,7 @@ def predict():
                             status=st_t,
                             timestamp=datetime.utcnow()
                         )
-                        db.session.add(log_t)
+                        measurement_logs.append(log_t)
                 except (ValueError, TypeError):
                     pass
 
@@ -296,7 +156,7 @@ def predict():
                             status=st_bp,
                             timestamp=datetime.utcnow()
                         )
-                        db.session.add(log_bp)
+                        measurement_logs.append(log_bp)
                 except (ValueError, TypeError):
                     pass
 
@@ -315,34 +175,16 @@ def predict():
                             status='Normal',
                             timestamp=datetime.utcnow()
                         )
-                        db.session.add(log_wt)
+                        measurement_logs.append(log_wt)
                 except (ValueError, TypeError):
                     pass
 
-            try:
-                db.session.commit()
-            except Exception as db_err:
-                db.session.rollback()
+            if measurement_logs:
+                services.health_logs.add_many(measurement_logs)
 
-        # Step 3: Diagnostic Matching Pipeline
-        symptom_weights = {}
-        for i, symptom in enumerate(user_symptoms):
-            symptom_weights[symptom] = max(0.5, 1.0 - (i * 0.1))
-        
-        matches = matcher.match_with_weights(user_symptoms, symptom_weights)
-        vector_matches = matcher.vector_match(user_symptoms)
-        
-        all_diseases = {m['disease']: m for m in matches}
-        for vm in vector_matches:
-            if vm['disease'] not in all_diseases:
-                all_diseases[vm['disease']] = vm
-        
-        final_matches = sorted(
-            all_diseases.values(), 
-            key=lambda x: (x['match_score'], x.get('confidence', 0)), 
-            reverse=True
-        )[:10]
-        
+        # Matching is orchestrated by a framework-independent service.
+        final_matches = list(assessment.matches)
+
         top_match = final_matches[0]['disease'] if final_matches else None
         chat_history.log_search(
             session_id,
@@ -373,6 +215,7 @@ def predict():
             'matches': final_matches,
             'structured_response': structured_resp,
             'user_symptoms': user_symptoms,
+            'negated_symptoms': negated_symptoms,
             'total_matches': len(final_matches),
             'session_id': session_id,
             'analytics': {'sentiment': sentiment, 'response_time': response_time}
@@ -391,7 +234,7 @@ def predict():
 @api_bp.route('/api/history/<session_id>', methods=['GET'])
 def get_session_history(session_id):
     try:
-        chat_history = current_app.config['CHAT_HISTORY']
+        chat_history = get_services(current_app._get_current_object()).chat_history
         messages = chat_history.get_session_history(session_id)
         history = [{
             'user': m.user_message,
@@ -408,7 +251,7 @@ def get_session_history(session_id):
 @api_bp.route('/api/history/user/<int:user_id>', methods=['GET'])
 def get_user_history(user_id):
     try:
-        chat_history = current_app.config['CHAT_HISTORY']
+        chat_history = get_services(current_app._get_current_object()).chat_history
         limit = request.args.get('limit', 50, type=int)
         history = chat_history.get_user_history(user_id, limit)
         # Convert datetime objects to string representation
@@ -423,7 +266,7 @@ def get_user_history(user_id):
 @api_bp.route('/api/analytics', methods=['GET'])
 def get_analytics():
     try:
-        chat_history = current_app.config['CHAT_HISTORY']
+        chat_history = get_services(current_app._get_current_object()).chat_history
         days = request.args.get('days', 30, type=int)
         return jsonify(chat_history.get_analytics(days))
     except Exception as e:
@@ -433,7 +276,7 @@ def get_analytics():
 def create_medication_reminder_route():
     try:
         data = request.get_json()
-        notifications = current_app.config['NOTIFICATIONS']
+        notifications = get_services(current_app._get_current_object()).notifications
         reminders = notifications.create_medication_reminder(
             user_id=data.get('user_id'),
             med_name=data.get('medication_name'),
@@ -451,11 +294,9 @@ def get_user_notifications(user_id):
         status = request.args.get('status')
         limit = request.args.get('limit', 50, type=int)
         
-        query = Notification.query.filter_by(user_id=user_id)
-        if status:
-            query = query.filter_by(status=status)
-        
-        notifications = query.order_by(Notification.scheduled_time.desc()).limit(limit).all()
+        notifications = get_services(current_app._get_current_object()).notification_records.list_for_user(
+            user_id, status=status, limit=limit
+        )
         
         result = [{
             'id': n.id,
@@ -473,10 +314,11 @@ def get_user_notifications(user_id):
 @api_bp.route('/api/notifications/<int:notification_id>/read', methods=['POST'])
 def mark_notification_read(notification_id):
     try:
-        notification = Notification.query.get(notification_id)
+        notification_repo = get_services(current_app._get_current_object()).notification_records
+        notification = notification_repo.get(notification_id)
         if notification:
             notification.read = True
-            db.session.commit()
+            notification_repo.save()
             return jsonify({'message': 'Notification marked as read'})
         return jsonify({'error': 'Notification not found'}), 404
     except Exception as e:
@@ -485,17 +327,10 @@ def mark_notification_read(notification_id):
 @api_bp.route('/api/insights/personalized/<int:user_id>', methods=['GET'])
 def get_personalized_insights(user_id):
     try:
-        sessions = ChatSession.query.filter_by(user_id=user_id).all()
-        session_ids = [s.session_id for s in sessions]
-        
-        searches = DiseaseSearch.query.filter(
-            DiseaseSearch.session_id.in_(session_ids)
-        ).order_by(DiseaseSearch.search_time.desc()).limit(20).all()
+        searches, profile = get_services(current_app._get_current_object()).chat_history.repository.get_personalized_data(user_id)
         
         diseases_searched = [s.top_match for s in searches if s.top_match]
         disease_counts = Counter(diseases_searched)
-        
-        profile = UserHealthProfile.query.filter_by(user_id=user_id).first()
         
         insights = {
             'most_searched': disease_counts.most_common(5),
@@ -537,7 +372,7 @@ def suggest():
         if len(partial) < 2:
             return jsonify({'suggestions': {'symptoms': [], 'diseases': []}})
         
-        diseases = current_app.config.get('DISEASES', [])
+        diseases = get_services(current_app._get_current_object()).diseases
         all_symptoms = set()
         all_diseases = []
         
@@ -572,7 +407,7 @@ def search_medical_knowledge():
         limit = int(data.get('limit', 12))
 
         
-        diseases = current_app.config.get('DISEASES', [])
+        diseases = get_services(current_app._get_current_object()).diseases
         
         if not query and not category:
             return jsonify({'results': diseases[:limit], 'total': len(diseases)})
@@ -629,7 +464,7 @@ def search_medical_knowledge():
 @api_bp.route('/api/knowledge/<disease_name>', methods=['GET'])
 def get_disease_knowledge(disease_name):
     try:
-        diseases = current_app.config.get('DISEASES', [])
+        diseases = get_services(current_app._get_current_object()).diseases
         d_name_clean = disease_name.strip().lower()
         
         for d in diseases:
@@ -759,8 +594,8 @@ def add_health_log():
             status=status,
             timestamp=datetime.utcnow()
         )
-        db.session.add(log_entry)
-        db.session.commit()
+        health_logs = get_services(current_app._get_current_object()).health_logs
+        health_logs.add(log_entry)
 
         log_dict = {
             'id': log_entry.id,
@@ -777,7 +612,7 @@ def add_health_log():
         metrics = ['temperature', 'weight', 'blood_pressure', 'blood_glucose']
         summary_temp = {}
         for m in metrics:
-            logs = HealthLog.query.filter_by(user_id=user_id, metric_type=m).order_by(HealthLog.timestamp.desc()).all()
+            logs = health_logs.latest_for_user(user_id, m, limit=1)
             if logs:
                 summary_temp[m] = {'latest': {'status': logs[0].status, 'val_pri': logs[0].value_primary}}
             else:
@@ -791,7 +626,6 @@ def add_health_log():
             'assessment': assessment
         })
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 
@@ -801,11 +635,9 @@ def get_user_health_logs(user_id):
         metric_type = request.args.get('metric_type')
         limit = request.args.get('limit', 100, type=int)
         
-        query = HealthLog.query.filter_by(user_id=user_id)
-        if metric_type:
-            query = query.filter_by(metric_type=metric_type.lower())
-            
-        logs = query.order_by(HealthLog.timestamp.desc()).limit(limit).all()
+        logs = get_services(current_app._get_current_object()).health_logs.list_for_user(
+            user_id, metric_type.lower() if metric_type else None, limit
+        )
         
         result = [{
             'id': l.id,
@@ -826,14 +658,13 @@ def get_user_health_logs(user_id):
 @api_bp.route('/api/health-trends/<int:log_id>', methods=['DELETE'])
 def delete_health_log(log_id):
     try:
-        log_entry = HealthLog.query.get(log_id)
+        health_logs = get_services(current_app._get_current_object()).health_logs
+        log_entry = health_logs.get(log_id)
         if log_entry:
-            db.session.delete(log_entry)
-            db.session.commit()
+            health_logs.delete(log_entry)
             return jsonify({'message': 'Health log deleted'})
         return jsonify({'error': 'Log entry not found'}), 404
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 
@@ -844,8 +675,7 @@ def get_health_trends_summary(user_id):
         summary = {}
         
         for m in metrics:
-            logs = HealthLog.query.filter_by(user_id=user_id, metric_type=m)\
-                .order_by(HealthLog.timestamp.desc()).all()
+            logs = get_services(current_app._get_current_object()).health_logs.list_for_user(user_id, m)
             if logs:
                 latest = logs[0]
                 prev = logs[1] if len(logs) > 1 else None
@@ -904,11 +734,8 @@ def get_due_reminders():
         now = datetime.utcnow()
         
         # Check notifications due up to now (or within last 24h)
-        due_list = Notification.query.filter(
-            Notification.user_id == user_id,
-            Notification.status == 'pending',
-            Notification.scheduled_time <= now
-        ).order_by(Notification.scheduled_time.asc()).all()
+        notification_repo = get_services(current_app._get_current_object()).notification_records
+        due_list = notification_repo.list_due(user_id, now)
         
         result = []
         for n in due_list:
@@ -923,11 +750,10 @@ def get_due_reminders():
             })
             
         if due_list:
-            db.session.commit()
+            notification_repo.save()
             
         return jsonify({'due_reminders': result, 'count': len(result)})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e), 'due_reminders': []}), 500
 
 
@@ -938,8 +764,9 @@ def get_active_reminders():
     """
     try:
         user_id = request.args.get('user_id', 1, type=int)
-        pending = Notification.query.filter_by(user_id=user_id, status='pending')\
-            .order_by(Notification.scheduled_time.asc()).all()
+        pending = get_services(current_app._get_current_object()).notification_records.list_for_user(
+            user_id, status='pending', ascending=True
+        )
             
         result = [{
             'id': n.id,
@@ -992,13 +819,11 @@ def create_reminder():
                 scheduled_time=scheduled_date,
                 status='pending'
             )
-            db.session.add(notif)
             reminders_created.append(notif)
             
-        db.session.commit()
+        get_services(current_app._get_current_object()).notification_records.add_many(reminders_created)
         return jsonify({'message': f'Scheduled {len(reminders_created)} medication reminders for {med_name}'})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 
@@ -1020,11 +845,9 @@ def test_reminder_alert():
             scheduled_time=now,
             status='pending'
         )
-        db.session.add(notif)
-        db.session.commit()
+        get_services(current_app._get_current_object()).notification_records.add_many([notif])
         return jsonify({'message': 'Test alert generated successfully', 'id': notif.id})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 
