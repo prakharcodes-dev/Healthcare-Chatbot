@@ -1,6 +1,6 @@
 # 🏥 MedVitals AI - Smart Healthcare Chatbot & Assistant
 
-[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/Framework-Flask_3.0%2B-green.svg)](https://flask.palletsprojects.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite_3-orange.svg)](https://www.sqlite.org/)
 [![Deployment](https://img.shields.io/badge/Deployment-Render-purple.svg)](https://render.com/)
@@ -171,7 +171,7 @@ HEALTHCARE CHATBOT/
 ## 🚀 Installation & Running
 
 ### 1. Prerequisites
-Make sure you have **Python 3.8+** installed.
+Make sure you have **Python 3.11+** installed.
 
 ### 2. Install Dependencies
 Install all required Python libraries:
@@ -191,8 +191,9 @@ Upon startup:
 
 ### Architecture and deployment notes
 
-- SQLite remains the default database at `instance/healthcare_chatbot.db`. `db.create_all()` only creates missing tables; it does not apply the optional query-index migration. Review and back up the database before manually applying `migrations/0001_add_query_indexes.sql`.
-- Production startup requires a strong `SECRET_KEY` environment variable. Set `APP_ENV=production`; the Docker image sets this by default. `CORS_ORIGINS` is an optional comma-separated allow-list for separately hosted frontends; same-origin hosting needs no CORS configuration.
+- SQLite remains the default database at `instance/healthcare_chatbot.db`. `DATABASE_PATH` can point to a persistent mount. `render.yaml` mounts a Render disk at the SQLite directory and provides its path. Render disks require a paid web service. `db.create_all()` only creates missing tables; it does not apply the optional query-index migration. Review and back up the database before manually applying `migrations/0001_add_query_indexes.sql`.
+- Production startup requires a strong `SECRET_KEY` environment variable. `render.yaml` asks Render to generate one; the Docker image expects it to be supplied at runtime. Set `APP_ENV=production`. `CORS_ORIGINS` is an optional comma-separated allow-list for separately hosted frontends; same-origin hosting needs no CORS configuration. Render provides `PORT` to the Gunicorn command.
+- `.python-version` pins Render to Python 3.11 to match the Docker image and the pinned scientific packages.
 - The in-process APScheduler is enabled by default (`ENABLE_SCHEDULER=false` disables it). Docker uses one Gunicorn worker because multiple web workers or replicas would each run a scheduler and could send duplicate reminders. A production multi-instance deployment needs a dedicated scheduler/worker and distributed job claiming before scaling horizontally.
 - This project currently has no authentication or authorization flow. API endpoints that accept or default a `user_id` cannot prove ownership, and history, notification, and health-log records must be treated as accessible to anyone who can reach the API. Do not use it for private or real patient data until authenticated identity, per-user authorization, request protections, and an operational database backup/retention plan are implemented.
 - Symptom match percentages are heuristic similarity scores, not probabilities or diagnoses. Dataset content and general health guidance require clinical review before patient-facing clinical use.

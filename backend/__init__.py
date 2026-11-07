@@ -131,6 +131,7 @@ def create_app(config_overrides=None):
     app.config.from_object(Config)
     if config_overrides:
         app.config.update(config_overrides)
+    app.config['SESSION_COOKIE_SECURE'] = app.config['APP_ENV'] == 'production'
 
     if app.config['APP_ENV'] == 'production' and not app.config.get('SECRET_KEY'):
         raise RuntimeError('SECRET_KEY must be configured in production.')
@@ -140,8 +141,17 @@ def create_app(config_overrides=None):
     # Enable CORS
     if app.config['CORS_ORIGINS']:
         CORS(app, origins=app.config['CORS_ORIGINS'], supports_credentials=False)
+
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault('X-Content-Type-Options', 'nosniff')
+        response.headers.setdefault('X-Frame-Options', 'SAMEORIGIN')
+        response.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+        response.headers.setdefault('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+        return response
     
     # Initialize SQLAlchemy database
+    os.makedirs(os.path.dirname(app.config['DATABASE_PATH']), exist_ok=True)
     db.init_app(app)
     
     # Load diseases and initialize services

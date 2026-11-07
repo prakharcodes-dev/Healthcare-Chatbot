@@ -110,22 +110,22 @@ body.modal-open {
 /* App Container Layout */
 .app-container {
     display: grid;
-    grid-template-columns: 280px 1fr 340px;
+    grid-template-columns: 280px minmax(0, 1fr) 340px;
     height: 100vh;
     overflow: hidden;
     transition: grid-template-columns 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .app-container.left-collapsed {
-    grid-template-columns: 0px 1fr 340px;
+    grid-template-columns: 0px minmax(0, 1fr) 340px;
 }
 
 .app-container.right-collapsed {
-    grid-template-columns: 280px 1fr 0px;
+    grid-template-columns: 280px minmax(0, 1fr) 0px;
 }
 
 .app-container.left-collapsed.right-collapsed {
-    grid-template-columns: 0px 1fr 0px;
+    grid-template-columns: 0px minmax(0, 1fr) 0px;
 }
 
 .sidebar {
@@ -196,7 +196,9 @@ body.modal-open {
     display: flex;
     flex-direction: column;
     padding: 24px;
-    justify-content: space-between;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -232,6 +234,7 @@ body.modal-open {
     flex-direction: column;
     gap: 8px;
     flex-grow: 1;
+    min-height: 0;
 }
 
 .menu-item {
@@ -243,8 +246,13 @@ body.modal-open {
     cursor: pointer;
     transition: var(--transition-fast);
     color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
     font-size: 14px;
     font-weight: 500;
+    text-align: left;
 }
 
 .menu-item:hover {
@@ -275,6 +283,7 @@ body.modal-open {
     align-items: center;
     gap: 12px;
     padding-top: 20px;
+    margin-top: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -1254,6 +1263,19 @@ body.modal-open {
 .prompt-text i {
     font-size: 16px;
     color: #3b82f6;
+}
+
+[data-theme="dark"] .notification-permission-prompt {
+    background-color: var(--primary-light);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .prompt-text {
+    color: var(--text-main);
+}
+
+[data-theme="dark"] .prompt-text i {
+    color: var(--primary);
 }
 
 /* History Modal Content */
@@ -2429,7 +2451,7 @@ body.modal-open {
 
 /* Medical library: clearer search hierarchy and calmer, easier-to-scan cards */
 #sectionKnowledge .section-intro-card {
-    background: linear-gradient(115deg, var(--card-bg), #e9f5fd);
+    background: var(--card-bg);
     border-radius: 18px;
 }
 #sectionKnowledge .knowledge-search-bar {
@@ -2773,29 +2795,7 @@ body.modal-open {
    Responsive Breakpoints
    ========================================================================== */
 
-/* ── 1199px: auto-collapse left sidebar ────────────────────────────────────── */
-@media (max-width: 1199px) {
-    .app-container {
-        grid-template-columns: 0px 1fr 300px;
-    }
-
-    .app-container.left-collapsed {
-        grid-template-columns: 0px 1fr 300px;
-    }
-
-    .app-container.right-collapsed {
-        grid-template-columns: 0px 1fr 0px;
-    }
-
-    .sidebar {
-        padding: 0 !important;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-    }
-}
-
-/* ── 1199px: compact navigation and quick-actions drawer ───────────────────── */
+/* ── 899px: compact navigation and quick-actions drawer ────────────────────── */
 @media (max-width: 899px) {
     .app-container,
     .app-container.left-collapsed,
@@ -2934,13 +2934,15 @@ body.modal-open {
     text-transform: uppercase;
 }
 .nav-tools-label { margin-top: 18px; }
-.sidebar-menu { overflow-y: auto; scrollbar-width: thin; }
+.sidebar-menu { overflow-y: visible; }
 .menu-item {
     width: 100%;
     border: 0;
     background: transparent;
     text-align: left;
     font: inherit;
+    font-size: 14px;
+    font-weight: 500;
 }
 .menu-item:focus-visible {
     outline: 2px solid #7dd3fc;
@@ -2973,7 +2975,7 @@ button { -webkit-tap-highlight-color: transparent; }
     outline: 2px solid var(--primary);
     outline-offset: 2px;
 }
-@media (max-width: 1199px) {
+@media (max-width: 899px) {
     .app-container, .app-container.left-collapsed, .app-container.right-collapsed,
     .app-container.left-collapsed.right-collapsed { grid-template-columns: minmax(0,1fr); }
     .sidebar { display:none; }
@@ -2990,7 +2992,7 @@ button { -webkit-tap-highlight-color: transparent; }
     .main-content { height:100dvh; min-height:0; padding-bottom:60px; }
     .app-section, #sectionChat { height:auto; min-height:0; }
 }
-@media (max-width: 1199px) {
+@media (max-width: 899px) {
     body { height: 100dvh; }
     .app-container, .app-container.left-collapsed, .app-container.right-collapsed,
     .app-container.left-collapsed.right-collapsed { height: 100dvh; min-height: 0; }
