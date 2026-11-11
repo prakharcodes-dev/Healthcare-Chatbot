@@ -8,7 +8,9 @@
 
 > 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com](https://healthcare-chatbot-1-ynxb.onrender.com)
 
-MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **727 condition records (702 distinct condition names)**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features **1,000 unique condition records**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+
+**Dataset review status:** 301 newly added condition names are catalog entries pending clinical review. They intentionally have no symptom profiles and provide no condition-specific medication or treatment guidance, so they are not used for symptom matching. Their general emergency safety text is not a substitute for medical care.
 
 ---
 
@@ -72,10 +74,11 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 - **Dark & Light Themes**: Theme support for light and dark mode.
 
 ### 🌐 8. Language Support & Health and Safety Guide
-- Choose **English, Hindi, Bengali, or Spanish** from the language menu. The safety guide and selected navigation and welcome text are localized.
+- Choose from **12 interface languages**: English, Hindi, Bengali, Spanish, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, and Odia. The safety guide and selected navigation and welcome text are localized in all 12.
 - The **Health & Safety** page offers general guidance on food and hydration, physical activity, sleep and mental wellbeing, infection and injury prevention, medicine safety, and when to seek care.
 - The guide includes emergency warning signs and directs users to call their **local emergency number** for urgent help.
-- The disease library and symptom-check results remain in English. The language selector does not translate medical records or diagnostic outputs.
+- Disease names, the disease library, chatbot responses, and symptom-check results remain in English. The language selector does not translate medical records or diagnostic outputs.
+- Localized general safety guidance should receive native-speaker and clinical review before use as patient-facing medical translation.
 - Guidance is general information, not personal medical advice. Recommendations can vary by person and location; consult a qualified health professional for individual care.
 - Reference sources: [WHO healthy diet](https://www.who.int/news-room/fact-sheets/detail/healthy-diet), [WHO physical activity](https://www.who.int/news-room/fact-sheets/detail/physical-activity), [WHO stroke](https://www.who.int/news-room/fact-sheets/detail/stroke), [WHO heart attack](https://www.who.int/news-room/fact-sheets/detail/heart-attack), [WHO vaccines and immunization](https://www.who.int/health-topics/vaccines-and-immunization), and [WHO noncommunicable diseases](https://www.who.int/health-topics/noncommunicable-diseases).
 
@@ -143,7 +146,7 @@ HEALTHCARE CHATBOT/
 ├── migrations/               # Explicit SQL migrations (never auto-applied)
 ├── tests/unit/               # Unit tests for pure assessment logic
 ├── data/                     # Data storage
-│   └── diseases.json         # Dataset containing 727 condition records (702 distinct names)
+│   └── diseases.json         # Dataset containing 1,000 unique condition records
 ├── evaluation/               # Matcher evaluation framework (new-features branch)
 │   ├── evaluate.py           # Evaluation runner — top-1/3/5 accuracy & failure analysis
 │   ├── test_cases.json       # 60 test cases (exact / partial / typo)
@@ -185,7 +188,7 @@ Start the Flask development server:
 python run.py
 ```
 Upon startup:
-- The backend loads **727 condition records (702 distinct condition names)** from `data/diseases.json` and normalizes all 6 medical pillars.
+- The backend loads **1,000 unique condition records** from `data/diseases.json` and normalizes all 6 medical pillars. Of these, 301 catalog entries are drafts pending clinical review and are not symptom-matchable.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
 
