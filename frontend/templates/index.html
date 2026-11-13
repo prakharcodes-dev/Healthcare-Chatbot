@@ -11,7 +11,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=profile-scroll-2">
 </head>
 <body>
     <div class="app-container">
@@ -32,6 +32,7 @@
                 <button class="menu-item" type="button" data-section="knowledge">
                     <i class="fa-solid fa-book-medical" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navLibrary">Medical Knowledge</span><span class="menu-subtitle" data-i18n="navLibrarySub">Search conditions</span></span>
                 </button>
+                <button class="menu-item" type="button" data-section="profile"><i class="fa-solid fa-id-card" aria-hidden="true"></i><span class="menu-text"><span class="menu-title">Patient Medical Profile</span><span class="menu-subtitle">Personal health record</span></span></button>
                 <button class="menu-item" type="button" data-section="trends">
                     <i class="fa-solid fa-chart-line" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navTrends">Health Trends</span><span class="menu-subtitle" data-i18n="navTrendsSub">Track vital metrics</span></span>
                 </button>
@@ -39,25 +40,20 @@
                     <i class="fa-solid fa-shield-heart" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="safetyNav">Health & Safety</span><span class="menu-subtitle" data-i18n="safetySub">Everyday wellness guidance</span></span>
                 </button>
                 <p class="nav-group-label nav-tools-label" data-i18n="navTools">Tools</p>
-                <button class="menu-item nav-action" type="button" data-section="reminders">
+                <button class="menu-item" type="button" data-section="reminders">
                     <i class="fa-solid fa-clock" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navReminders">Set Reminders</span><span class="menu-subtitle" data-i18n="navRemindersSub">Medication alerts</span></span>
                 </button>
-                <button class="menu-item nav-action" type="button" data-section="history">
+                <button class="menu-item" type="button" data-section="history">
                     <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navHistory">Chat History</span><span class="menu-subtitle" data-i18n="navHistorySub">Review past sessions</span></span>
                 </button>
-                <button class="menu-item nav-action" type="button" data-section="analytics">
+                <button class="menu-item" type="button" data-section="analytics">
                     <i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span class="menu-text"><span class="menu-title" data-i18n="navAnalytics">Analytics</span><span class="menu-subtitle" data-i18n="navAnalyticsSub">Usage overview</span></span>
                 </button>
             </nav>
             
             <div class="sidebar-user">
-                <div class="user-avatar">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </div>
-                <div class="user-info">
-                    <h4>Prakhar Singh</h4>
-                    <p>Personal Health Profile</p>
-                </div>
+                <div class="user-avatar"><i class="fa-solid fa-heart-pulse"></i></div>
+                <div class="user-info"><h4>Local workspace</h4><p>Health information tools</p></div>
             </div>
         </aside>
 
@@ -105,6 +101,12 @@
                                 <h2 data-i18n="welcomeTitle">Welcome to MedVitals AI!</h2>
                                 <p data-i18n="welcomeText">Your intelligent personal health assistant. How would you like to get started today?</p>
                             </div>
+                        </div>
+
+                        <div class="dashboard-stats" aria-label="Available health information">
+                            <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="fa-solid fa-book-medical"></i></span><div><strong data-stat-diseases>—</strong><span>Conditions in library</span></div></article>
+                            <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="fa-solid fa-layer-group"></i></span><div><strong data-stat-categories>—</strong><span>Medical categories</span></div></article>
+                            <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="fa-solid fa-heart-pulse"></i></span><div><strong>4</strong><span>Vital types to track</span></div></article>
                         </div>
 
                         <!-- Primary destinations -->
@@ -226,6 +228,31 @@
                     <article class="safety-emergency"><span class="safety-icon emergency-icon"><i class="fa-solid fa-triangle-exclamation"></i></span><div><h3 data-i18n="emergencyTitle">Get emergency help now</h3><p data-i18n="emergencyText">Call your local emergency number for severe difficulty breathing, chest pressure or pain, fainting or unresponsiveness, severe bleeding, a seizure that will not stop, or sudden face drooping, arm weakness, or speech trouble. Do not wait for an online response.</p></div></article>
                     <p class="safety-disclaimer" data-i18n="safetyDisclaimer">This guide is general information, not personal medical advice or a diagnosis. Follow local public-health advice and a qualified clinician’s recommendations. Vaccine, screening, diet, and activity guidance can vary by person and country.</p>
                     <div class="safety-sources"><strong data-i18n="sourcesTitle">Trusted sources</strong><a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" rel="noopener noreferrer">WHO: Healthy diet</a><a href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener noreferrer">WHO: Physical activity</a><a href="https://www.who.int/news-room/fact-sheets/detail/stroke" target="_blank" rel="noopener noreferrer">WHO: Stroke warning signs</a><a href="https://www.who.int/news-room/fact-sheets/detail/heart-attack" target="_blank" rel="noopener noreferrer">WHO: Heart attack</a><a href="https://www.who.int/health-topics/noncommunicable-diseases" target="_blank" rel="noopener noreferrer">WHO: NCD prevention</a><a href="https://www.who.int/health-topics/vaccines-and-immunization" target="_blank" rel="noopener noreferrer">WHO: Vaccines</a></div>
+                </div>
+            </section>
+
+            <section class="app-section" id="sectionProfile" style="display:none;">
+                <div class="profile-container">
+                    <div class="profile-privacy"><i class="fa-solid fa-lock-open"></i><div><strong>Privacy notice</strong><p>This workspace has no sign-in or patient ownership controls. Do not enter real sensitive medical information until appropriate privacy protections are in place. This profile is a single local-workspace record.</p></div></div>
+                    <div class="profile-toolbar"><p id="profileStatus" role="status">Loading profile…</p><button class="primary-btn" id="profileEditBtn" type="button" hidden>Edit Profile</button></div>
+                    <form id="patientProfileForm">
+                        <fieldset class="profile-card"><legend>Personal Information</legend><div class="profile-grid">
+                            <label>Patient name<input name="patient_name" autocomplete="name" placeholder="Full name"></label>
+                            <label>Date of birth<input name="date_of_birth" type="date"></label><label>Age<input id="profileAge" readonly placeholder="Calculated from date of birth"></label>
+                            <label>Gender<select name="gender"><option value="">Select</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select></label>
+                            <label>Blood group<select name="blood_group"><option value="">Select</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option><option>Unknown</option></select></label>
+                        </div></fieldset>
+                        <fieldset class="profile-card"><legend>Physical Measurements</legend><div class="profile-grid"><label>Height (cm)<input name="height_cm" type="number" min="1" max="300" step="0.1" placeholder="e.g. 170"></label><label>Weight (kg)<input name="weight_kg" type="number" min="1" max="500" step="0.1" placeholder="e.g. 65"></label><label>BMI<input id="profileBmi" readonly placeholder="Calculated from height and weight"></label></div></fieldset>
+                        <fieldset class="profile-card"><legend>Medical Information</legend><div class="profile-grid">
+                            <label>Known allergies <small>Separate entries with commas</small><textarea name="allergies" placeholder="e.g. peanuts, penicillin"></textarea></label><label>Previous operations / surgeries<textarea name="operations" placeholder="Procedure and approximate date"></textarea></label>
+                            <label>Medical history<textarea name="medical_history" placeholder="Relevant past medical history"></textarea></label><label>Current medical conditions<textarea name="conditions" placeholder="Separate entries with commas"></textarea></label>
+                            <label>Current medications <small>Name and dose, separated with commas</small><textarea name="medications" placeholder="e.g. medicine name, dose"></textarea></label><label>Family medical history<textarea name="family_history" placeholder="Relevant family history"></textarea></label>
+                            <label>Disabilities or special conditions<textarea name="disabilities" placeholder="Optional"></textarea></label><label>Important medical notes<textarea name="notes" placeholder="Optional notes for your record"></textarea></label>
+                        </div></fieldset>
+                        <fieldset class="profile-card emergency-card"><legend>Emergency Contact</legend><div class="profile-grid"><label>Contact name<input name="emergency_contact_name" placeholder="Full name"></label><label>Contact number<input name="emergency_contact_number" type="tel" autocomplete="tel" placeholder="e.g. +1 555 123 4567"></label><label>Relationship<input name="emergency_relationship" placeholder="e.g. spouse, friend"></label></div></fieldset>
+                        <div class="profile-actions"><button class="primary-btn" type="submit" id="profileSaveBtn">Save Profile</button><span id="profileSaveStatus" role="status"></span></div>
+                    </form>
+                    <p class="profile-disclaimer">MedVitals AI provides general health information and is not a substitute for professional medical advice. Profile information is not used to generate diagnoses or treatment recommendations.</p>
                 </div>
             </section>
 
@@ -465,6 +492,7 @@
             <button class="bottom-tab-item active" type="button" data-section="chat" aria-current="page"><i class="fa-solid fa-comment-medical" aria-hidden="true"></i><span data-i18n="navChecker">Check</span></button>
             <button class="bottom-tab-item" type="button" data-section="knowledge"><i class="fa-solid fa-book-medical" aria-hidden="true"></i><span data-i18n="navLibraryShort">Library</span></button>
             <button class="bottom-tab-item" type="button" data-section="trends"><i class="fa-solid fa-chart-line" aria-hidden="true"></i><span data-i18n="navTrendsShort">Trends</span></button>
+            <button class="bottom-tab-item" type="button" data-section="profile"><i class="fa-solid fa-id-card" aria-hidden="true"></i><span>Profile</span></button>
             <button class="bottom-tab-item" type="button" data-section="safety"><i class="fa-solid fa-shield-heart" aria-hidden="true"></i><span data-i18n="safetyNav">Safety</span></button>
         </nav>
     </div>

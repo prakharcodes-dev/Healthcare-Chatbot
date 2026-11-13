@@ -124,10 +124,10 @@ function handleMenuClick(e) {
 
 function switchSection(section) {
 
-    const view = ['chat', 'knowledge', 'trends', 'safety'].includes(section) ? section : 'chat';
+    const view = ['chat', 'knowledge', 'trends', 'safety', 'profile'].includes(section) ? section : 'chat';
     state.activeSection = view;
-    document.querySelectorAll('.sidebar-menu .menu-item:not(.nav-action), .bottom-tab-item').forEach(item => {
-        const active = item.dataset.section === view;
+    document.querySelectorAll('.sidebar-menu .menu-item, .bottom-tab-item').forEach(item => {
+        const active = item.dataset.section === section;
         item.classList.toggle('active', active);
         if (active) item.setAttribute('aria-current', 'page');
         else item.removeAttribute('aria-current');
@@ -165,11 +165,100 @@ function switchSection(section) {
         document.getElementById('sectionSafety').style.display = 'block';
         if (mainTitle) mainTitle.textContent = i18n[state.language].safetyTitle;
         if (mainSubtitle) mainSubtitle.textContent = i18n[state.language].safetyEyebrow;
+    } else if (section === 'profile') {
+        document.getElementById('sectionProfile').style.display = 'block';
+        if (mainTitle) mainTitle.textContent = 'Patient Medical Profile';
+        if (mainSubtitle) mainSubtitle.textContent = 'Personal health information';
+        loadPatientProfile();
     } else if (section === 'analytics') {
         document.getElementById('sectionChat').style.display = 'flex';
         fetchAnalytics();
     }
 }
+
+async function loadPatientProfile() {
+    const form = document.getElementById('patientProfileForm');
+    const status = document.getElementById('profileStatus');
+    if (!form) return;
+    status.textContent = 'Loading profile…';
+    try {
+        const response = await fetch('/api/patient-profile');
+        if (!response.ok) throw new Error('Unable to load the profile.');
+        const result = await response.json();
+        const data = result.profile || {};
+        Object.entries(data).forEach(([key, value]) => {
+            const field = form.elements.namedItem(key);
+            if (field) field.value = Array.isArray(value) ? value.join(', ') : (value ?? '');
+        });
+        document.getElementById('profileEditBtn').hidden = !Object.keys(data).length;
+        form.dataset.saved = Object.keys(data).length ? 'true' : 'false';
+        setProfileReadOnly(Boolean(Object.keys(data).length));
+        updateProfileCalculations();
+        status.textContent = Object.keys(data).length ? 'Saved profile' : 'No profile saved yet';
+    } catch (error) { status.textContent = error.message || 'Unable to load the profile.'; }
+}
+
+function setProfileReadOnly(readOnly) {
+    const form = document.getElementById('patientProfileForm');
+    if (!form) return;
+    form.querySelectorAll('input:not([readonly]), textarea, select').forEach(field => { field.disabled = readOnly; });
+    document.getElementById('profileSaveBtn').hidden = readOnly;
+}
+
+function updateProfileCalculations() {
+    const form = document.getElementById('patientProfileForm');
+    const dateField = form.elements.date_of_birth;
+    const today = new Date();
+    const todayValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    dateField.max = todayValue;
+    const dob = form.elements.date_of_birth.value;
+    const height = Number(form.elements.height_cm.value);
+    const weight = Number(form.elements.weight_kg.value);
+    let age = '';
+    if (dob) {
+        const birth = new Date(`${dob}T00:00:00`);
+        age = today.getFullYear() - birth.getFullYear();
+        if (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate())) age--;
+        if (age < 0 || birth > today) age = '';
+    }
+    document.getElementById('profileAge').value = age === '' ? '' : `${age} years`;
+    document.getElementById('profileBmi').value = height > 0 && weight > 0 ? (weight / ((height / 100) ** 2)).toFixed(1) : '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('patientProfileForm');
+    if (!form) return;
+    form.addEventListener('input', updateProfileCalculations);
+    form.addEventListener('change', updateProfileCalculations);
+    document.getElementById('profileEditBtn').addEventListener('click', () => {
+        setProfileReadOnly(false);
+        document.getElementById('profileSaveStatus').textContent = 'Edit your details and save to update.';
+    });
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const saveStatus = document.getElementById('profileSaveStatus');
+        const button = document.getElementById('profileSaveBtn');
+        if (!form.reportValidity()) return;
+        const payload = {};
+        for (const key of ['patient_name','date_of_birth','gender','blood_group','height_cm','weight_kg','allergies','operations','medical_history','conditions','medications','family_history','disabilities','notes','emergency_contact_name','emergency_contact_number','emergency_relationship']) {
+            const field = form.elements.namedItem(key); if (!field) continue;
+            let value = field.value.trim();
+            if (['allergies','operations','conditions','medications'].includes(key)) value = value ? value.split(',').map(item => item.trim()).filter(Boolean) : [];
+            else if (['height_cm','weight_kg'].includes(key)) value = value ? Number(value) : null;
+            payload[key] = value;
+        }
+        button.disabled = true; saveStatus.textContent = 'Saving…';
+        try {
+            const response = await fetch('/api/patient-profile', {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Unable to save the profile.');
+            form.dataset.saved = 'true'; document.getElementById('profileEditBtn').hidden = false;
+            setProfileReadOnly(true); saveStatus.textContent = 'Profile saved successfully.';
+            document.getElementById('profileStatus').textContent = 'Saved profile'; updateProfileCalculations();
+        } catch (error) { saveStatus.textContent = error.message || 'Unable to save. Please try again.'; }
+        finally { button.disabled = false; }
+    });
+});
 
 // Quick Start Example Symptom Chip Helper
 function sendExampleSymptom(text) {
@@ -1938,7 +2027,11 @@ async function updateDiseaseCount() {
     try {
         const response = await fetch('/health');
         const data = await response.json();
-        if (data.disease_count) document.querySelectorAll('[data-disease-count]').forEach(el => el.textContent = `${data.disease_count}+`);
+        if (data.disease_count) {
+            document.querySelectorAll('[data-disease-count]').forEach(el => el.textContent = data.disease_count.toLocaleString());
+            document.querySelectorAll('[data-stat-diseases]').forEach(el => el.textContent = data.disease_count.toLocaleString());
+        }
+        if (Number.isFinite(data.category_count)) document.querySelectorAll('[data-stat-categories]').forEach(el => el.textContent = data.category_count.toLocaleString());
     } catch (_) { /* Keep the page usable when the count endpoint is unavailable. */ }
 }
 

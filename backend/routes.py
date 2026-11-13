@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from collections import Counter
 from flask import Blueprint, request, jsonify, current_app, render_template
 from fuzzywuzzy import process
-from backend.models import Notification, HealthLog
+from backend.models import Notification, HealthLog, PatientMedicalProfile
+from backend.extensions import db
 from backend.utils import (
     generate_session_id, 
     analyze_sentiment, 
@@ -20,6 +21,58 @@ from backend.reddis_metadata import save_session_metadata
 api_bp = Blueprint('api', __name__)
 
 
+PROFILE_FIELDS = {
+    'patient_name', 'date_of_birth', 'gender', 'blood_group', 'height_cm', 'weight_kg',
+    'allergies', 'operations', 'medical_history', 'conditions', 'medications',
+    'family_history', 'disabilities', 'notes', 'emergency_contact_name',
+    'emergency_contact_number', 'emergency_relationship'
+}
+
+
+@api_bp.route('/api/patient-profile', methods=['GET', 'PUT', 'PATCH'])
+def patient_profile():
+    """Manage the local workspace's single profile. No authentication is implemented."""
+    profile = PatientMedicalProfile.query.get(1)
+    if request.method == 'GET':
+        return jsonify({'profile': profile.data if profile else {}, 'updated_at': profile.updated_at.isoformat() if profile and profile.updated_at else None})
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'error': 'Please provide a valid profile object.'}), 400
+    updates = {key: value for key, value in data.items() if key in PROFILE_FIELDS}
+    if not updates:
+        return jsonify({'error': 'No supported profile fields were provided.'}), 400
+    for key in ('height_cm', 'weight_kg'):
+        if key in updates and updates[key] not in (None, ''):
+            try:
+                value = float(updates[key])
+                if not 0 < value <= (300 if key == 'height_cm' else 500):
+                    raise ValueError()
+                updates[key] = value
+            except (TypeError, ValueError):
+                return jsonify({'error': f'{"Height" if key == "height_cm" else "Weight"} must be a positive, valid measurement.'}), 400
+    for key in ('allergies', 'operations', 'conditions', 'medications'):
+        if key in updates and updates[key] not in (None, '') and not isinstance(updates[key], list):
+            return jsonify({'error': f'{key.replace("_", " ").capitalize()} must be a list.'}), 400
+    phone = updates.get('emergency_contact_number')
+    if phone:
+        import re
+        if not re.fullmatch(r'\+?[0-9][0-9 ()-]{5,18}[0-9]', str(phone).strip()):
+            return jsonify({'error': 'Enter a valid emergency contact number.'}), 400
+        updates['emergency_contact_number'] = str(phone).strip()
+    if profile is None:
+        profile = PatientMedicalProfile(id=1, data={})
+        db.session.add(profile)
+    profile.data = {**(profile.data or {}), **updates}
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        current_app.logger.exception('Patient profile save failed')
+        return jsonify({'error': 'Unable to save the profile right now.'}), 500
+    return jsonify({'profile': profile.data, 'updated_at': profile.updated_at.isoformat() if profile.updated_at else None})
+
+
 @api_bp.route('/')
 def home():
     return render_template('index.html')
@@ -31,6 +84,7 @@ def health_check():
     return jsonify({
         'status': 'running',
         'disease_count': len(diseases),
+        'category_count': len({d.get('category', '').strip().casefold() for d in diseases if d.get('category', '').strip()}),
         'features': ['enhanced_matching', 'chat_history', 'notifications', 'autocomplete', 'conditional_measurements']
     })
 
