@@ -53,6 +53,13 @@ class UserHealthProfile(db.Model):
     emergency_contact = db.Column(db.JSON)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
+class PatientMedicalProfile(db.Model):
+    """Single local-workspace profile; not associated with an authenticated user."""
+    id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.JSON, nullable=False, default=dict)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

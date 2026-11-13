@@ -132,6 +132,12 @@ def create_app(config_overrides=None):
     if config_overrides:
         app.config.update(config_overrides)
 
+    # The development server runs with debug disabled; explicitly refresh Jinja
+    # templates so navigation changes become visible without stale templates.
+    app.config['TEMPLATES_AUTO_RELOAD'] = app.config['APP_ENV'] != 'production'
+    app.config['SESSION_COOKIE_SECURE'] = app.config['APP_ENV'] == 'production'
+
+
     if app.config['APP_ENV'] == 'production' and not app.config.get('SECRET_KEY'):
         raise RuntimeError('SECRET_KEY must be configured in production.')
     if not app.config.get('SECRET_KEY'):
