@@ -21,7 +21,7 @@ async function init() {
     initSidebarState();
     setupEventListeners();
     const languagePicker = document.getElementById('languagePicker');
-    if (languagePicker) { languagePicker.value = ['en','hi','bn','es'].includes(state.language) ? state.language : 'en'; applyLanguage(state.language); languagePicker.addEventListener('change', e => applyLanguage(e.target.value)); }
+    if (languagePicker) { languagePicker.value = ['en','hi','bn','es','ta','te','mr','gu','kn','ml','pa','or'].includes(state.language) ? state.language : 'en'; applyLanguage(state.language); languagePicker.addEventListener('change', e => applyLanguage(e.target.value)); }
     await startSession();
     await checkConnection();
     updateDiseaseCount();
@@ -2072,3 +2072,6 @@ const coreI18n = {
  bn:{navWorkspace:'কাজের বিভাগ',navTools:'অন্যান্য সুবিধা',navLibrarySub:'রোগ খুঁজুন',navRemindersSub:'ওষুধের অনুস্মারক',navHistorySub:'আগের সেশন দেখুন',navAnalyticsSub:'ব্যবহারের সারাংশ',navLibraryShort:'তথ্যভান্ডার',navTrendsShort:'প্রবণতা',navChecker:'উপসর্গ পরীক্ষা',navCheckerSub:'উপসর্গ দেখুন',navLibrary:'স্বাস্থ্য তথ্য',navTrends:'স্বাস্থ্য প্রবণতা',navTrendsSub:'স্বাস্থ্য পরিমাপ দেখুন',navReminders:'অনুস্মারক',navHistory:'চ্যাট ইতিহাস',navAnalytics:'বিশ্লেষণ',welcomeTitle:'MedVitals AI-তে স্বাগতম!',welcomeText:'আপনার স্বাস্থ্য সহায়ক। আজ কীভাবে শুরু করবেন?',sampleTitle:'দ্রুত পরীক্ষা করতে নিচের একটি উদাহরণ বেছে নিন:',symptomPlaceholder:'উপসর্গ লিখুন (যেমন জ্বর, মাথাব্যথা, শুকনো কাশি)...',libraryTitle:'স্বাস্থ্য তথ্য'},
  es:{navWorkspace:'Espacio de trabajo',navTools:'Herramientas',navLibrarySub:'Buscar afecciones',navRemindersSub:'Avisos de medicación',navHistorySub:'Ver sesiones anteriores',navAnalyticsSub:'Resumen de uso',navLibraryShort:'Biblioteca',navTrendsShort:'Tendencias',navChecker:'Revisar síntomas',navCheckerSub:'Consultar síntomas',navLibrary:'Información médica',navTrends:'Tendencias de salud',navTrendsSub:'Registrar mediciones',navReminders:'Recordatorios',navHistory:'Historial del chat',navAnalytics:'Estadísticas',welcomeTitle:'¡Te damos la bienvenida a MedVitals AI!',welcomeText:'Tu asistente personal de salud. ¿Cómo quieres empezar hoy?',sampleTitle:'Elige un ejemplo para probar un análisis rápido:',symptomPlaceholder:'Escribe síntomas (p. ej., fiebre, dolor de cabeza, tos seca)...',libraryTitle:'Información médica'}
 };
+
+Object.assign(i18n, window.medVitalsLanguageExtensions?.page || {});
+Object.assign(coreI18n, window.medVitalsLanguageExtensions?.core || {});

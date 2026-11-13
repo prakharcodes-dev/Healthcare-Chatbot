@@ -16,6 +16,7 @@ from backend.core.health_metrics import evaluate_health_metric_status
 from backend.services.chat_response import build_structured_chat_response
 from backend.services.symptom_assessment import SymptomAssessmentService
 from backend.services.registry import get_services
+from backend.reddis_metadata import save_session_metadata
 
 api_bp = Blueprint('api', __name__)
 
@@ -98,9 +99,11 @@ def start_session():
             data.get('user_id'),
             data.get('device_info', {})
         )
+        save_session_metadata(session_id, 'active', 0, session.start_time.isoformat())
         return jsonify({'session_id': session_id, 'start_time': session.start_time.isoformat()})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/session/<session_id>/end', methods=['POST'])
 def end_session(session_id):
@@ -109,10 +112,15 @@ def end_session(session_id):
         session = chat_history.repository.find_session(session_id)
         if session:
             chat_history.repository.end_session(session)
+            save_session_metadata(
+                session_id, 'ended', len(chat_history.get_session_history(session_id)),
+                session.start_time.isoformat() if session.start_time else None
+            )
             return jsonify({'message': 'Session ended'})
         return jsonify({'error': 'Session not found'}), 404
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/predict', methods=['POST'])
 def predict():
@@ -132,6 +140,7 @@ def predict():
         session = chat_history.repository.find_session(session_id)
         if not session:
             session = chat_history.create_session(session_id, user_id)
+            save_session_metadata(session_id, 'active', 0, session.start_time.isoformat())
         
         start_time = datetime.utcnow()
         assessment = SymptomAssessmentService().assess(symptoms_input, matcher)
@@ -140,6 +149,7 @@ def predict():
         
         if not user_symptoms:
             chat_history.add_message(session_id, str(symptoms_input), 'Please enter your symptoms to begin analysis.', 'question')
+            save_session_metadata(session_id, 'active', len(chat_history.get_session_history(session_id)), session.start_time.isoformat())
             return jsonify({'matches': [], 'message': 'Please enter your symptoms to begin analysis.', 'session_id': session_id})
         
         needed_measurements = detect_relevant_measurements(user_symptoms)
@@ -264,6 +274,7 @@ def predict():
             sentiment,
             response_time
         )
+        save_session_metadata(session_id, 'active', len(chat_history.get_session_history(session_id)), session.start_time.isoformat())
         
         response = {
             'matches': final_matches,
@@ -281,7 +292,8 @@ def predict():
         return jsonify(response)
     
     except Exception as e:
-        return jsonify({'error': str(e), 'matches': []}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed', 'matches': []}), 500
 
 
 
@@ -300,7 +312,8 @@ def get_session_history(session_id):
         
         return jsonify({'session_id': session_id, 'messages': history, 'total': len(history)})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/history/user/<int:user_id>', methods=['GET'])
 def get_user_history(user_id):
@@ -315,7 +328,8 @@ def get_user_history(user_id):
                 msg['time'] = msg['time'].isoformat()
         return jsonify({'history': history})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/analytics', methods=['GET'])
 def get_analytics():
@@ -324,7 +338,8 @@ def get_analytics():
         days = request.args.get('days', 30, type=int)
         return jsonify(chat_history.get_analytics(days))
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/notifications/medication-reminder', methods=['POST'])
 def create_medication_reminder_route():
@@ -340,7 +355,8 @@ def create_medication_reminder_route():
         )
         return jsonify({'reminders_created': len(reminders)})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/notifications/user/<int:user_id>', methods=['GET'])
 def get_user_notifications(user_id):
@@ -363,7 +379,8 @@ def get_user_notifications(user_id):
         
         return jsonify({'notifications': result})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/notifications/<int:notification_id>/read', methods=['POST'])
 def mark_notification_read(notification_id):
@@ -376,7 +393,8 @@ def mark_notification_read(notification_id):
             return jsonify({'message': 'Notification marked as read'})
         return jsonify({'error': 'Notification not found'}), 404
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/insights/personalized/<int:user_id>', methods=['GET'])
 def get_personalized_insights(user_id):
@@ -415,7 +433,8 @@ def get_personalized_insights(user_id):
         
         return jsonify(insights)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 @api_bp.route('/api/suggest', methods=['POST'])
 def suggest():
@@ -445,7 +464,8 @@ def suggest():
             }
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 # ==========================================================================
@@ -512,7 +532,8 @@ def search_medical_knowledge():
         
         return jsonify({'results': final_list, 'total': len(final_list), 'query': query})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 @api_bp.route('/api/knowledge/<disease_name>', methods=['GET'])
@@ -532,7 +553,8 @@ def get_disease_knowledge(disease_name):
             
         return jsonify({'error': 'Disease not found'}), 404
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 # ==========================================================================
@@ -680,7 +702,8 @@ def add_health_log():
             'assessment': assessment
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 @api_bp.route('/api/health-trends/user/<int:user_id>', methods=['GET'])
@@ -706,7 +729,8 @@ def get_user_health_logs(user_id):
         
         return jsonify({'logs': result, 'total': len(result)})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 @api_bp.route('/api/health-trends/<int:log_id>', methods=['DELETE'])
@@ -719,7 +743,8 @@ def delete_health_log(log_id):
             return jsonify({'message': 'Health log deleted'})
         return jsonify({'error': 'Log entry not found'}), 404
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 @api_bp.route('/api/health-trends/summary/<int:user_id>', methods=['GET'])
@@ -771,7 +796,8 @@ def get_health_trends_summary(user_id):
             'user_id': user_id
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 # ==========================================================================
@@ -808,7 +834,8 @@ def get_due_reminders():
             
         return jsonify({'due_reminders': result, 'count': len(result)})
     except Exception as e:
-        return jsonify({'error': str(e), 'due_reminders': []}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed', 'due_reminders': []}), 500
 
 
 @api_bp.route('/api/reminders/active', methods=['GET'])
@@ -833,7 +860,8 @@ def get_active_reminders():
         
         return jsonify({'reminders': result, 'count': len(result)})
     except Exception as e:
-        return jsonify({'error': str(e), 'reminders': []}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed', 'reminders': []}), 500
 
 
 @api_bp.route('/api/reminders/create', methods=['POST'])
@@ -878,7 +906,8 @@ def create_reminder():
         get_services(current_app._get_current_object()).notification_records.add_many(reminders_created)
         return jsonify({'message': f'Scheduled {len(reminders_created)} medication reminders for {med_name}'})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 @api_bp.route('/api/reminders/test', methods=['POST'])
@@ -902,7 +931,8 @@ def test_reminder_alert():
         get_services(current_app._get_current_object()).notification_records.add_many([notif])
         return jsonify({'message': 'Test alert generated successfully', 'id': notif.id})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.exception('Request processing failed')
+        return jsonify({'error': 'Request failed'}), 500
 
 
 

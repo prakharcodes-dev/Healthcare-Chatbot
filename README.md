@@ -1,6 +1,6 @@
 # 🏥 MedVitals AI - Smart Healthcare Chatbot & Assistant
 
-[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![Framework](https://img.shields.io/badge/Framework-Flask_3.0%2B-green.svg)](https://flask.palletsprojects.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite_3-orange.svg)](https://www.sqlite.org/)
 [![Deployment](https://img.shields.io/badge/Deployment-Render-purple.svg)](https://render.com/)
@@ -8,7 +8,9 @@
 
 > 🌐 **Live Demo URL:** [https://healthcare-chatbot-1-ynxb.onrender.com](https://healthcare-chatbot-1-ynxb.onrender.com)
 
-MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features an extensive dataset of **727 condition records (702 distinct condition names)**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+MedVitals AI is an advanced, responsive healthcare chatbot designed to help users identify potential medical conditions based on their symptoms, explore comprehensive medical knowledge, and track vital health trends over time. The application features **1,000 unique condition records**, intelligent typo-tolerant symptom search, structured 5-section chat responses, interactive 6-pillar disease detail modals, health trend tracking with clinical feedback, and an audio-visual medication reminder system.
+
+**Dataset review status:** 301 newly added condition names are catalog entries pending clinical review. They intentionally have no symptom profiles and provide no condition-specific medication or treatment guidance, so they are not used for symptom matching. Their general emergency safety text is not a substitute for medical care.
 
 ---
 
@@ -72,10 +74,11 @@ Instead of plain text outputs, every symptom check response is formatted into 5 
 - **Dark & Light Themes**: Theme support for light and dark mode.
 
 ### 🌐 8. Language Support & Health and Safety Guide
-- Choose **English, Hindi, Bengali, or Spanish** from the language menu. The safety guide and selected navigation and welcome text are localized.
+- Choose from **12 interface languages**: English, Hindi, Bengali, Spanish, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, and Odia. The safety guide and selected navigation and welcome text are localized in all 12.
 - The **Health & Safety** page offers general guidance on food and hydration, physical activity, sleep and mental wellbeing, infection and injury prevention, medicine safety, and when to seek care.
 - The guide includes emergency warning signs and directs users to call their **local emergency number** for urgent help.
-- The disease library and symptom-check results remain in English. The language selector does not translate medical records or diagnostic outputs.
+- Disease names, the disease library, chatbot responses, and symptom-check results remain in English. The language selector does not translate medical records or diagnostic outputs.
+- Localized general safety guidance should receive native-speaker and clinical review before use as patient-facing medical translation.
 - Guidance is general information, not personal medical advice. Recommendations can vary by person and location; consult a qualified health professional for individual care.
 - Reference sources: [WHO healthy diet](https://www.who.int/news-room/fact-sheets/detail/healthy-diet), [WHO physical activity](https://www.who.int/news-room/fact-sheets/detail/physical-activity), [WHO stroke](https://www.who.int/news-room/fact-sheets/detail/stroke), [WHO heart attack](https://www.who.int/news-room/fact-sheets/detail/heart-attack), [WHO vaccines and immunization](https://www.who.int/health-topics/vaccines-and-immunization), and [WHO noncommunicable diseases](https://www.who.int/health-topics/noncommunicable-diseases).
 
@@ -143,7 +146,7 @@ HEALTHCARE CHATBOT/
 ├── migrations/               # Explicit SQL migrations (never auto-applied)
 ├── tests/unit/               # Unit tests for pure assessment logic
 ├── data/                     # Data storage
-│   └── diseases.json         # Dataset containing 727 condition records (702 distinct names)
+│   └── diseases.json         # Dataset containing 1,000 unique condition records
 ├── evaluation/               # Matcher evaluation framework (new-features branch)
 │   ├── evaluate.py           # Evaluation runner — top-1/3/5 accuracy & failure analysis
 │   ├── test_cases.json       # 60 test cases (exact / partial / typo)
@@ -171,7 +174,7 @@ HEALTHCARE CHATBOT/
 ## 🚀 Installation & Running
 
 ### 1. Prerequisites
-Make sure you have **Python 3.8+** installed.
+Make sure you have **Python 3.11+** installed.
 
 ### 2. Install Dependencies
 Install all required Python libraries:
@@ -185,14 +188,15 @@ Start the Flask development server:
 python run.py
 ```
 Upon startup:
-- The backend loads **727 condition records (702 distinct condition names)** from `data/diseases.json` and normalizes all 6 medical pillars.
+- The backend loads **1,000 unique condition records** from `data/diseases.json` and normalizes all 6 medical pillars. Of these, 301 catalog entries are drafts pending clinical review and are not symptom-matchable.
 - The SQLite database tables (including `HealthLog`) are created automatically if they do not exist.
 - A background scheduler and reminder engine are initialized.
 
 ### Architecture and deployment notes
 
-- SQLite remains the default database at `instance/healthcare_chatbot.db`. `db.create_all()` only creates missing tables; it does not apply the optional query-index migration. Review and back up the database before manually applying `migrations/0001_add_query_indexes.sql`.
-- Production startup requires a strong `SECRET_KEY` environment variable. Set `APP_ENV=production`; the Docker image sets this by default. `CORS_ORIGINS` is an optional comma-separated allow-list for separately hosted frontends; same-origin hosting needs no CORS configuration.
+- SQLite remains the default database at `instance/healthcare_chatbot.db`. `DATABASE_PATH` can point to a persistent mount. `render.yaml` mounts a Render disk at the SQLite directory and provides its path. Render disks require a paid web service. `db.create_all()` only creates missing tables; it does not apply the optional query-index migration. Review and back up the database before manually applying `migrations/0001_add_query_indexes.sql`.
+- Production startup requires a strong `SECRET_KEY` environment variable. `render.yaml` asks Render to generate one; the Docker image expects it to be supplied at runtime. Set `APP_ENV=production`. `CORS_ORIGINS` is an optional comma-separated allow-list for separately hosted frontends; same-origin hosting needs no CORS configuration. Render provides `PORT` to the Gunicorn command.
+- `.python-version` pins Render to Python 3.11 to match the Docker image and the pinned scientific packages.
 - The in-process APScheduler is enabled by default (`ENABLE_SCHEDULER=false` disables it). Docker uses one Gunicorn worker because multiple web workers or replicas would each run a scheduler and could send duplicate reminders. A production multi-instance deployment needs a dedicated scheduler/worker and distributed job claiming before scaling horizontally.
 - This project currently has no authentication or authorization flow. API endpoints that accept or default a `user_id` cannot prove ownership, and history, notification, and health-log records must be treated as accessible to anyone who can reach the API. Do not use it for private or real patient data until authenticated identity, per-user authorization, request protections, and an operational database backup/retention plan are implemented.
 - Symptom match percentages are heuristic similarity scores, not probabilities or diagnoses. Dataset content and general health guidance require clinical review before patient-facing clinical use.

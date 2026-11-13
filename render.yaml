@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: medvitals-ai
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 run:app
+    disk:
+      name: medvitals-data
+      mountPath: /opt/render/project/src/instance
+      sizeGB: 1
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/instance/healthcare_chatbot.db
+      - key: ENABLE_SCHEDULER
+        value: "true"
